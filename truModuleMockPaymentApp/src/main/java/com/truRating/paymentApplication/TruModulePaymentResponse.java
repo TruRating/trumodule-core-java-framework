@@ -1,11 +1,11 @@
-package com.truRating.truModule.payment;
+package com.truRating.paymentApplication;
 
-import com.truRating.truModule.network.xml.TruRatingMessageFactory;
 import org.apache.log4j.Logger;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import com.truRating.truModule.network.xml.TruRatingMessageFactory;
+import com.truRating.truModule.payment.IPaymentResponse;
+import com.truRating.truModule.payment.TenderType;
+import com.truRating.truModule.payment.TransactionStatusCode;
 
 /**
  * Created by Paul on 10/03/2016.

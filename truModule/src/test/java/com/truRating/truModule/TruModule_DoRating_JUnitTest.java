@@ -1,29 +1,32 @@
 package com.truRating.truModule;
 
-import com.truRating.moduleSpecific.TruModPaymentRequest;
-import com.truRating.truModule.network.xml.XMLNetworkMessenger;
-import com.truRating.truModule.prize.CheckForPrize;
-import com.truRating.truModule.properties.ITruModuleProperties;
-import com.truRating.truModule.device.IDevice;
-import com.truRating.truModule.rating.Rating;
-import com.truRating.truSharedData.payment.IPaymentApplication;
-import com.truRating.truModule.xml.questionResponse.QuestionResponseJAXB;
-import com.truRating.truModule.xml.questionResponse.QuestionResponseJAXB.Languages.Language.DisplayElements.Question;
+import static mockit.Deencapsulation.setField;
+
+import java.math.BigDecimal;
+
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Tested;
 import mockit.integration.junit4.JMockit;
+
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.math.BigDecimal;
+import com.truRating.payment.TruModulePaymentRequest; 
 
-import static com.truRating.truModule.xml.questionResponse.QuestionResponseJAXB.Languages;
-import static com.truRating.truModule.xml.questionResponse.QuestionResponseJAXB.Languages.Language;
-import static mockit.Deencapsulation.setField;
+import com.truRating.truModule.device.IDevice;
+import com.truRating.truModule.network.xml.XMLNetworkMessenger;
+import com.truRating.truModule.payment.IPaymentRequest;
+import com.truRating.truModule.prize.CheckForPrize;
+import com.truRating.truModule.properties.ITruModuleProperties;
+import com.truRating.truModule.rating.Rating;
+import com.truRating.truModule.xml.questionResponse.QuestionResponseJAXB;
+import com.truRating.truModule.xml.questionResponse.QuestionResponseJAXB.Languages;
+import com.truRating.truModule.xml.questionResponse.QuestionResponseJAXB.Languages.Language;
+import com.truRating.truModule.xml.questionResponse.QuestionResponseJAXB.Languages.Language.DisplayElements.Question;
 
 /**
  * Created by Paul on 10/03/2016.
@@ -34,9 +37,9 @@ public class TruModule_DoRating_JUnitTest {
     @Tested
     TruModule truModule;
     @Injectable
-    IPaymentApplication paymentApplication;
+    IDevice iDevice;    
     @Injectable
-    IDevice iDevice;
+    IPaymentRequest iPaymentRequest;
     @Injectable
     XMLNetworkMessenger xmlNetworkMessenger;
     @Injectable
@@ -47,12 +50,10 @@ public class TruModule_DoRating_JUnitTest {
     @Before
     public void setUp() {
         truModule =  new TruModule();
-        setField(truModule, "paymentApplication", paymentApplication);
         setField(truModule, "xmlNetworkMessenger", xmlNetworkMessenger);
         setField(truModule, "checkForPrize", checkForPrize);
         setField(truModule, "iDevice", iDevice);
         setField(truModule, "log", log);
-
     }
 
     @Test
@@ -77,7 +78,7 @@ public class TruModule_DoRating_JUnitTest {
             times = 1;
         }};
 
-        Rating iRating = truModule.doRating(new TruModPaymentRequest("A fluffy teddy", new BigDecimal("1.99")), null);
+        Rating iRating = truModule.doRating(new TruModulePaymentRequest("A fluffy teddy", 199), null);
 
         Assert.assertNotNull(iRating.getRatingTime());
         Assert.assertEquals(8, iRating.getValue());
@@ -94,7 +95,7 @@ public class TruModule_DoRating_JUnitTest {
             times = 1;
         }};
 
-        Rating rating = truModule.doRating(new TruModPaymentRequest("A fluffy teddy", new BigDecimal("1.99")), null);
+        Rating rating = truModule.doRating(new TruModulePaymentRequest("A fluffy teddy", 199), null);
         Assert.assertNull(rating);
     }
 
@@ -116,7 +117,7 @@ public class TruModule_DoRating_JUnitTest {
             times = 1;
         }};
 
-        Rating rating = truModule.doRating(new TruModPaymentRequest("A fluffy teddy", new BigDecimal("1.99")), null);
+        Rating rating = truModule.doRating(new TruModulePaymentRequest("A fluffy teddy", 199), null);
         Assert.assertEquals("", rating.getPrizeCode());
     }
 
@@ -137,7 +138,7 @@ public class TruModule_DoRating_JUnitTest {
             times = 0;
         }};
 
-        Rating rating = truModule.doRating(new TruModPaymentRequest("A fluffy teddy", new BigDecimal("1.99")), null);
+        Rating rating = truModule.doRating(new TruModulePaymentRequest("A fluffy teddy", 199), null);
 
         Assert.assertEquals("", rating.getPrizeCode());
     }
@@ -159,7 +160,7 @@ public class TruModule_DoRating_JUnitTest {
             times = 1;
         }};
 
-        Rating rating = truModule.doRating(new TruModPaymentRequest("A fluffy teddy", new BigDecimal("1.99")), null);
+        Rating rating = truModule.doRating(new TruModulePaymentRequest("A fluffy teddy", 199), null);
 
         Assert.assertEquals("", rating.getPrizeCode());
     }
