@@ -83,6 +83,7 @@ public class TruModule implements ITruModule, Runnable {
 
         try {
             final QuestionResponseJAXB questionResponseJAXB = xmlNetworkMessenger.getQuestionFromService(properties);
+
             if (questionResponseJAXB.getErrortext() != null) {
                 if (!questionResponseJAXB.getErrortext().equals("")) {
                     log.error("The QuestionRequest produced an error : " + questionResponseJAXB.getErrortext());
@@ -92,8 +93,7 @@ public class TruModule implements ITruModule, Runnable {
 
             final Question question = questionResponseJAXB.getLanguages().getLanguage().getDisplayElements().getQuestion();
             final long startTime = System.currentTimeMillis();
-            keyStroke = getDevice().displayTruratingQuestionGetKeystroke(
-                    preProcessQuestion(question), question.getValue(), 1000);
+            keyStroke = iDevice.displayTruratingQuestionGetKeystroke(preProcessQuestion(question), question.getValue(), 1000);
             final long endTime = System.currentTimeMillis();
             final Long totalTimeTaken = endTime - startTime;
 
@@ -147,12 +147,6 @@ public class TruModule implements ITruModule, Runnable {
             if (rating != null) {
                 if (new Integer(rating.getValue()) > 0) userRated = true;
             }
-
-//            if (userRated) {
-//                getDevice().displayMessage(ratingResponseReceipt.getRatedvalue());
-//            } else {
-//                getDevice().displayMessage(ratingResponseReceipt.getNotratedvalue());
-//            }
         } catch (Exception e) {
             log.error(e);
             return false;

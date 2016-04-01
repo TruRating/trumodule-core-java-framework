@@ -1,29 +1,51 @@
 package com.truRating.network;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+import mockit.Injectable;
+import mockit.Tested;
+import mockit.integration.junit4.JMockit;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import com.truRating.properties.UnitTestProperties;
+import com.truRating.truModule.TruModule;
 import com.truRating.truModule.network.xml.XMLNetworkMessenger;
-import com.truRating.truModule.payment.TruModulePaymentResponse;
+import com.truRating.truModule.payment.IPaymentResponse;
+import com.truRating.truModule.properties.ITruModuleProperties;
 import com.truRating.truModule.rating.Rating;
-import com.truRating.truSharedData.properties.ProgramProperties;
-import com.truRating.truSharedData.utilTime.TDateTime;
 import com.truRating.truModule.xml.questionResponse.QuestionResponseJAXB;
 import com.truRating.truModule.xml.ratingResponse.RatingResponseJAXB;
 import com.truRating.util.IntegrationTestStartUp;
-import org.junit.Assert;
-import org.junit.Test;
-
-import java.io.File;
 
 /**
  * Created by Paul on 11/03/2016.
  */
+@RunWith(JMockit.class)
 public class XMLNetworkMessengerIntegrationTest {
 
+    @Tested
+    TruModule truModule;
+    @Injectable
+    ITruModuleProperties properties;    
+    @Injectable
+    IPaymentResponse paymentResponse;
+	
+    @Before
+    public void init() {
+    	properties = UnitTestProperties.getInstance();
+    }
+    
     @Test
     public void TestgetQuestionFromService_checkForReturnedMessage() {
         IntegrationTestStartUp.setupLog4J();
         IntegrationTestStartUp.startup();
         XMLNetworkMessenger xmlNetworkMessenger = new XMLNetworkMessenger();
-        QuestionResponseJAXB questionResponse = xmlNetworkMessenger.getQuestionFromService();
+        QuestionResponseJAXB questionResponse = xmlNetworkMessenger.getQuestionFromService(properties);
         Assert.assertNotNull(questionResponse);
     }
 
@@ -31,12 +53,17 @@ public class XMLNetworkMessengerIntegrationTest {
     public void getQuestionFromService_sendAnIncorrectlyFormattedQuestion() {
         IntegrationTestStartUp.setupLog4J();
         IntegrationTestStartUp.startup();
-        ProgramProperties.getInstance().load(new File("C:\\dev\\source\\trumodule-core-java\\source\\truModule\\src\\main\\resources\\testProps\\testPropertiesIncorrectlyFormatted.txt"));
         XMLNetworkMessenger xmlNetworkMessenger = new XMLNetworkMessenger();
-        QuestionResponseJAXB questionResponse = xmlNetworkMessenger.getQuestionFromService();
+        QuestionResponseJAXB questionResponse = xmlNetworkMessenger.getQuestionFromService(properties);
         Assert.assertNotNull(questionResponse.getErrortext());
     }
 
+    public static String now() {
+	    Calendar cal = Calendar.getInstance();
+	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	    return sdf.format(cal.getTime());
+    }    
+    
     @Test
     public void deliveryRatingToService_checkForReturnedMessage() {
         //will fail because the rating is not fully setup correctly
@@ -46,8 +73,8 @@ public class XMLNetworkMessengerIntegrationTest {
         XMLNetworkMessenger xmlNetworkMessenger = new XMLNetworkMessenger();
         Rating rating = new Rating();
         rating.setValue(5);
-        rating.setRatingDateTime(new TDateTime().toString());
-        RatingResponseJAXB ratingResponseJAXB= xmlNetworkMessenger.deliveryRatingToService(rating, new TruModulePaymentResponse());
+        rating.setRatingDateTime(now());
+        RatingResponseJAXB ratingResponseJAXB= xmlNetworkMessenger.deliveryRatingToService(rating, paymentResponse, properties);
         Assert.assertNull(ratingResponseJAXB);
     }
 

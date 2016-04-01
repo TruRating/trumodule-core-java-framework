@@ -46,7 +46,7 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
 
         try {
 
-            XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newFactory();
+            XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
 
             JAXBContext contextQuestionRequest = JAXBContext.newInstance(
                     QuestionRequestJAXB.class);
