@@ -1,0 +1,14 @@
+mid=MID98765
+tid=
+uid=17162
+languageCode=en-CA
+includeReceipt=true
+includeAcknowledgement=true
+device_Type=IPP350
+device_nLines=4
+device_cpl=20
+device_format=TEXT_CENTER
+device_firmware=Windows 10
+device_font_type=PROPORTIONAL
+serverId=123456789
+ppaFirmware=MCM4.2
