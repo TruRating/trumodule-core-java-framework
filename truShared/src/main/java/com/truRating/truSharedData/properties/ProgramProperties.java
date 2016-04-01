@@ -1,6 +1,5 @@
 package com.truRating.truSharedData.properties;
 
-import com.truRating.properties.UnitTestProperties;
 import com.truRating.truModule.properties.ITruModuleProperties;
 
 import org.apache.log4j.Logger;
