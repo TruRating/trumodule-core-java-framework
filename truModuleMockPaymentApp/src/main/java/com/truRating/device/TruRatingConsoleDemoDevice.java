@@ -1,7 +1,7 @@
-package com.truRating.device;
+package com.trurating.device;
 
-import com.truRating.truModule.device.DeviceCapabilities;
-import com.truRating.truModule.device.IDevice;
+import com.trurating.device.IDevice;
+
 import org.apache.log4j.Logger;
 
 import javax.swing.*;

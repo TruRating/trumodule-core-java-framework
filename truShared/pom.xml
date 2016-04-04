@@ -12,6 +12,7 @@
         <groupId>com.truRating</groupId>
         <artifactId>truModuleParent</artifactId>
         <version>1.1-SNAPSHOT</version>
+        <relativePath>../truModuleParent</relativePath>
     </parent>
 
     <dependencies>

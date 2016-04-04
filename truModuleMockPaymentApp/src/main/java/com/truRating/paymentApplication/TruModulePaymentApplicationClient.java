@@ -1,11 +1,12 @@
-package com.truRating.paymentApplication;
+package com.trurating.paymentApplication;
 
-import com.truRating.moduleSpecific.TruModPaymentRequest;
-import com.truRating.truModule.ITruModule;
-import com.truRating.truModule.TruModule;
-import com.truRating.truSharedData.payment.IPaymentApplication;
-import com.truRating.truModule.payment.IPaymentRequest;
-import com.truRating.truModule.payment.TenderType;
+import com.trurating.TruModule;
+import com.trurating.payment.IPaymentApplication;
+import com.trurating.payment.PaymentRequest;
+import com.trurating.payment.TenderType;
+import com.trurating.ITruModule;
+import com.trurating.payment.IPaymentRequest;
+
 import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;

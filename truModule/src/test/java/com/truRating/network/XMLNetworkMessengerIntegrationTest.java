@@ -1,4 +1,4 @@
-package com.truRating.network;
+package com.trurating.network;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -12,15 +12,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.truRating.properties.UnitTestProperties;
-import com.truRating.truModule.TruModule;
-import com.truRating.truModule.network.xml.XMLNetworkMessenger;
-import com.truRating.truModule.payment.IPaymentResponse;
-import com.truRating.truModule.properties.ITruModuleProperties;
-import com.truRating.truModule.rating.Rating;
-import com.truRating.truModule.xml.questionResponse.QuestionResponseJAXB;
-import com.truRating.truModule.xml.ratingResponse.RatingResponseJAXB;
-import com.truRating.util.IntegrationTestStartUp;
+import com.trurating.TruModule;
+import com.trurating.network.xml.XMLNetworkMessenger;
+import com.trurating.payment.IPaymentResponse;
+import com.trurating.properties.ITruModuleProperties;
+import com.trurating.properties.UnitTestProperties;
+import com.trurating.rating.Rating;
+import com.trurating.util.IntegrationTestStartUp;
+import com.trurating.xml.questionResponse.QuestionResponseJAXB;
+import com.trurating.xml.ratingResponse.RatingResponseJAXB;
 
 /**
  * Created by Paul on 11/03/2016.
@@ -45,7 +45,7 @@ public class XMLNetworkMessengerIntegrationTest {
         IntegrationTestStartUp.setupLog4J();
         IntegrationTestStartUp.startup();
         XMLNetworkMessenger xmlNetworkMessenger = new XMLNetworkMessenger();
-        QuestionResponseJAXB questionResponse = xmlNetworkMessenger.getQuestionFromService(properties);
+        QuestionResponseJAXB questionResponse = xmlNetworkMessenger.getQuestionFromService(properties, "12345");
         Assert.assertNotNull(questionResponse);
     }
 
@@ -54,7 +54,7 @@ public class XMLNetworkMessengerIntegrationTest {
         IntegrationTestStartUp.setupLog4J();
         IntegrationTestStartUp.startup();
         XMLNetworkMessenger xmlNetworkMessenger = new XMLNetworkMessenger();
-        QuestionResponseJAXB questionResponse = xmlNetworkMessenger.getQuestionFromService(properties);
+        QuestionResponseJAXB questionResponse = xmlNetworkMessenger.getQuestionFromService(properties, "12345");
         Assert.assertNotNull(questionResponse.getErrortext());
     }
 
@@ -74,7 +74,7 @@ public class XMLNetworkMessengerIntegrationTest {
         Rating rating = new Rating();
         rating.setValue(5);
         rating.setRatingDateTime(now());
-        RatingResponseJAXB ratingResponseJAXB= xmlNetworkMessenger.deliveryRatingToService(rating, paymentResponse, properties);
+        RatingResponseJAXB ratingResponseJAXB= xmlNetworkMessenger.deliveryRatingToService(rating, "12345", paymentResponse, properties);
         Assert.assertNull(ratingResponseJAXB);
     }
 

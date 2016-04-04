@@ -1,10 +1,13 @@
-package com.truRating.truModule;
+package com.trurating.truModule;
 
 import static mockit.Deencapsulation.setField;
 
 import java.math.BigDecimal;
 
-import com.truRating.truModule.network.xml.IXMLNetworkMessenger;
+import com.trurating.TruModule;
+import com.trurating.rating.Rating;
+import com.trurating.network.xml.IXMLNetworkMessenger;
+
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Tested;
@@ -16,18 +19,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.truRating.payment.TruModulePaymentRequest; 
-
-import com.truRating.truModule.device.IDevice;
-import com.truRating.truModule.network.xml.XMLNetworkMessenger;
-import com.truRating.truModule.payment.IPaymentRequest;
-import com.truRating.truModule.prize.CheckForPrize;
-import com.truRating.truModule.properties.ITruModuleProperties;
-import com.truRating.truModule.rating.Rating;
-import com.truRating.truModule.xml.questionResponse.QuestionResponseJAXB;
-import com.truRating.truModule.xml.questionResponse.QuestionResponseJAXB.Languages;
-import com.truRating.truModule.xml.questionResponse.QuestionResponseJAXB.Languages.Language;
-import com.truRating.truModule.xml.questionResponse.QuestionResponseJAXB.Languages.Language.DisplayElements.Question;
+import com.trurating.network.xml.XMLNetworkMessenger;
+import com.trurating.payment.TruModulePaymentRequest; 
+import com.trurating.prize.CheckForPrize;
+import com.trurating.properties.ITruModuleProperties;
+import com.trurating.device.IDevice;
+import com.trurating.payment.IPaymentRequest;
+import com.trurating.xml.questionResponse.QuestionResponseJAXB;
+import com.trurating.xml.questionResponse.QuestionResponseJAXB.Languages;
+import com.trurating.xml.questionResponse.QuestionResponseJAXB.Languages.Language;
+import com.trurating.xml.questionResponse.QuestionResponseJAXB.Languages.Language.DisplayElements.Question;
 
 /**
  * Created by Paul on 10/03/2016.
@@ -68,7 +69,7 @@ public class TruModule_DoRating_JUnitTest {
         final QuestionResponseJAXB questionResponseJAXB = getQuestionResponseJAXB();
 
         new Expectations() {{
-            xmlNetworkMessenger.getQuestionFromService((ITruModuleProperties)any);
+            xmlNetworkMessenger.getQuestionFromService((ITruModuleProperties)any, "12345");
             returns(questionResponseJAXB);
             times = 1;
 //            iDevice.displaySecurePromptGetKeystroke((String[])any, (String)any, anyInt);
@@ -92,7 +93,7 @@ public class TruModule_DoRating_JUnitTest {
     public void doRatingServiceFailsTest() {
 
         new Expectations() {{
-            xmlNetworkMessenger.getQuestionFromService((ITruModuleProperties)any);
+            xmlNetworkMessenger.getQuestionFromService((ITruModuleProperties)any, "12345");
             returns(null);
             times = 1;
         }};
@@ -108,7 +109,7 @@ public class TruModule_DoRating_JUnitTest {
         final QuestionResponseJAXB questionResponseJAXB = getQuestionResponseJAXB();
 
         new Expectations() {{
-            xmlNetworkMessenger.getQuestionFromService((ITruModuleProperties)any);
+            xmlNetworkMessenger.getQuestionFromService((ITruModuleProperties)any, "12345");
             returns(questionResponseJAXB);
             times = 1;
             iDevice.displayTruratingQuestionGetKeystroke((String[])any, (String)any, anyInt);
@@ -129,7 +130,7 @@ public class TruModule_DoRating_JUnitTest {
         final QuestionResponseJAXB questionResponseJAXB = getQuestionResponseJAXB();
 
         new Expectations() {{
-            xmlNetworkMessenger.getQuestionFromService((ITruModuleProperties)any);
+            xmlNetworkMessenger.getQuestionFromService((ITruModuleProperties)any, "12345");
             returns(questionResponseJAXB);
             times = 1;
             iDevice.displayTruratingQuestionGetKeystroke((String[])any, (String)any, anyInt);
@@ -151,7 +152,7 @@ public class TruModule_DoRating_JUnitTest {
         final QuestionResponseJAXB questionResponseJAXB = getQuestionResponseJAXB();
 
         new Expectations() {{
-            xmlNetworkMessenger.getQuestionFromService((ITruModuleProperties)any);
+            xmlNetworkMessenger.getQuestionFromService((ITruModuleProperties)any, "12345");
             returns(questionResponseJAXB);
             times = 1;
             iDevice.displayTruratingQuestionGetKeystroke((String[])any, (String)any, anyInt);

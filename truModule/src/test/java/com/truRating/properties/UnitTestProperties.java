@@ -1,6 +1,7 @@
-package com.truRating.properties;
+package com.trurating.properties;
 
-import com.truRating.truModule.properties.ITruModuleProperties;
+import com.trurating.properties.ITruModuleProperties;
+
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -40,32 +41,28 @@ public class UnitTestProperties implements ITruModuleProperties {
         return "65321";
     }
 
-    public String getUid() {
-        return "000001";
-    }
-
     public String getLanguageCode() {
         return "en";
     }
 
-    public String getIncludeReceipt() {
-        return "yes";
+    public boolean getIncludeReceipt() {
+        return true;
     }
 
-    public String getIncludeAcknowledgement() {
-        return "yes";
+    public boolean getIncludeAcknowledgement() {
+        return true;
     }
 
     public String getDeviceType() {
         return "IPP350";
     }
 
-    public String getDevicenLines() {
-        return "4";
+    public int getDeviceLines() {
+        return 4;
     }
 
-    public String getDeviceCpl() {
-        return "16";
+    public int getDeviceCpl() {
+        return 16;
     }
 
     public String getDeviceFormat() {

@@ -1,12 +1,10 @@
-package com.truRating.payment;
+package com.trurating.payment;
 
 import java.math.BigDecimal;
 
 import org.apache.log4j.Logger;
 
-import com.truRating.truModule.payment.IPaymentRequest;
-import com.truRating.truModule.payment.TenderType;
-import com.truRating.truModule.payment.TransactionType;
+import com.trurating.payment.IPaymentRequest;
 
 /**
  * Created by Paul on 10/03/2016.

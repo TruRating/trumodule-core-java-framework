@@ -1,4 +1,4 @@
-package com.truRating.device;
+package com.trurating.device;
 
 import java.util.Scanner;
 

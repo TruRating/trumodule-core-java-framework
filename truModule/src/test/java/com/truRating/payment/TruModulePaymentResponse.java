@@ -1,11 +1,8 @@
-package com.truRating.payment;
+package com.trurating.payment;
 
 import org.apache.log4j.Logger;
 
-import com.truRating.truModule.network.xml.TruRatingMessageFactory;
-import com.truRating.truModule.payment.IPaymentResponse;
-import com.truRating.truModule.payment.TenderType;
-import com.truRating.truModule.payment.TransactionStatusCode;
+import com.trurating.network.xml.TruRatingMessageFactory;
 
 /**
  * Created by Paul on 10/03/2016.

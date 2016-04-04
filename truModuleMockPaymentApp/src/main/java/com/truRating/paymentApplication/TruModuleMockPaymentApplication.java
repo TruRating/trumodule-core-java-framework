@@ -1,18 +1,18 @@
-package com.truRating.paymentApplication;
+package com.trurating.paymentApplication;
 
 import org.apache.log4j.Logger;
 
-import com.truRating.device.TruRatingConsoleDemoDevice;
-import com.truRating.truModule.ITruModule;
-import com.truRating.truModule.device.IDevice;
-import com.truRating.truModule.payment.IPaymentRequest;
-import com.truRating.truModule.payment.IPaymentResponse;
-import com.truRating.truModule.properties.ITruModuleProperties;
-import com.truRating.truModule.rating.Rating;
-import com.truRating.truSharedData.payment.IPaymentApplication;
-import com.truRating.truSharedData.payment.transaction.ITransactionResult;
-import com.truRating.truSharedData.utilTime.TDate;
-import com.truRating.truSharedData.utilTime.TTime;
+import com.trurating.device.TruRatingConsoleDemoDevice;
+import com.trurating.payment.IPaymentApplication;
+import com.trurating.payment.IPaymentResponse;
+import com.trurating.properties.ITruModuleProperties;
+import com.trurating.rating.Rating;
+import com.trurating.ITruModule;
+import com.trurating.device.IDevice;
+import com.trurating.payment.IPaymentRequest;
+import com.trurating.payment.transaction.ITransactionResult;
+import com.trurating.utilTime.TDate;
+import com.trurating.utilTime.TTime;
 
 /**
  * Created by Paul on 01/03/2016.

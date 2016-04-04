@@ -1,4 +1,4 @@
-package com.truRating.truModule;
+package com.trurating.truModule;
 
 import static mockit.Deencapsulation.setField;
 
@@ -15,17 +15,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.truRating.payment.TruModulePaymentResponse; 
-
-import com.truRating.truModule.device.IDevice;
-import com.truRating.truModule.network.xml.XMLNetworkMessenger;
-import com.truRating.truModule.payment.IPaymentResponse;
-import com.truRating.truModule.properties.ITruModuleProperties;
-import com.truRating.truModule.rating.Rating;
-import com.truRating.truModule.xml.ratingResponse.RatingResponseJAXB;
-import com.truRating.truModule.xml.ratingResponse.RatingResponseJAXB.Languages;
-import com.truRating.truModule.xml.ratingResponse.RatingResponseJAXB.Languages.Language;
-import com.truRating.truModule.xml.ratingResponse.RatingResponseJAXB.Languages.Language.Receipt;
+import com.trurating.TruModule;
+import com.trurating.network.xml.XMLNetworkMessenger;
+import com.trurating.payment.IPaymentResponse;
+import com.trurating.payment.TruModulePaymentResponse; 
+import com.trurating.properties.ITruModuleProperties;
+import com.trurating.rating.Rating;
+import com.trurating.device.IDevice;
+import com.trurating.xml.ratingResponse.RatingResponseJAXB;
+import com.trurating.xml.ratingResponse.RatingResponseJAXB.Languages;
+import com.trurating.xml.ratingResponse.RatingResponseJAXB.Languages.Language;
+import com.trurating.xml.ratingResponse.RatingResponseJAXB.Languages.Language.Receipt;
 
 /**
  * Created by Paul on 10/03/2016.
@@ -59,7 +59,7 @@ public class TruModule_RecordResponse_JUnitTest {
         final RatingResponseJAXB ratingResponseJAXB= getRatingResponseMockJAXBTest();
 
         new Expectations() {{
-            xmlNetworkMessenger.deliveryRatingToService((Rating) any, (IPaymentResponse) any, (ITruModuleProperties) any);
+            xmlNetworkMessenger.deliveryRatingToService((Rating) any, "12345", (IPaymentResponse) any, (ITruModuleProperties) any);
             returns(ratingResponseJAXB);
             times = 1;
         }};
@@ -75,7 +75,7 @@ public class TruModule_RecordResponse_JUnitTest {
     public void recordResponseDeliveryFailsTest() {
 
         new Expectations() {{
-            xmlNetworkMessenger.deliveryRatingToService((Rating) any, (IPaymentResponse) any, (ITruModuleProperties) any);
+            xmlNetworkMessenger.deliveryRatingToService((Rating) any, "12345", (IPaymentResponse) any, (ITruModuleProperties) any);
             returns(null);
             times = 1;
         }};
