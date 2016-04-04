@@ -62,9 +62,6 @@ public class StringUtilities {
 
 	/**
 	 * Convert a given byte array into a hex string
-	 * 
-	 * @param b
-	 * @return
 	 */
 	public static String byteArrayToHexString(byte[] bytes) {
 		char[] hexChars = new char[bytes.length * 2];
@@ -79,9 +76,6 @@ public class StringUtilities {
 
 	/**
 	 * Convert a string formatted as 2 byte hex to a byte array
-	 * 
-	 * @param s
-	 * @return
 	 */
 	public static byte[] hexStringToByteArray(String s) {
 		int len = s.length();
@@ -95,9 +89,6 @@ public class StringUtilities {
 
 	/**
 	 * Read a file and return the contents as a string
-	 * 
-	 * @param filename
-	 * @return
 	 */
 	public static String readFile(String filename) {
 		StringBuffer sb = new StringBuffer();
@@ -125,9 +116,6 @@ public class StringUtilities {
 	/**
 	 * Break some text into an array of strings, word wrapping before the
 	 * maxWidth value is reached
-	 * 
-	 * @param questionText
-	 * @return
 	 */
 	public static String[] wordWrap(String qt, int maxWidth) {
 		ArrayList rv = new ArrayList();

@@ -1,6 +1,8 @@
 package com.truRating.truSharedData.common;
 
 
+import com.truRating.truSharedData.properties.IProperties;
+
 public class CurrencyFormatter {
 
 	private static int defaultCurrencyCode = 826;
