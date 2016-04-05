@@ -68,7 +68,7 @@ public class TruRatingMessageFactory {
 
         RatingDeliveryJAXB.Rating ratingElement = new RatingDeliveryJAXB.Rating();
         ratingElement.setValue((short) rating.getValue());
-        ratingElement.setResponsetimemilliseconds(new Short(rating.getRatingTime()));
+        ratingElement.setResponsetimemilliseconds(new Short(rating.getRatingDateTime()));
         ratingElement.setQid(rating.getQuestionID());
         ratingElement.setPrizecode(rating.getPrizeCode());
         ratingElement.setRatinglanguage(properties.getLanguageCode());

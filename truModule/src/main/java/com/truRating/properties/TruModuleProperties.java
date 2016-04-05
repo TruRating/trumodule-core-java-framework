@@ -1,14 +1,6 @@
 package com.trurating.properties;
 
-import com.trurating.properties.ITruModuleProperties;
-
 import org.apache.log4j.Logger;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.*;
 
 /**
  * A general loader of system properties.
@@ -23,7 +15,6 @@ import java.util.*;
 public class TruModuleProperties implements ITruModuleProperties {
 
     private static Logger log = Logger.getLogger(TruModuleProperties.class);
-    private Properties properties = null;
 
     public TruModuleProperties() {
     }

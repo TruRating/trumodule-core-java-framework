@@ -74,7 +74,7 @@ public class XMLNetworkMessengerIntegrationTest {
         Rating rating = new Rating();
         rating.setValue(5);
         rating.setRatingDateTime(now());
-        RatingResponseJAXB ratingResponseJAXB= xmlNetworkMessenger.deliveryRatingToService(rating, "12345", paymentResponse, properties);
+        RatingResponseJAXB ratingResponseJAXB= xmlNetworkMessenger.deliveryRatingToService(properties, "12345", rating, paymentResponse);
         Assert.assertNull(ratingResponseJAXB);
     }
 

@@ -6,9 +6,16 @@ import com.trurating.xml.questionResponse.QuestionResponseJAXB;
 /**
  * Created by Paul on 10/03/2016.
  */
-public class CheckForPrize {
+public class PrizeManager {
 
-    public String doCheck(IDevice iDevice, QuestionResponseJAXB questionResponseJAXB, String prizeCode) {
+	/**
+	 * 
+	 * @param iDevice
+	 * @param questionResponseJAXB
+	 * @param prizeCode
+	 * @return
+	 */
+    public String checkForAPrize(IDevice iDevice, QuestionResponseJAXB questionResponseJAXB, String prizeCode) {
         if (questionResponseJAXB.getLanguages().getLanguage().getDisplayElements().getPrize() != null) {
             prizeCode = questionResponseJAXB.getLanguages().getLanguage().getDisplayElements().getPrize().toString();
             if (prizeCode.length() > 0) {

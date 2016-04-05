@@ -145,10 +145,6 @@ public interface IPaymentRequest {
 
 	void setBasket(String basket);
 
-	String getProduct();
-
-	void setProduct(String product);
-
 	String getOperatorID();
 
 	void setOperatorID(String operatorID);

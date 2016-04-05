@@ -1,33 +1,54 @@
 package com.trurating;
 
-import com.trurating.payment.IPaymentResponse;
-import com.trurating.properties.ITruModuleProperties;
-import com.trurating.rating.Rating;
 import com.trurating.device.IDevice;
 import com.trurating.payment.IPaymentRequest;
+import com.trurating.payment.IPaymentResponse;
+import com.trurating.payment.TransactionContext;
+import com.trurating.properties.ITruModuleProperties;
 
 /**
  * Created by Paul on 01/03/2016.
  */
 public interface ITruModule {
-    
 	
-	int start();
+	/**
+	 *  if a device ref is set inside the module, the module will use this 
+	 *  otherwise it will expect to be able to contact device via payment app.
+	 * @param deviceRef
+	 */
+    //
+    void setDevice(IDevice deviceRef);
     
-    //if a device ref is set inside the module, the module will use this otherwise it will expect to be able to contact device via payment app.
-    void setDeviceRef(IDevice deviceRef);
+	/**
+	 * Get a reference to the current transaction data 
+	 */
+	
+	TransactionContext getTransactionContext() ;
+	
+    /**
+     * 
+     * @param paymentRequest
+     * @param properties
+     */
+    void doRating(ITruModuleProperties properties, IPaymentRequest paymentRequest);
     
-    Rating doRating(ITruModuleProperties properties); //for dwell time where there is no payment request yet
-    
-    Rating doRating(IPaymentRequest paymentRequest, ITruModuleProperties properties);
-    
-    
+    /**
+     * 
+     * @param properties
+     */
+    void doRatingInBackground(ITruModuleProperties properties, String transactionId); //for dwell time where there is no payment request yet
+
+    /**
+     * 
+     */
     void cancelRating();
     
-    boolean recordRatingResponse(IPaymentResponse paymentResponse, Rating rating, ITruModuleProperties properties);
-
-    /**a method used to setProgramProperties the truModule properties from the payment application,
-    /the truModule will default to using its own properties file if one
-    isn't setProgramProperties up via this method **/
-    void setProgramProperties(ITruModuleProperties propertiesMap);
+    /**
+     * 
+     * @param paymentResponse
+     * @param rating
+     * @param properties
+     * @return
+     */
+    boolean recordRatingResponse(ITruModuleProperties properties, IPaymentResponse paymentResponse);
 }

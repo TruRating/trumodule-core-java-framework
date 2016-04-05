@@ -2,15 +2,14 @@ package com.trurating.paymentApplication;
 
 import org.apache.log4j.Logger;
 
-import com.trurating.device.TruRatingConsoleDemoDevice;
-import com.trurating.payment.IPaymentApplication;
-import com.trurating.payment.IPaymentResponse;
-import com.trurating.properties.ITruModuleProperties;
-import com.trurating.rating.Rating;
 import com.trurating.ITruModule;
 import com.trurating.device.IDevice;
+import com.trurating.device.TruRatingConsoleDemoDevice;
+import com.trurating.payment.IPaymentApplication;
 import com.trurating.payment.IPaymentRequest;
+import com.trurating.payment.IPaymentResponse;
 import com.trurating.payment.transaction.ITransactionResult;
+import com.trurating.properties.ITruModuleProperties;
 import com.trurating.utilTime.TDate;
 import com.trurating.utilTime.TTime;
 
@@ -22,7 +21,6 @@ public class TruModuleMockPaymentApplication implements IPaymentApplication {
     private final ITruModule truModule;
     private final Logger log = Logger.getLogger(TruModuleMockPaymentApplication.class);
     private IDevice iDevice;
-    private Rating rating;
 
     public TruModuleMockPaymentApplication(ITruModule truModule) {
         this.truModule = truModule;
@@ -31,7 +29,7 @@ public class TruModuleMockPaymentApplication implements IPaymentApplication {
     //this is a take payment request - payment will not yet be taken
     public void paymentTrigger(IPaymentRequest paymentRequest, ITruModuleProperties properties) {
         log.info("Payment application is requesting payment - passing this on to the module");
-        rating = truModule.doRating(paymentRequest, properties);
+        truModule.doRating(properties, paymentRequest);
     }
 
     //now take payment - at this point card is inserted, therefore we will know card type
@@ -61,10 +59,7 @@ public class TruModuleMockPaymentApplication implements IPaymentApplication {
         paymentResponse.setCardHashData("7eb094ef3537a0a8c7799cc8725aa77fc3632ceaa193594492cd422d736fa79e");
         paymentResponse.setTenderType(paymentRequest.getTenderType());
 
-        if (rating==null) {
-            log.info("Due to a previous system error, no rating response is recorded.");
-        } else
-        truModule.recordRatingResponse(paymentResponse, rating, properties);
+        truModule.recordRatingResponse(properties, paymentResponse);
     }
 
     public IDevice getDevice() {
