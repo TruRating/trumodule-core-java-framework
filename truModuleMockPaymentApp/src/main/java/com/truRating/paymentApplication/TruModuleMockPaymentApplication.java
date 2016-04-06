@@ -91,6 +91,10 @@ public class TruModuleMockPaymentApplication  {
         log.info("Starting transaction");
     }
 
+    public void startTransaction(String tillOperator, String salesPerson, String txnID) {
+        log.error("Not implemented yet");
+    }
+
     public void endTransaction(ITransactionResult result) {
         log.info("End transaction");
     }

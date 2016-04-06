@@ -34,7 +34,7 @@ import java.util.TimeZone;
 
 /**
  * A representation of time, that brings together the way that times are handled
- * in payment applications, truRating, and in the Java date class.
+ * in payment applications, trurating, and in the Java date class.
  * 
  * @author Peter Salmon
  * 

@@ -32,7 +32,7 @@ public class TruRatingConsoleDemoDevice implements IDevice {
     }
 
     public void displayWelcome() {
-        log.info("truRating welcome");
+        log.info("trurating welcome");
     }
 
     public void displayPleaseWait() {

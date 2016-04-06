@@ -39,12 +39,12 @@ import com.trurating.properties.ITruModuleProperties;
 public interface IPaymentApplication {
 
 	/**
-	 * Flag to indicate whether truRating has been enabled, and whether it has been activated
+	 * Flag to indicate whether trurating has been enabled, and whether it has been activated
 	 */
 	boolean hasTruratingEnabledAndActive();
 
 	/**
-	 * Call to ask payment app to run a background exchange with the truRating host API
+	 * Call to ask payment app to run a background exchange with the trurating host API
 	 * to make sure that the LDS is up to date
 	 */
 	 void updateTrurating();
@@ -56,13 +56,15 @@ public interface IPaymentApplication {
 	 */
 	void startTransaction(String tillOperator, String salesPerson);
 
+	void startTransaction(String tillOperator, String salesPerson, String txnID);
+
 	/**
 	 * New event from POS to payment app to indicate that checkout is starting
 	 */
 	void startCheckout();
 
 	/**
-	*	Delivers the details of one item scanned from the basket to the truRating app.
+	*	Delivers the details of one item scanned from the basket to the trurating app.
 	*	Note that a copy of the basket item provided is made during this call, so the
 	*	instance provided can be safely deleted if necessary.
 	*/

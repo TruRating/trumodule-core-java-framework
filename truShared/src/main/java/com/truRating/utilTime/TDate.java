@@ -30,7 +30,7 @@ import java.util.Calendar;
 
 /**
  * A representation of dates, that brings together the way that dates are
- * handled in payment applications, truRating, and in Java.
+ * handled in payment applications, trurating, and in Java.
  * 
  * @author Peter Salmon
  * 
