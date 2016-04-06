@@ -15,9 +15,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.log4j.Logger;
 
 import com.trurating.network.ServerConnectionManager;
-import com.trurating.payment.IPaymentResponse;
 import com.trurating.properties.ITruModuleProperties;
-import com.trurating.rating.Rating;
 import com.trurating.xml.questionRequest.QuestionRequestJAXB;
 import com.trurating.xml.questionResponse.QuestionResponseJAXB;
 import com.trurating.xml.ratingDelivery.RatingDeliveryJAXB;
@@ -80,7 +78,7 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
     /**
         Will send the request for a question, if no response after timeOut seconds, will return null;
      */
-    public synchronized QuestionResponseJAXB getQuestionFromService(ITruModuleProperties properties, String transactionId) {
+    public synchronized QuestionResponseJAXB getQuestionFromService(ITruModuleProperties properties, long transactionId) {
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
 
@@ -132,7 +130,7 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
         return questionFromService;
     }
 
-    public RatingResponseJAXB deliveryRatingToService(ITruModuleProperties properties, String transactionId, Rating rating, IPaymentResponse paymentResponse) {
+	public RatingResponseJAXB deliverRatingToService(RatingDeliveryJAXB ratingRecord) {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
 
         //start listening for a rating response for 'timeout' seconds
@@ -160,7 +158,7 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
                     (String) ratingMarshaller.getProperty(Marshaller.JAXB_ENCODING));
 
             ratingWriter.writeStartDocument((String) ratingMarshaller.getProperty(Marshaller.JAXB_ENCODING), "1.0");
-            ratingMarshaller.marshal( truRatingMessageFactory.assembleARatingDelivery(rating, transactionId, paymentResponse, properties), ratingWriter);
+            ratingMarshaller.marshal( ratingRecord, ratingWriter);
             ratingWriter.writeEndDocument();
             ratingWriter.flush();
 
@@ -187,5 +185,10 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
 
         serverConnectionManager.close();
         return ratingResponseJAXB;
+    }
+	
+    public void close() {
+    	if (serverConnectionManager != null)
+            serverConnectionManager.close();
     }
 }

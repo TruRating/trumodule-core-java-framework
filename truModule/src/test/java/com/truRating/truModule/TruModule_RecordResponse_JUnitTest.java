@@ -18,10 +18,9 @@ import org.junit.runner.RunWith;
 import com.trurating.TruModule;
 import com.trurating.device.IDevice;
 import com.trurating.network.xml.XMLNetworkMessenger;
-import com.trurating.payment.IPaymentResponse;
-import com.trurating.payment.TruModulePaymentResponse;
 import com.trurating.properties.ITruModuleProperties;
-import com.trurating.rating.Rating;
+import com.trurating.xml.ratingDelivery.RatingDeliveryJAXB;
+import com.trurating.xml.ratingDelivery.RatingDeliveryJAXB.Rating;
 import com.trurating.xml.ratingResponse.RatingResponseJAXB;
 import com.trurating.xml.ratingResponse.RatingResponseJAXB.Languages;
 import com.trurating.xml.ratingResponse.RatingResponseJAXB.Languages.Language;
@@ -59,15 +58,16 @@ public class TruModule_RecordResponse_JUnitTest {
         final RatingResponseJAXB ratingResponseJAXB= getRatingResponseMockJAXBTest();
 
         new Expectations() {{
-            xmlNetworkMessenger.deliveryRatingToService((ITruModuleProperties) any, "12345", (Rating) any, (IPaymentResponse) any);
+            xmlNetworkMessenger.deliverRatingToService((RatingDeliveryJAXB) any);
             returns(ratingResponseJAXB);
             times = 1;
         }};
 
-        Rating rating = new Rating();
-        rating.setValue(8);
+        RatingDeliveryJAXB iRatingRecord = truModule.getRatingRecord(properties) ;
+        Rating rating = iRatingRecord.getRating() ;
+        rating.setValue((short)8);
 
-        boolean methodSucceeded = truModule.recordRatingResponse(properties, new TruModulePaymentResponse());
+        boolean methodSucceeded = truModule.deliverRating(properties);
         Assert.assertEquals(true, methodSucceeded);
     }
 
@@ -75,14 +75,13 @@ public class TruModule_RecordResponse_JUnitTest {
     public void recordResponseDeliveryFailsTest() {
 
         new Expectations() {{
-            xmlNetworkMessenger.deliveryRatingToService((ITruModuleProperties) any, "12345", (Rating) any, (IPaymentResponse) any);
+            xmlNetworkMessenger.deliverRatingToService((RatingDeliveryJAXB) any);
             returns(null);
             times = 1;
         }};
 
         Rating rating = new Rating();
-
-        boolean methodSucceeded = truModule.recordRatingResponse(properties, new TruModulePaymentResponse());
+        boolean methodSucceeded = truModule.deliverRating(properties);
         Assert.assertEquals(false, methodSucceeded);
     }
 

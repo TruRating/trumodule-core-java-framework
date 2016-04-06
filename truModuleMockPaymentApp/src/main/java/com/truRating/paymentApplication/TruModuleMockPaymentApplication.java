@@ -3,63 +3,71 @@ package com.trurating.paymentApplication;
 import org.apache.log4j.Logger;
 
 import com.trurating.ITruModule;
+import com.trurating.TruModule;
 import com.trurating.device.IDevice;
 import com.trurating.device.TruRatingConsoleDemoDevice;
-import com.trurating.payment.IPaymentApplication;
 import com.trurating.payment.IPaymentRequest;
-import com.trurating.payment.IPaymentResponse;
+import com.trurating.payment.TenderType;
+import com.trurating.payment.TransactionResult;
 import com.trurating.payment.transaction.ITransactionResult;
 import com.trurating.properties.ITruModuleProperties;
-import com.trurating.utilTime.TDate;
-import com.trurating.utilTime.TTime;
+import com.trurating.xml.ratingDelivery.RatingDeliveryJAXB.Transaction;
 
 /**
  * Created by Paul on 01/03/2016.
  */
-public class TruModuleMockPaymentApplication implements IPaymentApplication {
+public class TruModuleMockPaymentApplication  {
 
     private final ITruModule truModule;
     private final Logger log = Logger.getLogger(TruModuleMockPaymentApplication.class);
     private IDevice iDevice;
 
-    public TruModuleMockPaymentApplication(ITruModule truModule) {
-        this.truModule = truModule;
+    public TruModuleMockPaymentApplication() {
+        this.truModule = new TruModule();
+        this.truModule.setDevice(getDevice());
+    }
+
+    private Transaction getTransaction(ITruModuleProperties properties) {
+    	return truModule.getRatingRecord(properties).getTransaction() ; 
     }
 
     //this is a take payment request - payment will not yet be taken
-    public void paymentTrigger(IPaymentRequest paymentRequest, ITruModuleProperties properties) {
+	void paymentTrigger(ITruModuleProperties properties, String operator, TenderType tenderType, String product, long cost){
         log.info("Payment application is requesting payment - passing this on to the module");
-        truModule.doRating(properties, paymentRequest);
+
+        truModule.doRating(properties);
+        
+    	Transaction transaction = getTransaction(properties) ; 
+
+        //Operator
+		transaction.setOperator(operator);        
+    	
+    	// Tender type
+   		transaction.setTendertype(tenderType.toString());
+        
+       	// Amount
+       	transaction.setAmount(199) ;
     }
 
     //now take payment - at this point card is inserted, therefore we will know card type
-    public void completePayment(IPaymentRequest paymentRequest, ITruModuleProperties properties) {
-        IPaymentResponse paymentResponse = new TruModulePaymentResponse(); //again only partially implemented
+    public void completePayment(ITruModuleProperties properties) {
+    	Transaction transaction = getTransaction(properties) ; 
 
-        //do card
-        if (paymentRequest.getTenderType().equals("CARD")) {
-            getDevice().displayMessage("INSERT CARD"); //etc
+        getDevice().displayMessage("INSERT CARD"); //etc
 
-            //for demo purposes
-            paymentResponse.setCardScheme("VISA");
-            paymentResponse.setOperatorId(paymentRequest.getOperatorId());
-            paymentResponse.setTransactionIsApproved();
-            log.info("Payment cleared");
+    	// Transaction Id
+       	transaction.setTxnid(12345);
 
-        } else
-        //do cash
-        if (paymentRequest.getTenderType().equals("CASH")) {
-        }
+       	// Currency
+       	transaction.setCurrency((short)826);
+       
+    	// Transaction result
+   		transaction.setResult(TransactionResult.APPROVED.toString());
 
-        //for demo purposes, assume that payment cleared
-        paymentResponse.setTransactionNumber(1234512345);
-        paymentResponse.setTransactionDate(new TDate().toString());
-        paymentResponse.setTransactionTime(new TTime().toString());
-        paymentResponse.setCardHashType("CDH1");
-        paymentResponse.setCardHashData("7eb094ef3537a0a8c7799cc8725aa77fc3632ceaa193594492cd422d736fa79e");
-        paymentResponse.setTenderType(paymentRequest.getTenderType());
+    	// Card type
+   		transaction.setCardtype("VISA");
 
-        truModule.recordRatingResponse(properties, paymentResponse);
+        truModule.deliverRating(properties);
     }
 
     public IDevice getDevice() {

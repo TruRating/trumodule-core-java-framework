@@ -15,7 +15,8 @@ public class PrizeManager {
 	 * @param prizeCode
 	 * @return
 	 */
-    public String checkForAPrize(IDevice iDevice, QuestionResponseJAXB questionResponseJAXB, String prizeCode) {
+    public String checkForAPrize(IDevice iDevice, QuestionResponseJAXB questionResponseJAXB) {
+    	String prizeCode = "";
         if (questionResponseJAXB.getLanguages().getLanguage().getDisplayElements().getPrize() != null) {
             prizeCode = questionResponseJAXB.getLanguages().getLanguage().getDisplayElements().getPrize().toString();
             if (prizeCode.length() > 0) {

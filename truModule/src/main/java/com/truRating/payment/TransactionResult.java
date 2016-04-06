@@ -1,5 +1,5 @@
 /*
- * @(#)TransactionType.java
+ * @(#)TransactionResult.java
  *
  * Copyright (c) 2013 truRating Limited. All Rights Reserved.
  *
@@ -27,73 +27,57 @@ package com.trurating.payment;
 
 import java.util.Vector;
 
-public class TransactionType {
-
-	/***************************************************************************
-	 * Constructors
-	 ***************************************************************************/
+/**
+ * Static enumeration of values that indicate the progress of a payment
+ * transaction
+ * 
+ * @author Peter Salmon 
+ * 
+ */
+public class TransactionResult {
 
 	String name;
 	int value;
 	static Vector AllValues = new Vector();
 
-	/**
-	 * Construct a new TransactionType.
-	 */
-	private TransactionType(String name, int value) {
+	public TransactionResult(String name, int value) {
 		this.name = name;
 		this.value = value;
 		AllValues.add(this);
-	}
-
-	public int getIntValue() {
-		return value;
 	}
 
 	public String getName() {
 		return name;
 	}
 
+	public int getValue() {
+		return value;
+	}
+
 	public String toString() {
 		return name;
 	}
 
-	public static TransactionType fromInt(int val) {
+	public static TransactionResult fromInt(int val) {
 		for (int i = 0; i < AllValues.size(); i++)
-			if (((TransactionType) AllValues.get(i)).getIntValue() == val)
-				return (TransactionType) AllValues.get(i);
+			if (((TransactionResult) AllValues.get(i)).getValue() == val)
+				return (TransactionResult) AllValues.get(i);
 		return null;
 	}
 
-	public static TransactionType fromString(String val) {
+	public static TransactionResult fromString(String val) {
 		for (int i = 0; i < AllValues.size(); i++)
-			if (((TransactionType) AllValues.get(i)).getName().equals(val))
-				return (TransactionType) AllValues.get(i);
+			if (((TransactionResult) AllValues.get(i)).getName().equals(val))
+				return (TransactionResult) AllValues.get(i);
 		return null;
 	}
 
-	/**
-	 * Goods and services
-	 */
-	public static final TransactionType ISO_PURCHASE = new TransactionType(
-			"Purchase", 0x00);
-
-	/**
-	 * Withdrawal/cash advance
-	 */
-	public static final TransactionType ISO_CASHONLY = new TransactionType(
-			"Cashback", 0x01);
-
-	/**
-	 * Goods and services with Cash Disbursement
-	 */
-	public static final TransactionType ISO_CASHBACK = new TransactionType(
-			"Purchase with cashback", 0x09);
-
-	/**
-	 * Returns
-	 */
-	public static final TransactionType ISO_REFUND = new TransactionType(
-			"Refund", 0x20);
-
+	public static TransactionResult UNKNOWN = new TransactionResult(
+			"Unknown", -2);
+	public static TransactionResult CANCELLED = new TransactionResult(
+			"Cancelled", -1);
+	public static TransactionResult DECLINED = new TransactionResult(
+			"Declined", 0);
+	public static TransactionResult APPROVED = new TransactionResult(
+			"Approved", 1);
 }

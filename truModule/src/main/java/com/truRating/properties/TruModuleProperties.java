@@ -226,5 +226,4 @@ public class TruModuleProperties implements ITruModuleProperties {
     	socketTimeoutInMilliSeconds = value;
     }
     private int socketTimeoutInMilliSeconds = 500;
-
  }
