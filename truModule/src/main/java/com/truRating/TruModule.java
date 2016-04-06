@@ -7,6 +7,7 @@ import com.trurating.network.xml.TruRatingMessageFactory;
 import com.trurating.network.xml.XMLNetworkMessenger;
 import com.trurating.prize.PrizeManager;
 import com.trurating.properties.ITruModuleProperties;
+import com.trurating.util.StringUtilities;
 import com.trurating.xml.questionResponse.QuestionResponseJAXB;
 import com.trurating.xml.questionResponse.QuestionResponseJAXB.Languages.Language.DisplayElements.Question;
 import com.trurating.xml.ratingDelivery.RatingDeliveryJAXB;
@@ -84,8 +85,15 @@ public class TruModule implements ITruModule  {
 	        final Question question = questionResponseJAXB.getLanguages().getLanguage().getDisplayElements().getQuestion();
 	        
 	        String qText = question.getValue() ;
+	        
+            final int displayWidth = properties.getDeviceCpl();
+            String[] qTextWraps = qText.split("\\\\n") ;
+            if ((qTextWraps.length == 1) && (qTextWraps[0].length() > displayWidth))
+            	qTextWraps = StringUtilities.wordWrap(qText, displayWidth);
+            keyStroke = iDevice.displayTruratingQuestionGetKeystroke(qTextWraps, qText, 60*1000); //qText.split("\\\\n")
+	        
 	        final long startTime = System.currentTimeMillis();
-	        keyStroke = iDevice.displayTruratingQuestionGetKeystroke(qText.split("\\\\n"), qText, 1000);
+	        keyStroke = iDevice.displayTruratingQuestionGetKeystroke(qTextWraps, qText, 1000);
 	        final long endTime = System.currentTimeMillis();
 	        final Long totalTimeTaken = endTime - startTime;
 	

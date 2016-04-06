@@ -6,7 +6,6 @@ import com.trurating.ITruModule;
 import com.trurating.TruModule;
 import com.trurating.device.IDevice;
 import com.trurating.device.TruRatingConsoleDemoDevice;
-import com.trurating.payment.IPaymentRequest;
 import com.trurating.payment.TenderType;
 import com.trurating.payment.TransactionResult;
 import com.trurating.payment.transaction.ITransactionResult;
@@ -95,24 +94,17 @@ public class TruModuleMockPaymentApplication  {
         log.error("Not implemented yet");
     }
 
+    public void startCheckout() {
+        log.info("Starting checkout");
+    }
+
+    public void endCheckout(long amount) {
+        log.info("Starting end checkout");
+    }
+
     public void endTransaction(ITransactionResult result) {
         log.info("End transaction");
     }
-
-    public void startCheckout() {
-        log.info("Starting checkout");
-
-    }
-
-    public void endCheckout(IPaymentRequest paymentDetails) {
-        log.info("Starting end checkout");
-
-    }
-
-//    public void endTransaction(ITransactionResult result) {
-//        log.info("Starting end transaction");
-//
-//    }
 
     public String getErrorMessage() {
         return null;
