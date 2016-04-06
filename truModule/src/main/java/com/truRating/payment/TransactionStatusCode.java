@@ -127,7 +127,7 @@ public final class TransactionStatusCode {
 	}
 
 	/***************************************************************************
-	 * truRating additional transaction status codes
+	 * trurating additional transaction status codes
 	 ***************************************************************************/
 
 	/** Start of checkout */

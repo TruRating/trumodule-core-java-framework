@@ -114,7 +114,7 @@ public interface IPaymentRequest {
 	void setOperatorId(String id);
 
 	/**
-	 * Set a value in the Properties map Used by the truRating plugin to
+	 * Set a value in the Properties map Used by the trurating plugin to
 	 * influence the output on the receipt
 	 */
 	void setProperty(String key, String value);

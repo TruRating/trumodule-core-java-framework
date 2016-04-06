@@ -3,6 +3,8 @@ package com.trurating;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.trurating.properties.TruModuleProperties;
+import com.trurating.util.StringUtilities;
 import org.apache.log4j.Logger;
 
 import com.trurating.device.IDevice;
@@ -78,14 +80,17 @@ public class TruModule implements ITruModule  {
         return questionResponseJAXB;         
     }
     
-    private void runQuestion(QuestionResponseJAXB questionResponseJAXB) {
+    private void runQuestion(QuestionResponseJAXB questionResponseJAXB, ITruModuleProperties properties) {
         String keyStroke;
         try {        	
 	        final Question question = questionResponseJAXB.getLanguages().getLanguage().getDisplayElements().getQuestion();
 	        
 	        String qText = question.getValue() ;
 	        final long startTime = System.currentTimeMillis();
-	        keyStroke = iDevice.displayTruratingQuestionGetKeystroke(qText.split("\\\\n"), qText, 1000);
+            final int displayWidth = properties.getDeviceCpl();
+
+            String[] qTextWraps = StringUtilities.wordWrap(qText, displayWidth);
+	        keyStroke = iDevice.displayTruratingQuestionGetKeystroke(qTextWraps, qText, 60*1000); //qText.split("\\\\n")
 	        final long endTime = System.currentTimeMillis();
 	        final Long totalTimeTaken = endTime - startTime;
 	
@@ -125,20 +130,20 @@ public class TruModule implements ITruModule  {
     	getTransactionContext().setTransactionId(currentTransactionId) ;
     	getTransactionContext().setPaymentRequest(paymentRequest);
     	QuestionResponseJAXB jaxbQuestion = getNextQuestion(properties, getTransactionContext().getTransactionId()) ;
-    	runQuestion (jaxbQuestion) ;
+    	runQuestion (jaxbQuestion, properties) ;
     }
 
 	/**
 	 * 	Dwell time ratings questions need to be run in a separate thread
 	 */	
-    public void doRatingInBackground(ITruModuleProperties properties, String transactionId) {
+    public void doRatingInBackground(final ITruModuleProperties properties, String transactionId) {
     	getTransactionContext().setTransactionId(transactionId) ;
     	final QuestionResponseJAXB jaxbQuestion = getNextQuestion(properties, transactionId) ;
 
     	new Thread(new Runnable() 
     			{
     				public void run() { 
-    					runQuestion (jaxbQuestion) ;
+    					runQuestion (jaxbQuestion, properties) ;
     				}
     			}
     	).start() ;

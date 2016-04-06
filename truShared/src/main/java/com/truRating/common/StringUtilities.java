@@ -25,11 +25,14 @@
 
 package com.trurating.common;
 
+//import org.apache.commons.lang.StringUtils;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 import java.util.Vector;
 
 /**
@@ -147,4 +150,70 @@ public class StringUtilities {
 		}
 		return (String[]) rv.toArray(new String[rv.size()]);
 	}
+
+	/**
+	 * Break some text into an array of strings, word wrapping before the
+	 * maxWidth value is reached
+	 *
+	 * @param qt
+	 * @return
+	 */
+    public static String[] wordWrap(String qt, int maxTermWidth, int margin) {
+
+        final int MAX_TERM_WIDTH=maxTermWidth;
+        final int LEFT_MARGIN=4;
+        final int MAX_LINE_WIDTH=MAX_TERM_WIDTH-LEFT_MARGIN;
+        final int MAX_TERM_HEIGHT = 8;
+        final String[] outputList = new String[MAX_TERM_HEIGHT];
+
+
+        StringTokenizer s = new StringTokenizer(qt, " ");
+        String sentence = "";
+        int currentLine=0;
+        while (s.hasMoreElements()) {
+            String word = s.nextToken();
+            if (sentence.length()+word.length()<MAX_LINE_WIDTH) {
+                sentence+= " " + word;
+            } else {
+                outputList[currentLine++] = sentence;
+                sentence="";
+                sentence+= " " + word;
+            }
+        }
+
+        outputList[currentLine++] = sentence;
+
+        for (int i =0; i<outputList.length; i++) {
+//            outputList[i]=StringUtils.center(outputList[i], MAX_TERM_WIDTH);
+        }
+
+
+        StringBuffer aBlankLine= new StringBuffer();
+        for (int i=0; i<MAX_TERM_WIDTH; i++) {
+            aBlankLine.append(" ");
+        }
+
+        Vector v = new Vector();
+        for (int i=0; i<outputList.length; i++) {
+            if (outputList[i]!=null) v.add(outputList[i]);
+        }
+
+        if (v.size() < MAX_TERM_HEIGHT) {
+            int addedLines = (MAX_TERM_HEIGHT-v.size())/2;
+            for (int i=0; i<addedLines; i++) {
+                v.insertElementAt(aBlankLine.toString(), i);
+            }
+        }
+
+        String[] revisedOutPutList = new String[v.size()];
+        for (int i =0; i<revisedOutPutList.length; i++) {
+            revisedOutPutList[i]= v.get(i).toString();
+        }
+        return revisedOutPutList;
+    }
+
+	public static void main(String[] args) {
+		String[] sa = StringUtilities.wordWrap("truRating: Please rate the food/drinks from 0-9 or clear",16);
+        System.out.println();
+    }
 }

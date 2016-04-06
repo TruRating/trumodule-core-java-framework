@@ -3,13 +3,13 @@ package com.trurating.device;
 /*
  * @(#)IDevice.java
  *
- * Copyright (c) 2013 truRating Limited. All Rights Reserved.
+ * Copyright (c) 2013 trurating Limited. All Rights Reserved.
  *
  * This software is the confidential and proprietary information of 
- * truRating Limited. ("Confidential Information").  You shall
+ * trurating Limited. ("Confidential Information").  You shall
  * not disclose such Confidential Information and shall use it only in
  * accordance with the terms of the license agreement you entered into
- * with truRating Limited.
+ * with trurating Limited.
  *
  * TRURATING LIMITED MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT 
  * THE SUITABILITY OF THE SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING
@@ -28,7 +28,7 @@ package com.trurating.device;
 /**
  * @author Peter
  * 
- *         An interface that describes the behaviour that the truRating
+ *         An interface that describes the behaviour that the trurating
  *         application requires of a PIN entry device.
  */
 
@@ -79,7 +79,7 @@ public interface IDevice {
 	void displayMessageWaitForKey(String string, int timeout);
 
 	/**
-	 * Display the truRating question (ie an arbitary one that allows numeric
+	 * Display the trurating question (ie an arbitary one that allows numeric
 	 * keystrokes) and wait for a single keystroke.
 	 * 
 	 * @return
