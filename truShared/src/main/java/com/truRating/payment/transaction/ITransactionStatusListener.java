@@ -25,6 +25,8 @@
 
 package com.trurating.payment.transaction;
 
+import com.trurating.payment.IPaymentResponse;
+
 /**
  * A listener from the calling routine to be informed when a transaction is
  * complete
@@ -54,9 +56,6 @@ public interface ITransactionStatusListener {
 	/**
 	 * Callback that is called when a transaction is complete with the result of
 	 * the transaction
-	 * 
-	 * @param result
 	 */
-	void transactionComplete(TransactionResult result);
-
+	void transactionComplete(IPaymentResponse paymentResponse);
 }

@@ -3,11 +3,18 @@
  */
 package com.trurating.payment;
 
+import java.math.BigDecimal;
+
 /**
  * @author Peter Salmon
  *
  */
 public class PaymentRequest implements IPaymentRequest {
+
+	public PaymentRequest(String item, Long amount) {
+		this.setBasket(item);
+		this.setTransactionValue(amount);
+	}
 
 	/**
 	 * Terminal Id

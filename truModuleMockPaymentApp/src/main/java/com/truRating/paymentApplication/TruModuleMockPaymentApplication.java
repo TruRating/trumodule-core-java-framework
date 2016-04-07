@@ -1,5 +1,6 @@
 package com.trurating.paymentApplication;
 
+import com.trurating.payment.IPaymentResponse;
 import org.apache.log4j.Logger;
 
 import com.trurating.ITruModule;
@@ -8,7 +9,6 @@ import com.trurating.device.IDevice;
 import com.trurating.device.TruRatingConsoleDemoDevice;
 import com.trurating.payment.TenderType;
 import com.trurating.payment.TransactionResult;
-import com.trurating.payment.transaction.ITransactionResult;
 import com.trurating.properties.ITruModuleProperties;
 import com.trurating.xml.ratingDelivery.RatingDeliveryJAXB.Transaction;
 
@@ -102,7 +102,7 @@ public class TruModuleMockPaymentApplication  {
         log.info("Starting end checkout");
     }
 
-    public void endTransaction(ITransactionResult result) {
+    public void endTransaction(IPaymentResponse paymentResponse) {
         log.info("End transaction");
     }
 

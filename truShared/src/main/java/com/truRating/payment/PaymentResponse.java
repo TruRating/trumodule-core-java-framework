@@ -57,6 +57,18 @@ public class PaymentResponse implements IPaymentResponse {
         this.transactionDate = date;
     }
 
+    public void setTransactionAmount(Long aLong) {
+
+    }
+
+    public void setCurrencyCode(Integer integer) {
+
+    }
+
+    public void setTransactionNumber(Integer integer) {
+
+    }
+
     public String getTransactionTime() {
         return transactionTime.toString();
     }
@@ -173,14 +185,15 @@ public class PaymentResponse implements IPaymentResponse {
         cardHashData = value;
     }
     
-    public void setResult(TransactionResult transactionStatusCode) {
+    public void setTransactionResult(TransactionResult transactionStatusCode) {
         this.transactionResult = transactionStatusCode;
     }
 
     public TransactionResult getTransactionResult() {
         return transactionResult;
     }
-	/**
+
+    /**
 	 * Flag to indicate whether the transaction was approved
 	 * 
 	 */

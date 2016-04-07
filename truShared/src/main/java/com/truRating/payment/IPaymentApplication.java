@@ -26,8 +26,6 @@
 package com.trurating.payment;
 
 import com.trurating.device.IDevice;
-import com.trurating.payment.IPaymentRequest;
-import com.trurating.payment.transaction.ITransactionResult;
 import com.trurating.properties.ITruModuleProperties;
 
 /**
@@ -84,12 +82,12 @@ public interface IPaymentApplication {
 	 * the processing, as defined by the TransactionStatus enumerated list
 	 * 
 	 */
-	void paymentTrigger(IPaymentRequest paymentRequest, ITruModuleProperties properties);
+	void requestPayment(ITruModuleProperties properties, IPaymentRequest paymentRequest);
 
 	/**
 	 * End a transaction (if one's running).
 	 */
-	void endTransaction(ITransactionResult result);
+	void endTransaction(IPaymentResponse paymentResponse);
 
 	/**
 	 * Return a message describing the last error
