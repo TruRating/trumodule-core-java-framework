@@ -25,7 +25,6 @@
 
 package com.trurating.payment;
 
-
 /**
  * @author Peter Salmon
  * 
@@ -44,11 +43,6 @@ public interface IPaymentResponse {
 	String getTerminalId();
 
     String getOperatorId();
-
-    /**
-	 * Transaction number, unique to the point of service
-	 */
-	long getTransactionId();
 
     /**
 	 * POS application's transaction reference
@@ -115,17 +109,8 @@ public interface IPaymentResponse {
     String getCardHashData();
 
 	TransactionResult getTransactionResult();
-	
-	
-	/**
-	 * Flag to indicate whether the transaction was approved
-	 * 
-	 */
-	boolean isApproved();
 
-	/**
-	 * Flag to indicate whether the transaction was cancelled
-	 * 
-	 */
-	boolean isCancelled();
+	void setTransactionResult(TransactionResult transactionResult);
+
+	String getCardScheme();
 }

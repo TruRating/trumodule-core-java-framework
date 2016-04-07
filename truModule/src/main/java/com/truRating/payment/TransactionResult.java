@@ -74,6 +74,12 @@ public class TransactionResult {
 			"Cancelled", -1);
 	public static TransactionResult DECLINED = new TransactionResult(
 			"Declined", 0);
+	public static TransactionResult DECLINED_ONLINE = new TransactionResult(
+			"DeclinedOnline", 2);
 	public static TransactionResult APPROVED = new TransactionResult(
 			"Approved", 1);
+	public static TransactionResult APPROVED_ONLINE = new TransactionResult(
+			"ApprovedOnline", 3);
+	public static TransactionResult ERROR = new TransactionResult(
+			"Error", 4);
 }
