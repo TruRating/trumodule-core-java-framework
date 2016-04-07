@@ -26,7 +26,7 @@
 package com.trurating.payment;
 
 import com.trurating.device.IDevice;
-import com.trurating.properties.ITruModuleProperties;
+import com.trurating.payment.transaction.ITransactionStatusListener;
 
 /**
  * @author Peter Salmon
@@ -80,9 +80,10 @@ public interface IPaymentApplication {
 	 * Process a payment as a Chip and PIN transaction using Emvelink The
 	 * Plug-in applications will be called at various strategic points around
 	 * the processing, as defined by the TransactionStatus enumerated list
+	 * @return 
 	 * 
 	 */
-	void requestPayment(ITruModuleProperties properties, IPaymentRequest paymentRequest);
+	IPaymentResponse requestPayment(IPaymentRequest paymentRequest, ITransactionStatusListener transactionStatusListener);
 
 	/**
 	 * End a transaction (if one's running).
@@ -99,10 +100,5 @@ public interface IPaymentApplication {
 	 */
 	void shutdown();
 
-
-	//rating has completed, now take payment -
-	void completePayment(IPaymentRequest paymentRequest, ITruModuleProperties properties);
-
 	IDevice getDevice();
-
 }
