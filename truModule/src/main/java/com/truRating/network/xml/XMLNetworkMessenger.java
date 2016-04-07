@@ -1,7 +1,6 @@
 package com.trurating.network.xml;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.util.concurrent.CountDownLatch;
 
 import javax.xml.bind.JAXBContext;
@@ -113,7 +112,29 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
             questionWriter.writeStartDocument((String) questionMarshaller.getProperty(Marshaller.JAXB_ENCODING), "1.0");
 
             //output stream....
-            questionMarshaller.marshal(truRatingMessageFactory.assembleARequestQuestion(properties, transactionId), questionWriter);
+            Object jaxbObject = truRatingMessageFactory.assembleARequestQuestion(properties, transactionId);
+
+
+            // Create a stream to hold the output
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            PrintStream ps = new PrintStream(baos);
+            // IMPORTANT: Save the old System.out!
+            PrintStream old = System.out;
+            // Tell Java to use your special stream
+            System.setOut(ps);
+            // Print some output: goes to your special stream
+            questionMarshaller.marshal(jaxbObject, System.out);
+            // Put things back
+            System.out.flush();
+            System.setOut(old);
+            // Show what happened
+            log.info("Writing the following XML message to the truRating service");
+            log.info("----------------------------------");
+            log.info(baos.toString());
+            log.info("----------------------------------");
+
+            questionMarshaller.marshal(jaxbObject, questionWriter);
+
             questionWriter.writeEndDocument();
             questionWriter.flush();
         } catch (XMLStreamException e) {

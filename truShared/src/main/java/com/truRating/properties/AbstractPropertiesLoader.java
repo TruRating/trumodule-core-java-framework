@@ -64,7 +64,7 @@ public abstract class AbstractPropertiesLoader {
         try {
             propertyAsInt = new Integer(getProperty(o));
         } catch (NumberFormatException e) {
-            log.error("Unable to find a valid Integer value for a program property " + o);
+            log.debug("Warn: Unable to find a valid Integer value for a program property " + o);
             return -1;
         }
         return propertyAsInt;
