@@ -117,15 +117,21 @@ public class TruModule implements ITruModule  {
         	else {
         		//send the rating
         		final RatingResponseJAXB ratingResponseJAXB = xmlNetworkMessenger.deliverRatingToService(currentRatingRecord);
-        		final Receipt ratingResponseReceipt = ratingResponseJAXB.getLanguages().getLanguage().getReceipt();
+        		if (ratingResponseJAXB != null) {
+        			if ((ratingResponseJAXB.getErrortext() != null) && (ratingResponseJAXB.getErrortext().length() > 0))
+        				log.error(ratingResponseJAXB.getErrortext());
+        			else {
+        				final Receipt ratingResponseReceipt = ratingResponseJAXB.getLanguages().getLanguage().getReceipt();
 
-        		if (currentRatingRecord.getRating().getValue() > 0)
-        			setReceiptMessage(ratingResponseReceipt.getRatedvalue());
-        		else
-        			setReceiptMessage(ratingResponseReceipt.getNotratedvalue());
+        				if (currentRatingRecord.getRating().getValue() > 0)
+        					setReceiptMessage(ratingResponseReceipt.getRatedvalue());
+        				else
+        					setReceiptMessage(ratingResponseReceipt.getNotratedvalue());
+        			}
+        		}
         	}
         } catch (Exception e) {
-            log.error(e);
+            log.error("", e);
             return false;
         }
         finally {
