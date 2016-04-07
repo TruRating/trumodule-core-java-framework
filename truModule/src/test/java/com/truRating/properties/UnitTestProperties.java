@@ -1,17 +1,9 @@
 package com.trurating.properties;
 
-import com.trurating.properties.ITruModuleProperties;
+import java.io.File;
+import java.util.Properties;
 
 import org.apache.log4j.Logger;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Properties;
-import java.util.Set;
-import java.util.Vector;
 
 /**
  * Created by Paul on 2016. :)
@@ -77,7 +69,11 @@ public class UnitTestProperties implements ITruModuleProperties {
         return "FIXED";
     }
 
-    public String getServerId() {
+	public int getQuestionTimeout() {
+		return 50000;
+	}
+
+	public String getServerId() {
         return "1";
     }
 

@@ -1,7 +1,7 @@
 /*
  * @(#)TransactionResult.java
  *
- * Copyright (c) 2013 truRating Limited. All Rights Reserved.
+ * Copyright (c) 2016 truRating Limited. All Rights Reserved.
  *
  * This software is the confidential and proprietary information of 
  * truRating Limited. ("Confidential Information").  You shall
@@ -17,11 +17,7 @@
  * OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE OR ITS DERIVATIVES.
  */
 
-/*
- * VERSION HISTORY:
- *
- * 1.00 01/06/2013 Initial Version
- */
+
 
 package com.trurating.payment;
 
