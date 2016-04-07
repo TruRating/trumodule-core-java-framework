@@ -1,3 +1,22 @@
+/*
+ * @(#)ServerConnectionManager.java
+ *
+ * Copyright (c) 2016 trurating Limited. All Rights Reserved.
+ *
+ * This software is the confidential and proprietary information of 
+ * trurating Limited. ("Confidential Information").  You shall
+ * not disclose such Confidential Information and shall use it only in
+ * accordance with the terms of the license agreement you entered into
+ * with trurating Limited.
+ *
+ * TRURATING LIMITED MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT 
+ * THE SUITABILITY OF THE SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING
+ * BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS 
+ * FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. TRURATING LIMITED
+ * SHALL NOT BE LIABLE FOR ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT 
+ * OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE OR ITS DERIVATIVES.
+ */
+
 package com.trurating.network;
 
 import java.io.ByteArrayOutputStream;
@@ -19,15 +38,27 @@ import com.trurating.properties.ITruModuleProperties;
 public class ServerConnectionManager {
 
     private Socket socket = null;
-    private final int PORT = 9999;
-    private final String NODE = "40.76.5.14";
-    private final int TIMEOUT = 1 * 5000;
+    private int PORT = 9999;
+    private String NODE = "40.76.5.14";
+    private int TIMEOUT = 1 * 5000;
     private final Logger log = Logger.getLogger(ServerConnectionManager.class);
 
     public Socket connectToServer(ITruModuleProperties properties) {
 
         String reason = "";
-    	
+
+        // Configure the socket
+        if (properties != null) {
+        	if (properties.getTruServiceIPAddress().length() > 0)
+        		NODE = properties.getTruServiceIPAddress() ;
+
+        	if (properties.getTruServiceSocketPortNumber() > 0)
+        		PORT = properties.getTruServiceSocketPortNumber();
+
+        	if (properties.getTruServiceSocketTimeoutInMilliSeconds() > 0)
+        		TIMEOUT = properties.getTruServiceSocketTimeoutInMilliSeconds() ;
+        }
+        
     	if (socket != null) {
     		log.warn("Socket still open from previous transaction");
     		close() ;
@@ -63,8 +94,9 @@ public class ServerConnectionManager {
                     log.info("Port " + PORT + " on " + NODE + " is not reachable; reason: " + reason);
                     return null;
                 }
-
             }
+            else
+            	log.error ("Failed to create socket") ;
         }
         return socket;
     }
@@ -93,8 +125,8 @@ public class ServerConnectionManager {
         return buffer;
     }    
     
-    public void close() {
-        if (socket.isConnected()) {
+    public void close() {    	
+        if ((socket != null) && socket.isConnected()) {
         	try {
 				socket.close();
 	            log.info("ServerConnectionManager closed");

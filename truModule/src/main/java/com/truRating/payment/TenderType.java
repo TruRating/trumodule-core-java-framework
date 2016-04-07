@@ -1,7 +1,7 @@
 /*
  * @class TenderType.java
  *
- * Copyright (c) 2015 truRating Limited. All Rights Reserved.
+ * Copyright (c) 2016 truRating Limited. All Rights Reserved.
  *
  * This software is the confidential and proprietary information of 
  * truRating Limited. ("Confidential Information").  You shall

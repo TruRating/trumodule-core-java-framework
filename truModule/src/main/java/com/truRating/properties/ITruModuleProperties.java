@@ -1,3 +1,22 @@
+/*
+ * @(#)ITruModuleProperties.java
+ *
+ * Copyright (c) 2016 trurating Limited. All Rights Reserved.
+ *
+ * This software is the confidential and proprietary information of 
+ * trurating Limited. ("Confidential Information").  You shall
+ * not disclose such Confidential Information and shall use it only in
+ * accordance with the terms of the license agreement you entered into
+ * with trurating Limited.
+ *
+ * TRURATING LIMITED MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT 
+ * THE SUITABILITY OF THE SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING
+ * BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS 
+ * FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. TRURATING LIMITED
+ * SHALL NOT BE LIABLE FOR ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT 
+ * OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE OR ITS DERIVATIVES.
+ */
+
 package com.trurating.properties;
 
 public interface ITruModuleProperties {
@@ -59,6 +78,12 @@ public interface ITruModuleProperties {
      * The type of font supported by the PED display (proportional or fixed width)
      */
     String getDeviceFontType();
+
+    /**
+     * The question timeout in milliseconds
+     * @return
+     */
+    int getQuestionTimeout() ;    
     
     /**
      * 
@@ -76,12 +101,12 @@ public interface ITruModuleProperties {
     String getTruServiceIPAddress();
 
     /**
-     * The timeout to use for socket connections to the truService application
-     */
-    int getTruServiceSocketTimeoutInMilliSeconds();
-
-    /**
      *  The port on the truService server that the truService application is listening on
     */
     int getTruServiceSocketPortNumber();
+    
+    /**
+     * The timeout to use for socket connections to the truService application
+     */
+    int getTruServiceSocketTimeoutInMilliSeconds();
 }

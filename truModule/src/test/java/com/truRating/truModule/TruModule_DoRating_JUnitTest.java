@@ -15,14 +15,16 @@ import org.junit.runner.RunWith;
 import com.trurating.TruModule;
 import com.trurating.device.IDevice;
 import com.trurating.network.xml.IXMLNetworkMessenger;
-import com.trurating.payment.TruModulePaymentRequest;
+import com.trurating.network.xml.TruRatingMessageFactory;
 import com.trurating.prize.PrizeManager;
 import com.trurating.properties.ITruModuleProperties;
-import com.trurating.rating.Rating;
+import com.trurating.properties.TruModuleProperties;
 import com.trurating.xml.questionResponse.QuestionResponseJAXB;
 import com.trurating.xml.questionResponse.QuestionResponseJAXB.Languages;
 import com.trurating.xml.questionResponse.QuestionResponseJAXB.Languages.Language;
 import com.trurating.xml.questionResponse.QuestionResponseJAXB.Languages.Language.DisplayElements.Question;
+import com.trurating.xml.ratingDelivery.RatingDeliveryJAXB;
+import com.trurating.xml.ratingDelivery.RatingDeliveryJAXB.Rating;
 
 /**
  * Created by Paul on 10/03/2016.
@@ -63,39 +65,42 @@ public class TruModule_DoRating_JUnitTest {
         final QuestionResponseJAXB questionResponseJAXB = getQuestionResponseJAXB();
 
         new Expectations() {{
-            xmlNetworkMessenger.getQuestionFromService((ITruModuleProperties)any, "12345");
+            xmlNetworkMessenger.getQuestionFromService((ITruModuleProperties)any, 12345);
             returns(questionResponseJAXB);
             times = 1;
 //            iDevice.displaySecurePromptGetKeystroke((String[])any, (String)any, anyInt);
             iDevice.displayTruratingQuestionGetKeystroke((String[])any, (String)any, anyInt);
             returns ("8");
             times = 1;
-            checkForPrize.checkForAPrize((IDevice) any, (QuestionResponseJAXB)any, (String)any);
+            checkForPrize.checkForAPrize((IDevice) any, (QuestionResponseJAXB)any);
             returns ("555");
             times = 1;
         }};
 
-        truModule.doRating(properties, new TruModulePaymentRequest("A fluffy teddy", 199));
-        Rating iRating = truModule.getTransactionContext().getRating() ;
+        truModule.doRating(properties);
+        RatingDeliveryJAXB iRatingRecord = truModule.getRatingRecord(properties) ;
+        Rating rating = iRatingRecord.getRating() ;
 
-        Assert.assertNotNull(iRating.getRatingDateTime());
-        Assert.assertEquals(8, iRating.getValue());
-        Assert.assertEquals(12345L, iRating.getQuestionID());
-        Assert.assertEquals("555", iRating.getPrizeCode());
+        Assert.assertNotNull(iRatingRecord.getTransaction().getDatetime());
+        Assert.assertEquals(8, rating.getValue());
+        Assert.assertEquals(12345L, rating.getQid());
+        Assert.assertEquals("555", rating.getPrizecode());
     }
 
     @Test
     public void doRatingServiceFailsTest() {
 
         new Expectations() {{
-            xmlNetworkMessenger.getQuestionFromService((ITruModuleProperties)any, "12345");
+            xmlNetworkMessenger.getQuestionFromService((ITruModuleProperties)any, 12345);
             returns(null);
             times = 1;
         }};
 
-        truModule.doRating(null, new TruModulePaymentRequest("A fluffy teddy", 199));
-        Rating rating = truModule.getTransactionContext().getRating() ;
-        Assert.assertNull(rating);
+        TruModuleProperties properties = new TruModuleProperties() ;
+        truModule.doRating(properties);
+        RatingDeliveryJAXB iRatingRecord = truModule.getRatingRecord(properties) ;
+        Assert.assertEquals(iRatingRecord.getRating().getValue(), TruRatingMessageFactory.NO_RATING_VALUE); 
+        // We should have a value
     }
 
 
@@ -105,20 +110,20 @@ public class TruModule_DoRating_JUnitTest {
         final QuestionResponseJAXB questionResponseJAXB = getQuestionResponseJAXB();
 
         new Expectations() {{
-            xmlNetworkMessenger.getQuestionFromService((ITruModuleProperties)any, "12345");
+            xmlNetworkMessenger.getQuestionFromService((ITruModuleProperties)any, 12345);
             returns(questionResponseJAXB);
             times = 1;
             iDevice.displayTruratingQuestionGetKeystroke((String[])any, (String)any, anyInt);
             returns ("8");
             times = 1;
-            checkForPrize.checkForAPrize((IDevice) any, (QuestionResponseJAXB)any, (String)any);
+            checkForPrize.checkForAPrize((IDevice) any, (QuestionResponseJAXB)any);
             returns ("");
             times = 1;
         }};
 
-        truModule.doRating(null, new TruModulePaymentRequest("A fluffy teddy", 199));
-        Rating rating = truModule.getTransactionContext().getRating() ;
-        Assert.assertEquals("", rating.getPrizeCode());
+        truModule.doRating(null);
+        Rating rating = truModule.getRatingRecord(properties).getRating() ;
+        Assert.assertEquals("", rating.getPrizecode());
     }
 
     @Test
@@ -127,21 +132,20 @@ public class TruModule_DoRating_JUnitTest {
         final QuestionResponseJAXB questionResponseJAXB = getQuestionResponseJAXB();
 
         new Expectations() {{
-            xmlNetworkMessenger.getQuestionFromService((ITruModuleProperties)any, "12345");
+            xmlNetworkMessenger.getQuestionFromService((ITruModuleProperties)any, 12345);
             returns(questionResponseJAXB);
             times = 1;
             iDevice.displayTruratingQuestionGetKeystroke((String[])any, (String)any, anyInt);
             returns ("-1");
             times = 1;
-            checkForPrize.checkForAPrize((IDevice) any, (QuestionResponseJAXB)any, (String)any);
+            checkForPrize.checkForAPrize((IDevice) any, (QuestionResponseJAXB)any);
             returns ("");
             times = 0;
         }};
 
-        truModule.doRating(null, new TruModulePaymentRequest("A fluffy teddy", 199));
-        Rating rating = truModule.getTransactionContext().getRating() ;
-
-        Assert.assertEquals("", rating.getPrizeCode());
+        truModule.doRating(null);
+        Rating rating = truModule.getRatingRecord(properties).getRating() ;
+        Assert.assertEquals("", rating.getPrizecode());
     }
 
     @Test
@@ -150,21 +154,20 @@ public class TruModule_DoRating_JUnitTest {
         final QuestionResponseJAXB questionResponseJAXB = getQuestionResponseJAXB();
 
         new Expectations() {{
-            xmlNetworkMessenger.getQuestionFromService((ITruModuleProperties)any, "12345");
+            xmlNetworkMessenger.getQuestionFromService((ITruModuleProperties)any, 12345);
             returns(questionResponseJAXB);
             times = 1;
             iDevice.displayTruratingQuestionGetKeystroke((String[])any, (String)any, anyInt);
             returns ("1");
             times = 1;
-            checkForPrize.checkForAPrize((IDevice) any, (QuestionResponseJAXB)any, (String)any);
+            checkForPrize.checkForAPrize((IDevice) any, (QuestionResponseJAXB)any);
             returns (null);
             times = 1;
         }};
 
-        truModule.doRating(null, new TruModulePaymentRequest("A fluffy teddy", 199));
-        Rating rating = truModule.getTransactionContext().getRating() ;
-
-        Assert.assertEquals("", rating.getPrizeCode());
+        truModule.doRating(null);
+        Rating rating = truModule.getRatingRecord(properties).getRating() ;
+        Assert.assertEquals("", rating.getPrizecode());
     }
     private QuestionResponseJAXB getQuestionResponseJAXB() {
         QuestionResponseJAXB questionResponseJAXB = new QuestionResponseJAXB();

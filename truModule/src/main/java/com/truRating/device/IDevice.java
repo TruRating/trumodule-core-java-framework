@@ -3,7 +3,7 @@ package com.trurating.device;
 /*
  * @(#)IDevice.java
  *
- * Copyright (c) 2013 trurating Limited. All Rights Reserved.
+ * Copyright (c) 2016 trurating Limited. All Rights Reserved.
  *
  * This software is the confidential and proprietary information of 
  * trurating Limited. ("Confidential Information").  You shall

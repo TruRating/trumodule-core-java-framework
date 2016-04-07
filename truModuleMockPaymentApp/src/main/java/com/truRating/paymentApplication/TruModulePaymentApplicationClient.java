@@ -9,9 +9,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
-import com.trurating.ITruModule;
-import com.trurating.TruModule;
-import com.trurating.payment.IPaymentApplication;
+import com.trurating.configuration.TestProperties;
+import com.trurating.payment.TenderType;
 
 /**
  * Created by Paul on 01/03/2016.
@@ -26,33 +25,19 @@ public class TruModulePaymentApplicationClient {
 
     private void run() {
 
-
-        if (!log4JIsConfigured()) {
+    	if (!log4JIsConfigured()) {
             configureLog4JUsingDefaults();
         }
-    	
-        //start up the ITruModule
-        ITruModule truModule = new TruModule();
 
-//        if (ProgramProperties.getInstance().getProperties() ==null) {
-//            ProgramProperties.getInstance().initialisePropertiesFromSystemArg();
-//            truModule.setProgramProperties(ProgramProperties.getInstance().getProperties());
-//        }
+    	// Set of test properties
+    	TestProperties truModuleProperties = new TestProperties() ;
 
         //start up the payment App and send a payment request
-        IPaymentApplication paymentApplication = new TruModuleMockPaymentApplication(truModule);
+    	TruModuleMockPaymentApplication paymentApplication = new TruModuleMockPaymentApplication();
 
-        //give the ITruModule a reference to its payment app
-//        truModule.setPaymentAppReference(paymentApplication);
+        paymentApplication.paymentTrigger(truModuleProperties, "Operator_Tony", TenderType.SMARTCARD, "A Product", 199);
 
-//        IPaymentRequest paymentRequest = new TruModPaymentRequest("A Product", new BigDecimal(1.99));
-//        paymentRequest.setOperatorId("Operator_Tony");
-//        ITenderType tenderType= new TenderType(TenderType.CARD);
-//        paymentRequest.setTenderType(tenderType);
-//
-//        paymentApplication.paymentTrigger(paymentRequest);
-//
-//        paymentApplication.completePayment(paymentRequest);
+        paymentApplication.completePayment(truModuleProperties);
     }
     
 

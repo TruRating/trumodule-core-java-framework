@@ -1,3 +1,22 @@
+/*
+ * @(#)TruModuleProperties.java
+ *
+ * Copyright (c) 2016 trurating Limited. All Rights Reserved.
+ *
+ * This software is the confidential and proprietary information of 
+ * trurating Limited. ("Confidential Information").  You shall
+ * not disclose such Confidential Information and shall use it only in
+ * accordance with the terms of the license agreement you entered into
+ * with trurating Limited.
+ *
+ * TRURATING LIMITED MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT 
+ * THE SUITABILITY OF THE SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING
+ * BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS 
+ * FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. TRURATING LIMITED
+ * SHALL NOT BE LIABLE FOR ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT 
+ * OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE OR ITS DERIVATIVES.
+ */
+
 package com.trurating.properties;
 
 import org.apache.log4j.Logger;
@@ -163,6 +182,19 @@ public class TruModuleProperties implements ITruModuleProperties {
 
 
     /**
+     * The question timeout in milliseconds
+     */
+	public int getQuestionTimeout() {
+		return questionTimeout;
+	}
+
+	public void setQuestionTimeout(int questionTimeout) {
+		this.questionTimeout = questionTimeout;
+	}
+	private int questionTimeout = 60000 ;
+    
+
+    /**
      * 
      */
     public String getServerId() {
@@ -225,6 +257,5 @@ public class TruModuleProperties implements ITruModuleProperties {
     public void setTruServiceSocketTimeoutInMilliSeconds(int value) {
     	socketTimeoutInMilliSeconds = value;
     }
-    private int socketTimeoutInMilliSeconds = 500;
-
+	private int socketTimeoutInMilliSeconds = 500;
  }

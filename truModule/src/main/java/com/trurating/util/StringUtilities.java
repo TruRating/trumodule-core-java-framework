@@ -1,7 +1,7 @@
 /*
  * @(#)StringUtilities.java
  *
- * Copyright (c) 2013 truRating Limited. All Rights Reserved.
+ * Copyright (c) 2016 truRating Limited. All Rights Reserved.
  *
  * This software is the confidential and proprietary information of 
  * truRating Limited. ("Confidential Information").  You shall
@@ -17,23 +17,9 @@
  * OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE OR ITS DERIVATIVES.
  */
 
-/*
- * VERSION HISTORY:
- *
- * 1.00 27 Jun 2013 Initial Version
- */
-
 package com.trurating.util;
 
-//import org.apache.commons.lang.StringUtils;
-
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.StringTokenizer;
-import java.util.Vector;
 
 /**
  * A set of general purpose string functions
