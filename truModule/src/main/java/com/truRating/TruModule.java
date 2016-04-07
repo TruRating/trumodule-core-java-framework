@@ -35,7 +35,17 @@ import com.trurating.xml.ratingResponse.RatingResponseJAXB;
 import com.trurating.xml.ratingResponse.RatingResponseJAXB.Languages.Language.Receipt;
 
 /**
+ * TruModule is the main class of a library that encapsulates the behaviour 
+ * required by a payment application to 
+ * 	- connect to the truService application
+ * 	- retrieve a question, 
+ * 	- run a rating question, 
+ * 	- check for a prize, 
+ * 	- issue an appropriate receipt message
+ *  - and deliver the rating to truService 
+ * 
  * Created by Paul on 01/03/2016.
+ * 
  */
 public class TruModule implements ITruModule  {
 
@@ -104,6 +114,9 @@ public class TruModule implements ITruModule  {
     	).start() ;
     }
 
+    /**
+     * Clear the question ready for payment
+     */
 	public void cancelRating() {
         getDevice().cancelInput();
     }
