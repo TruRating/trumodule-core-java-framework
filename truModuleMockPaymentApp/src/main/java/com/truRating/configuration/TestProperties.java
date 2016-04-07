@@ -33,6 +33,7 @@ public class TestProperties implements ITruModuleProperties {
 
     public String getTid() {
         return "00000tR2";
+        //return "12345";
     }
 
     public String getLanguageCode() {
@@ -71,6 +72,10 @@ public class TestProperties implements ITruModuleProperties {
         return "PROPORTIONAL";
     }
 
+	public int getQuestionTimeout() {
+		return 50000;
+	}
+    
     public String getServerId() {
         return "123456789";
     }

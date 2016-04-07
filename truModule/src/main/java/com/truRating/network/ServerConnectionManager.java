@@ -106,8 +106,8 @@ public class ServerConnectionManager {
         return buffer;
     }    
     
-    public void close() {
-        if (socket.isConnected()) {
+    public void close() {    	
+        if ((socket != null) && socket.isConnected()) {
         	try {
 				socket.close();
 	            log.info("ServerConnectionManager closed");

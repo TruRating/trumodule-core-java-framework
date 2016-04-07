@@ -84,16 +84,18 @@ public class TruModule implements ITruModule  {
         try {        	
 	        final Question question = questionResponseJAXB.getLanguages().getLanguage().getDisplayElements().getQuestion();
 	        
-	        String qText = question.getValue() ;
-	        
             final int displayWidth = properties.getDeviceCpl();
+	        String qText = question.getValue() ;
             String[] qTextWraps = qText.split("\\\\n") ;
             if ((qTextWraps.length == 1) && (qTextWraps[0].length() > displayWidth))
             	qTextWraps = StringUtilities.wordWrap(qText, displayWidth);
-            keyStroke = iDevice.displayTruratingQuestionGetKeystroke(qTextWraps, qText, 60*1000); //qText.split("\\\\n")
-	        
+
+	        int timeout = properties.getQuestionTimeout() ;
+	        if (timeout < 1000)
+	        	timeout = 60000 ;
+            
 	        final long startTime = System.currentTimeMillis();
-	        keyStroke = iDevice.displayTruratingQuestionGetKeystroke(qTextWraps, qText, 1000);
+	        keyStroke = iDevice.displayTruratingQuestionGetKeystroke(qTextWraps, qText, timeout);
 	        final long endTime = System.currentTimeMillis();
 	        final Long totalTimeTaken = endTime - startTime;
 	

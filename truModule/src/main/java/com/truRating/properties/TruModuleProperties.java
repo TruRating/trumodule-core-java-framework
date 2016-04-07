@@ -163,6 +163,19 @@ public class TruModuleProperties implements ITruModuleProperties {
 
 
     /**
+     * The question timeout in milliseconds
+     */
+	public int getQuestionTimeout() {
+		return questionTimeout;
+	}
+
+	public void setQuestionTimeout(int questionTimeout) {
+		this.questionTimeout = questionTimeout;
+	}
+	private int questionTimeout = 60000 ;
+    
+
+    /**
      * 
      */
     public String getServerId() {
@@ -225,5 +238,5 @@ public class TruModuleProperties implements ITruModuleProperties {
     public void setTruServiceSocketTimeoutInMilliSeconds(int value) {
     	socketTimeoutInMilliSeconds = value;
     }
-    private int socketTimeoutInMilliSeconds = 500;
+	private int socketTimeoutInMilliSeconds = 500;
  }

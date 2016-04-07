@@ -59,6 +59,12 @@ public interface ITruModuleProperties {
      * The type of font supported by the PED display (proportional or fixed width)
      */
     String getDeviceFontType();
+
+    /**
+     * The question timeout in milliseconds
+     * @return
+     */
+    int getQuestionTimeout() ;    
     
     /**
      * 
@@ -76,12 +82,12 @@ public interface ITruModuleProperties {
     String getTruServiceIPAddress();
 
     /**
-     * The timeout to use for socket connections to the truService application
-     */
-    int getTruServiceSocketTimeoutInMilliSeconds();
-
-    /**
      *  The port on the truService server that the truService application is listening on
     */
     int getTruServiceSocketPortNumber();
+    
+    /**
+     * The timeout to use for socket connections to the truService application
+     */
+    int getTruServiceSocketTimeoutInMilliSeconds();
 }
