@@ -25,8 +25,6 @@
 
 package com.trurating.payment.transaction;
 
-import com.trurating.payment.TransactionStatusCode;
-
 /**
  * A listener from the calling routine to be informed when a transaction is
  * complete
@@ -50,7 +48,7 @@ public interface ITransactionStatusListener {
 	 *            - The ITransactionContext that holds the request and response
 	 *            instances for this transaction
 	 */
-	void printReceipts(ITransactionContext context) throws Exception;
+//	void printReceipts(ITransactionContext context) throws Exception;
 //			throws ReceiptsNotPrintedException;
 
 	/**
@@ -59,6 +57,6 @@ public interface ITransactionStatusListener {
 	 * 
 	 * @param result
 	 */
-	void transactionComplete(TransactionStatusCode result);
+	void transactionComplete(TransactionResult result);
 
 }
