@@ -19,6 +19,7 @@
 
 package com.trurating;
 
+import com.trurating.network.xml.IXMLNetworkMessenger;
 import org.apache.log4j.Logger;
 
 import com.trurating.device.IDevice;
@@ -41,16 +42,17 @@ public class TruModule implements ITruModule  {
 
     private final Logger log = Logger.getLogger(TruModule.class);
 
-    private IDevice iDevice = null ;
-
-    private XMLNetworkMessenger xmlNetworkMessenger = null ;;    
+    private IDevice iDevice = null;
+    private IXMLNetworkMessenger xmlNetworkMessenger = null;
+	private TruRatingMessageFactory truRatingMessageFactory = null;
     private final PrizeManager checkForPrize = new PrizeManager();
     private String receiptMessage = "";
     
     private volatile RatingDeliveryJAXB currentRatingRecord = null ;
     
     public TruModule() {
-        xmlNetworkMessenger = new XMLNetworkMessenger();
+		truRatingMessageFactory = new TruRatingMessageFactory() ;
+		xmlNetworkMessenger = new XMLNetworkMessenger();
     }
 
     // Set the device in use
@@ -65,7 +67,7 @@ public class TruModule implements ITruModule  {
 	// Get a reference to the current transaction data
 	public RatingDeliveryJAXB getRatingRecord(ITruModuleProperties properties) {
 		if (currentRatingRecord == null)
-			currentRatingRecord = new TruRatingMessageFactory().createRatingRecord(properties) ;
+			currentRatingRecord = truRatingMessageFactory.createRatingRecord(properties) ;
 		return currentRatingRecord;
 	}
 	
@@ -156,7 +158,8 @@ public class TruModule implements ITruModule  {
                     return null;
                 }
             }
-            else if ((questionResponseJAXB != null) && (questionResponseJAXB.getLanguages().getLanguage().getDisplayElements().getQuestion().getValue().length() > 0)) {	
+            else if ((questionResponseJAXB != null) &&
+                    (questionResponseJAXB.getLanguages().getLanguage().getDisplayElements().getQuestion().getValue().length() > 0)) {
             	// We have a question
             	final com.trurating.xml.questionResponse.QuestionResponseJAXB.Languages.Language.Receipt receipt = 
             			questionResponseJAXB.getLanguages().getLanguage().getReceipt() ;

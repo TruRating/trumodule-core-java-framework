@@ -1,6 +1,8 @@
 package com.trurating.truModule;
 
 import static mockit.Deencapsulation.setField;
+
+import com.trurating.network.xml.XMLNetworkMessenger;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Tested;
@@ -26,6 +28,10 @@ import com.trurating.xml.questionResponse.QuestionResponseJAXB.Languages.Languag
 import com.trurating.xml.ratingDelivery.RatingDeliveryJAXB;
 import com.trurating.xml.ratingDelivery.RatingDeliveryJAXB.Rating;
 
+import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Created by Paul on 10/03/2016.
  */
@@ -44,6 +50,8 @@ public class TruModule_DoRating_JUnitTest {
     Logger log;
     @Injectable
     ITruModuleProperties properties;
+    @Injectable
+    TruRatingMessageFactory truRatingMessageFactory;
 
     @Before
     public void setUp() {
@@ -52,11 +60,7 @@ public class TruModule_DoRating_JUnitTest {
         setField(truModule, "checkForPrize", checkForPrize);
         setField(truModule, "iDevice", iDevice);
         setField(truModule, "log", log);
-    }
-
-    @Test
-    public void myTestTest() {
-        Assert.assertEquals(1,1);
+        setField(truModule, "truRatingMessageFactory", truRatingMessageFactory);
     }
 
     @Test
@@ -65,15 +69,17 @@ public class TruModule_DoRating_JUnitTest {
         final QuestionResponseJAXB questionResponseJAXB = getQuestionResponseJAXB();
 
         new Expectations() {{
-            xmlNetworkMessenger.getQuestionFromService((ITruModuleProperties)any, 12345);
+            xmlNetworkMessenger.getQuestionFromService((ITruModuleProperties)any, anyLong);
             returns(questionResponseJAXB);
             times = 1;
-//            iDevice.displaySecurePromptGetKeystroke((String[])any, (String)any, anyInt);
             iDevice.displayTruratingQuestionGetKeystroke((String[])any, (String)any, anyInt);
             returns ("8");
             times = 1;
             checkForPrize.checkForAPrize((IDevice) any, (QuestionResponseJAXB)any);
             returns ("555");
+            times = 1;
+            truRatingMessageFactory.createRatingRecord((ITruModuleProperties)any);
+            returns (getRatingDeliveryJAXB());
             times = 1;
         }};
 
@@ -91,7 +97,7 @@ public class TruModule_DoRating_JUnitTest {
     public void doRatingServiceFailsTest() {
 
         new Expectations() {{
-            xmlNetworkMessenger.getQuestionFromService((ITruModuleProperties)any, 12345);
+            xmlNetworkMessenger.getQuestionFromService((ITruModuleProperties)any, anyLong);
             returns(null);
             times = 1;
         }};
@@ -173,17 +179,66 @@ public class TruModule_DoRating_JUnitTest {
         QuestionResponseJAXB questionResponseJAXB = new QuestionResponseJAXB();
         final Question question = new Question();
         question.setValue("Rate 0-9");
+        questionResponseJAXB.setMessagetype("MY MESSAGE TYPE");
         question.setQid(12345L);
         Languages languages = new Languages();
         Language language = new Language();
-        languages.setLanguage(language);
+
         Language.DisplayElements displayElements = new Language.DisplayElements();
+        displayElements.setQuestion(question);
         language.setDisplayElements(displayElements);
+
+        com.trurating.xml.questionResponse.QuestionResponseJAXB.Languages.Language.Receipt receipt =
+                new Language.Receipt();
+        receipt.setRatedvalue("8");
+        language.setReceipt(receipt);
+        languages.setLanguage(language);
 
         questionResponseJAXB.setLanguages(languages);
 
-        questionResponseJAXB.getLanguages().getLanguage().getDisplayElements().setQuestion(question);
         return questionResponseJAXB;
+    }
+
+    private RatingDeliveryJAXB getRatingDeliveryJAXB() {
+
+        RatingDeliveryJAXB ratingDeliveryJAXB = new RatingDeliveryJAXB();
+        ratingDeliveryJAXB.setErrortext("Error text");
+        RatingDeliveryJAXB.CardHash cardHash = new RatingDeliveryJAXB.CardHash();
+        cardHash.setCardhashdata("cardHarhValue");
+        cardHash.setCardhashdatatype("MD5");
+        ratingDeliveryJAXB.setCardHash(cardHash);
+        RatingDeliveryJAXB.Languages languages = new RatingDeliveryJAXB.Languages();
+        RatingDeliveryJAXB.Languages.Language language = new RatingDeliveryJAXB.Languages.Language();
+        language.setIncludereceipt(false);
+        language.setLanguagetype("CA-EN");
+        languages.setLanguage(language);
+        ratingDeliveryJAXB.setLanguages(languages);
+
+        ratingDeliveryJAXB.setMid("12345");
+        ratingDeliveryJAXB.setTid("12345");
+        ratingDeliveryJAXB.setMessagetype("TYPE");
+        Rating rating = new Rating();
+        rating.setValue(new Short("9"));
+        rating.setResponsetimemilliseconds(5);
+        ratingDeliveryJAXB.setRating(rating);
+        ratingDeliveryJAXB.setUid(new BigInteger("123456789"));
+
+        Date now = new Date();
+        RatingDeliveryJAXB.Transaction transaction = new RatingDeliveryJAXB.Transaction();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        transaction.setDatetime(sdf.format(now));
+        transaction.setTxnid(now.getTime());
+        transaction.setAmount(0);
+        transaction.setGratuity(0);
+        transaction.setCurrency((short) 826);
+        transaction.setCardtype("");
+        transaction.setEntrymode("021");
+        transaction.setTendertype("");
+        transaction.setResult("");
+        transaction.setOperator("");
+        ratingDeliveryJAXB.setTransaction(transaction);
+
+        return ratingDeliveryJAXB;
     }
 }
 
