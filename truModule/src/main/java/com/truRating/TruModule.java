@@ -50,6 +50,11 @@ import com.trurating.xml.ratingResponse.RatingResponseJAXB.Languages.Language.Re
  */
 public class TruModule implements ITruModule  {
 
+	public final static short NO_RATING_VALUE = -99 ;
+	public final static short USER_CANCELLED = -1 ;
+	public final static short QUESTION_TIMEOUT = -2 ;
+	public final static short NO_QUESTION_ASKED = -3 ;
+	
     private final Logger log = Logger.getLogger(TruModule.class);
 
     private IDevice iDevice = null;
@@ -125,10 +130,11 @@ public class TruModule implements ITruModule  {
 
     public boolean deliverRating(ITruModuleProperties properties) {
 
+    	boolean rv = false ;
         try {
-        	if (currentRatingRecord == null)
+        	if (currentRatingRecord == null) 
         		log.error("Call to deliverRating when no rating record exists!");
-
+        	
         	else {
         		//send the rating
         		final RatingResponseJAXB ratingResponseJAXB = xmlNetworkMessenger.deliverRatingToService(currentRatingRecord);
@@ -142,19 +148,20 @@ public class TruModule implements ITruModule  {
         					setReceiptMessage(ratingResponseReceipt.getRatedvalue());
         				else
         					setReceiptMessage(ratingResponseReceipt.getNotratedvalue());
+
+        				rv = true ;
         			}
         		}
         	}
         } catch (Exception e) {
             log.error("", e);
-            return false;
         }
         finally {
         	endTransaction() ;
         }        
 
         log.info("Everything is finished in truModule!");
-        return true;
+        return rv;
     }
 
     private QuestionResponseJAXB getNextQuestion(ITruModuleProperties properties) {
@@ -188,33 +195,35 @@ public class TruModule implements ITruModule  {
     }
     
     private void runQuestion(ITruModuleProperties properties, QuestionResponseJAXB questionResponseJAXB) {
-        String keyStroke;
+        String keyStroke = String.valueOf(NO_QUESTION_ASKED) ;
+        long totalTimeTaken = 0; 
         try {        	
 	        final Question question = questionResponseJAXB.getLanguages().getLanguage().getDisplayElements().getQuestion();
 	        
             final int displayWidth = properties.getDeviceCpl();
 	        String qText = question.getValue() ;
-            String[] qTextWraps = qText.split("\\\\n") ;
-            if ((qTextWraps.length == 1) && (qTextWraps[0].length() > displayWidth))
-            	qTextWraps = StringUtilities.wordWrap(qText, displayWidth);
-
-	        int timeout = properties.getQuestionTimeout() ;
-	        if (timeout < 1000)
-	        	timeout = 60000 ;
-            
-	        final long startTime = System.currentTimeMillis();
-	        keyStroke = iDevice.displayTruratingQuestionGetKeystroke(qTextWraps, qText, timeout);
-	        final long endTime = System.currentTimeMillis();
-	        final Long totalTimeTaken = endTime - startTime;
+	        if (qText != null) {
+	            String[] qTextWraps = qText.split("\\\\n") ;
+	            if ((qTextWraps.length == 1) && (qTextWraps[0].length() > displayWidth))
+	            	qTextWraps = StringUtilities.wordWrap(qText, displayWidth);
 	
+		        int timeout = properties.getQuestionTimeout() ;
+		        if (timeout < 1000)
+		        	timeout = 60000 ;
+	            
+		        final long startTime = System.currentTimeMillis();
+		        keyStroke = iDevice.displayTruratingQuestionGetKeystroke(qTextWraps, qText, timeout);
+		        final long endTime = System.currentTimeMillis();
+		        totalTimeTaken = endTime - startTime;
+	        }
 	        //if user rated then check if there is a prize
 	        Rating rating = getRatingRecord(properties).getRating();
 	        if ((new Integer(keyStroke) > 0)) {
 	        	// Update the receipt text to indicate that the user rated
 	        	final com.trurating.xml.questionResponse.QuestionResponseJAXB.Languages.Language.Receipt receipt = 
 	        			questionResponseJAXB.getLanguages().getLanguage().getReceipt() ;
-	            setReceiptMessage(receipt.getRatedvalue());	        
-	            rating.setPrizecode(checkForPrize.checkForAPrize(getDevice(), questionResponseJAXB));
+	        	setReceiptMessage(receipt.getRatedvalue());	        
+	        	rating.setPrizecode(checkForPrize.checkForAPrize(getDevice(), questionResponseJAXB));
 	        }
 	        rating.setValue(new Short(keyStroke));
 	        rating.setResponsetimemilliseconds(totalTimeTaken);

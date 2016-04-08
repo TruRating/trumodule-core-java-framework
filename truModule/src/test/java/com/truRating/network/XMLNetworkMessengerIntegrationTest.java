@@ -1,5 +1,7 @@
 package com.trurating.network;
 
+import static mockit.Deencapsulation.setField;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -31,36 +33,22 @@ public class XMLNetworkMessengerIntegrationTest {
     @Tested
     TruModule truModule;
     @Injectable
-    ITruModuleProperties properties;    
+    ITruModuleProperties properties;
 	
     @Before
     public void init() {
     	properties = UnitTestProperties.getInstance();
     }
-    
+
     @Test
     public void TestgetQuestionFromService_checkForReturnedMessage() {
         IntegrationTestStartUp.setupLog4J();
         IntegrationTestStartUp.startup();
+
         XMLNetworkMessenger xmlNetworkMessenger = new XMLNetworkMessenger();
         QuestionResponseJAXB questionResponse = xmlNetworkMessenger.getQuestionFromService(properties, 12345);
         Assert.assertNotNull(questionResponse);
     }
-
-    @Test
-    public void getQuestionFromService_sendAnIncorrectlyFormattedQuestion() {
-        IntegrationTestStartUp.setupLog4J();
-        IntegrationTestStartUp.startup();
-        XMLNetworkMessenger xmlNetworkMessenger = new XMLNetworkMessenger();
-        QuestionResponseJAXB questionResponse = xmlNetworkMessenger.getQuestionFromService(properties, 12345);
-        Assert.assertNotNull(questionResponse.getErrortext());
-    }
-
-    public static String now() {
-	    Calendar cal = Calendar.getInstance();
-	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	    return sdf.format(cal.getTime());
-    }    
     
     @Test
     public void deliveryRatingToService_checkForReturnedMessage() {
@@ -69,10 +57,15 @@ public class XMLNetworkMessengerIntegrationTest {
         IntegrationTestStartUp.startup();
 
         XMLNetworkMessenger xmlNetworkMessenger = new XMLNetworkMessenger();
+        // Open the connection
+        QuestionResponseJAXB questionResponse = xmlNetworkMessenger.getQuestionFromService(properties, 12345);
+        
         RatingDeliveryJAXB ratingRecord = new TruRatingMessageFactory().createRatingRecord(properties);
         ratingRecord.getRating().setValue((short) 5);
+        
+        // Deliver the result
         RatingResponseJAXB ratingResponseJAXB= xmlNetworkMessenger.deliverRatingToService(ratingRecord);
-        Assert.assertNull(ratingResponseJAXB);
+        Assert.assertNotNull(ratingResponseJAXB);
     }
 
     //todo make a full rating for test purposes.. :)

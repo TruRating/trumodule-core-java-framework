@@ -77,10 +77,9 @@ public class TruModule_RecordResponse_JUnitTest {
         new Expectations() {{
             xmlNetworkMessenger.deliverRatingToService((RatingDeliveryJAXB) any);
             returns(null);
-            times = 1;
+            times = 0;
         }};
 
-        Rating rating = new Rating();
         boolean methodSucceeded = truModule.deliverRating(properties);
         Assert.assertEquals(false, methodSucceeded);
     }
@@ -99,8 +98,8 @@ public class TruModule_RecordResponse_JUnitTest {
         languages.setLanguage(language);
         ratingResponseJAXB.setLanguages(languages);
 
-        ratingResponseJAXB.setErrorcode(new BigInteger("199"));
-        ratingResponseJAXB.setErrortext("Some error text");
+        ratingResponseJAXB.setErrorcode(new BigInteger("0"));
+        ratingResponseJAXB.setErrortext("");
         ratingResponseJAXB.setMessagetype("A message type");
         ratingResponseJAXB.setMid("MID1");
         ratingResponseJAXB.setTid("TID1");

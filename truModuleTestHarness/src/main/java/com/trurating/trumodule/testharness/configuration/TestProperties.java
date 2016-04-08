@@ -1,4 +1,4 @@
-package com.trurating.configuration;
+package com.trurating.trumodule.testharness.configuration;
 
 import java.io.File;
 import java.util.Properties;
@@ -37,7 +37,7 @@ public class TestProperties implements ITruModuleProperties {
     }
 
     public String getLanguageCode() {
-        return "en-CA";
+        return "en-GB";
     }
 
     public boolean getIncludeReceipt() {
@@ -85,7 +85,7 @@ public class TestProperties implements ITruModuleProperties {
     }
 
     public String getTruServiceIPAddress() {
-        return "40.76.5.14";
+        return "13.95.156.19";
     }
 
     public int getTruServiceSocketTimeoutInMilliSeconds() {
