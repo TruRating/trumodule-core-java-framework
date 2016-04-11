@@ -21,6 +21,7 @@ package com.trurating.network;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -108,6 +109,15 @@ public class ServerConnectionManager {
 			log.error("Exception occurred getting socket output stream: ", e);
 		}
     	return null ;
+    }
+
+    public InputStream getInputStream() {
+        try {
+            return socket.getInputStream();
+        } catch (IOException e) {
+            log.error("Exception occurred getting socket input stream: ", e);
+        }
+        return  null;
     }
     
     public byte[] readInput() {

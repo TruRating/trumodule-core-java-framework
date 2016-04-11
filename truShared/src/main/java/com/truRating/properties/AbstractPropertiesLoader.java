@@ -95,7 +95,7 @@ public abstract class AbstractPropertiesLoader {
     public void loadAllPropertiesFromResourcesSystemArg() {
         final String resources = System.getProperty("resources");                                                             //static pre Spring config
         if (resources == null || resources.equals("")) {
-            log.error("The base file system must be passed a 'resources' property as a program VM argument");
+            log.debug("The base file system must be passed a 'resources' property as a program VM argument");
             System.out.println("The base file system must be passed a 'resources' property as a program VM argument");
 
             System.exit(1);

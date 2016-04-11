@@ -27,7 +27,7 @@ public class TruModuleMockPaymentApplication  {
     }
 
     private Transaction getTransaction(ITruModuleProperties properties) {
-    	return truModule.getRatingRecord(properties).getTransaction() ; 
+    	return truModule.buildBasicRatingRecordTemplate(properties).getTransaction() ;
     }
 
     //this is a take payment request - payment will not yet be taken

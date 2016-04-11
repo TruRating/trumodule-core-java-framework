@@ -63,7 +63,7 @@ public class TruModule_RecordResponse_JUnitTest {
             times = 1;
         }};
 
-        RatingDeliveryJAXB iRatingRecord = truModule.getRatingRecord(properties) ;
+        RatingDeliveryJAXB iRatingRecord = truModule.buildBasicRatingRecordTemplate(properties) ;
         Rating rating = iRatingRecord.getRating() ;
         rating.setValue((short)8);
 

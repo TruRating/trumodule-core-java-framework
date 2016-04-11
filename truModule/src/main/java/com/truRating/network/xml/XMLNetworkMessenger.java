@@ -54,7 +54,7 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
      */
     private ServerConnectionManager serverConnectionManager;
     
-    private volatile QuestionResponseJAXB questionFromService = null;
+    private volatile QuestionResponseJAXB questionResponseJAXB = null;
     private volatile RatingResponseJAXB ratingResponseJAXB = null;
 
     private Marshaller questionMarshaller;
@@ -89,7 +89,7 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
             truRatingMessageFactory = new TruRatingMessageFactory();
 
         } catch (Exception e) {
-            log.error(e);
+            log.error("", e);
         }
     }
    
@@ -109,68 +109,47 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
                     log.info("Blocking on question return");
                     final byte[] ba = serverConnectionManager.readInput();
                     final InputStream myInputStream = new ByteArrayInputStream(ba); //this will block until timeout
-                    questionFromService = (QuestionResponseJAXB) questionUnmarshaller.unmarshal(myInputStream);
+                    questionResponseJAXB = (QuestionResponseJAXB) questionUnmarshaller.unmarshal(myInputStream);
                     countDownLatch.countDown();
+                    log.info("Service inbound message: " + new String(ba));
                     return;
                 } catch (JAXBException e) {
-                    log.error(e);
+                    log.error("",e);
                 }
-                questionFromService = null;
+                questionResponseJAXB = null;
                 countDownLatch.countDown();
             }
         }).start();
 
         try {
             //send question request
-            log.info("Writing questionRequest XML to Service...");
             XMLStreamWriter questionWriter = xmlOutputFactory.createXMLStreamWriter(serverConnectionManager.getOutputStream(),
                     (String) questionMarshaller.getProperty(Marshaller.JAXB_ENCODING));
             
             questionWriter.writeStartDocument((String) questionMarshaller.getProperty(Marshaller.JAXB_ENCODING), "1.0");
-
-            //output stream....
-            Object jaxbObject = truRatingMessageFactory.assembleARequestQuestion(properties, transactionId);
-
-
-            // Create a stream to hold the output
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            PrintStream ps = new PrintStream(baos);
-            // IMPORTANT: Save the old System.out!
-            PrintStream old = System.out;
-            // Tell Java to use your special stream
-            System.setOut(ps);
-            // Print some output: goes to your special stream
-            questionMarshaller.marshal(jaxbObject, System.out);
-            // Put things back
-            System.out.flush();
-            System.setOut(old);
-            // Show what happened
-            log.info("Writing the following XML message to the truRating service");
-            log.info("----------------------------------");
-            log.info(baos.toString());
-            log.info("----------------------------------");
-
+            QuestionRequestJAXB jaxbObject = truRatingMessageFactory.assembleARequestQuestion(properties, transactionId);
             questionMarshaller.marshal(jaxbObject, questionWriter);
-
             questionWriter.writeEndDocument();
             questionWriter.flush();
+            writeServiceBoundXMLOutputToLog(jaxbObject);
+
         } catch (XMLStreamException e) {
-            e.printStackTrace();
+            log.error("",e );
         } catch (JAXBException e) {
-            e.printStackTrace();
+            log.error("",e);
         }
 
         //wait for an answer or a timeout
         try {
             countDownLatch.await();
         } catch (InterruptedException e) {
-            log.error(e);
+            log.error("", e);
         }
 
-        return questionFromService;
+        return questionResponseJAXB;
     }
 
-	public RatingResponseJAXB deliverRatingToService(RatingDeliveryJAXB ratingRecord) {
+    public RatingResponseJAXB deliverRatingToService(RatingDeliveryJAXB ratingRecord) {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
 
         //start listening for a rating response for 'timeout' seconds
@@ -181,10 +160,11 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
                     final InputStream myInputStream = new ByteArrayInputStream(ba); //this will block until timeout
                     ratingResponseJAXB = (RatingResponseJAXB) ratingUnmarshaller.unmarshal(myInputStream);
                     countDownLatch.countDown();
-                    log.info("Response received for ratingDelivery");
+                    log.info("Service inbound message: " + new String(ba));
                     return;
+
                 } catch (JAXBException e) {
-                    log.error(e);
+                    log.error("", e);
                 }
                 ratingResponseJAXB=null;
                 countDownLatch.countDown();
@@ -197,18 +177,20 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
             XMLStreamWriter ratingWriter = xmlOutputFactory.createXMLStreamWriter(serverConnectionManager.getOutputStream(),
                     (String) ratingMarshaller.getProperty(Marshaller.JAXB_ENCODING));
 
+
             ratingWriter.writeStartDocument((String) ratingMarshaller.getProperty(Marshaller.JAXB_ENCODING), "1.0");
             ratingMarshaller.marshal( ratingRecord, ratingWriter);
             ratingWriter.writeEndDocument();
             ratingWriter.flush();
+            writeServiceBoundXMLOutputToLog(ratingRecord);
 
         } catch (XMLStreamException e) {
             log.error("Error delivering the rating: ", e);
         } catch (JAXBException e) {
-            log.error(e);
+            log.error("", e);
         } catch (NumberFormatException e) {
             log.error("There was an error in the ratings delivery factory : " +
-                    "perhaps a props file in not correctly set? " + e);
+                    "perhaps a props file in not correctly set? ", e);
             return null;
         }
 
@@ -216,7 +198,7 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
         try {
             countDownLatch.await();
         } catch (InterruptedException e) {
-            log.error(e);
+            log.error("", e);
         }
 
         if (ratingResponseJAXB.getErrortext()!=null){
@@ -226,7 +208,19 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
         serverConnectionManager.close();
         return ratingResponseJAXB;
     }
-	
+
+    private void writeServiceBoundXMLOutputToLog(QuestionRequestJAXB jaxbObject) throws JAXBException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        questionMarshaller.marshal( jaxbObject, baos);
+        log.info("--truService outbound message " + new String(baos.toByteArray()));
+    }
+
+    private void writeServiceBoundXMLOutputToLog(RatingDeliveryJAXB ratingRecord) throws JAXBException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ratingMarshaller.marshal( ratingRecord, baos);
+        log.info("--truService outbound message " + new String(baos.toByteArray()));
+    }
+
     public void close() {
     	if (serverConnectionManager != null)
             serverConnectionManager.close();

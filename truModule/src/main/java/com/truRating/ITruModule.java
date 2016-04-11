@@ -40,7 +40,7 @@ public interface ITruModule {
 	 * Get a reference to the current record  
 	 */
 	
-    RatingDeliveryJAXB getRatingRecord(ITruModuleProperties properties) ;
+    RatingDeliveryJAXB buildBasicRatingRecordTemplate(ITruModuleProperties properties) ;
 	
     /**
      * 

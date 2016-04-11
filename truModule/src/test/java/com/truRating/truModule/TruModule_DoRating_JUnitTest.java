@@ -2,7 +2,6 @@ package com.trurating.truModule;
 
 import static mockit.Deencapsulation.setField;
 
-import com.trurating.network.xml.XMLNetworkMessenger;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Tested;
@@ -84,7 +83,7 @@ public class TruModule_DoRating_JUnitTest {
         }};
 
         truModule.doRating(properties);
-        RatingDeliveryJAXB iRatingRecord = truModule.getRatingRecord(properties) ;
+        RatingDeliveryJAXB iRatingRecord = truModule.buildBasicRatingRecordTemplate(properties) ;
         Rating rating = iRatingRecord.getRating() ;
 
         Assert.assertNotNull(iRatingRecord.getTransaction().getDatetime());
@@ -104,7 +103,7 @@ public class TruModule_DoRating_JUnitTest {
 
         TruModuleProperties properties = new TruModuleProperties() ;
         truModule.doRating(properties);
-        RatingDeliveryJAXB iRatingRecord = truModule.getRatingRecord(properties) ;
+        RatingDeliveryJAXB iRatingRecord = truModule.buildBasicRatingRecordTemplate(properties) ;
         Assert.assertEquals(iRatingRecord.getRating().getValue(), TruRatingMessageFactory.NO_RATING_VALUE); 
         // We should have a value
     }
@@ -128,7 +127,7 @@ public class TruModule_DoRating_JUnitTest {
         }};
 
         truModule.doRating(null);
-        Rating rating = truModule.getRatingRecord(properties).getRating() ;
+        Rating rating = truModule.buildBasicRatingRecordTemplate(properties).getRating() ;
         Assert.assertEquals("", rating.getPrizecode());
     }
 
@@ -150,7 +149,7 @@ public class TruModule_DoRating_JUnitTest {
         }};
 
         truModule.doRating(null);
-        Rating rating = truModule.getRatingRecord(properties).getRating() ;
+        Rating rating = truModule.buildBasicRatingRecordTemplate(properties).getRating() ;
         Assert.assertEquals("", rating.getPrizecode());
     }
 
@@ -172,7 +171,7 @@ public class TruModule_DoRating_JUnitTest {
         }};
 
         truModule.doRating(null);
-        Rating rating = truModule.getRatingRecord(properties).getRating() ;
+        Rating rating = truModule.buildBasicRatingRecordTemplate(properties).getRating() ;
         Assert.assertEquals("", rating.getPrizecode());
     }
     private QuestionResponseJAXB getQuestionResponseJAXB() {
