@@ -80,7 +80,7 @@ public class TruModule implements ITruModule  {
     }
     
 	// Get a reference to the current transaction data
-	public RatingDeliveryJAXB buildBasicRatingRecordTemplate(ITruModuleProperties properties) {
+	public RatingDeliveryJAXB getRatingRecord(ITruModuleProperties properties) {
 		if (currentRatingRecord == null)
 			currentRatingRecord = truRatingMessageFactory.createRatingRecord(properties) ;
 		return currentRatingRecord;
@@ -168,7 +168,7 @@ public class TruModule implements ITruModule  {
     	QuestionResponseJAXB questionResponseJAXB = null ;
 
         try {        	
-        	RatingDeliveryJAXB ratingRecord = buildBasicRatingRecordTemplate(properties) ;
+        	RatingDeliveryJAXB ratingRecord = getRatingRecord(properties) ;
         	long transactionId = ratingRecord.getUid().longValue();
             questionResponseJAXB = xmlNetworkMessenger.getQuestionFromService(properties, transactionId);
             
@@ -217,7 +217,7 @@ public class TruModule implements ITruModule  {
 		        totalTimeTaken = endTime - startTime;
 	        }
 	        //if user rated then check if there is a prize
-	        Rating rating = buildBasicRatingRecordTemplate(properties).getRating();
+	        Rating rating = getRatingRecord(properties).getRating();
 	        if ((new Integer(keyStroke) > 0)) {
 	        	// Update the receipt text to indicate that the user rated
 	        	final com.trurating.xml.questionResponse.QuestionResponseJAXB.Languages.Language.Receipt receipt = 

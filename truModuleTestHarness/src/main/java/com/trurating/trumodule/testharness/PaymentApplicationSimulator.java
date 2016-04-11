@@ -28,7 +28,7 @@ public class PaymentApplicationSimulator  {
     }
 
     private Transaction getTransaction(ITruModuleProperties properties) {
-    	return truModule.buildBasicRatingRecordTemplate(properties).getTransaction() ;
+    	return truModule.getRatingRecord(properties).getTransaction() ;
     }
 
     //this is a take payment request - payment will not yet be taken
