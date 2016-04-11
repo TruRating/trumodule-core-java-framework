@@ -1,5 +1,6 @@
-package com.trurating.device;
+package com.trurating.trumodule.testharness.device;
 
+import com.trurating.device.DeviceCapabilities;
 import com.trurating.device.IDevice;
 
 import org.apache.log4j.Logger;
@@ -32,14 +33,19 @@ public class TruRatingConsoleDemoDevice implements IDevice {
     }
 
     public void displayWelcome() {
-        log.info("trurating welcome");
+    	String string = "trurating welcome" ; 
+        JOptionPane.showMessageDialog(null, string);
+        log.info(string);
     }
 
     public void displayPleaseWait() {
-        log.info("Please wait...");
+    	String string = "Please wait..." ; 
+        JOptionPane.showMessageDialog(null, string);
+        log.info(string);
     }
 
     public void displayMessage(String string) {
+        JOptionPane.showMessageDialog(null, string);
         log.info(string);
     }
 

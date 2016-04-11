@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.truRating</groupId>
-    <artifactId>truModuleMockPaymentApp</artifactId>
+    <artifactId>truModuleTestHarness</artifactId>
     <version>1.1-SNAPSHOT</version>
 
     <parent>

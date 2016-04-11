@@ -25,6 +25,7 @@ import java.util.Date;
 
 import org.apache.log4j.Logger;
 
+import com.trurating.TruModule;
 import com.trurating.properties.ITruModuleProperties;
 import com.trurating.properties.TruModuleProperties;
 import com.trurating.xml.questionRequest.QuestionRequestJAXB;
@@ -36,8 +37,6 @@ import com.trurating.xml.ratingDelivery.RatingDeliveryJAXB.Rating;
  */
 public class TruRatingMessageFactory {
 
-	public final static short NO_RATING_VALUE = -99 ;
-	
     Logger log = Logger.getLogger(TruRatingMessageFactory.class);
 
     public QuestionRequestJAXB assembleARequestQuestion(ITruModuleProperties propertiesProvided, long transactionId) {
@@ -94,7 +93,7 @@ public class TruRatingMessageFactory {
 
         // Rating element
         RatingDeliveryJAXB.Rating ratingElement = new RatingDeliveryJAXB.Rating();
-        ratingElement.setValue(NO_RATING_VALUE); // No rating value
+        ratingElement.setValue(TruModule.NO_RATING_VALUE); // No rating value
         ratingElement.setResponsetimemilliseconds(0);
         ratingElement.setQid(0);
         ratingElement.setPrizecode("");

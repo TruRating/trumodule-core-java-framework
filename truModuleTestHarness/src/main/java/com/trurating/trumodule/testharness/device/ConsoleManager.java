@@ -1,4 +1,4 @@
-package com.trurating.device;
+package com.trurating.trumodule.testharness.device;
 
 import java.util.Scanner;
 

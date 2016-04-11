@@ -1,27 +1,28 @@
-package com.trurating.paymentApplication;
+package com.trurating.trumodule.testharness;
 
 import com.trurating.payment.IPaymentResponse;
+
 import org.apache.log4j.Logger;
 
 import com.trurating.ITruModule;
 import com.trurating.TruModule;
 import com.trurating.device.IDevice;
-import com.trurating.device.TruRatingConsoleDemoDevice;
 import com.trurating.payment.TenderType;
 import com.trurating.payment.TransactionResult;
 import com.trurating.properties.ITruModuleProperties;
+import com.trurating.trumodule.testharness.device.TruRatingConsoleDemoDevice;
 import com.trurating.xml.ratingDelivery.RatingDeliveryJAXB.Transaction;
 
 /**
  * Created by Paul on 01/03/2016.
  */
-public class TruModuleMockPaymentApplication  {
+public class PaymentApplicationSimulator  {
 
     private final ITruModule truModule;
-    private final Logger log = Logger.getLogger(TruModuleMockPaymentApplication.class);
+    private final Logger log = Logger.getLogger(PaymentApplicationSimulator.class);
     private IDevice iDevice;
 
-    public TruModuleMockPaymentApplication() {
+    public PaymentApplicationSimulator() {
         this.truModule = new TruModule();
         this.truModule.setDevice(getDevice());
     }
@@ -52,7 +53,7 @@ public class TruModuleMockPaymentApplication  {
     public void completePayment(ITruModuleProperties properties) {
     	Transaction transaction = getTransaction(properties) ; 
 
-        getDevice().displayMessage("INSERT CARD"); //etc
+        // "INSERT CARD"; //etc
 
     	// Transaction Id
        	transaction.setTxnid(12345);
@@ -66,7 +67,10 @@ public class TruModuleMockPaymentApplication  {
     	// Card type
    		transaction.setCardtype("VISA");
 
-        truModule.deliverRating(properties);
+        if (truModule.deliverRating(properties))
+        	getDevice().displayMessage("Rating delivery succeeded");
+        else
+        	getDevice().displayMessage("Rating delivery failed");
     }
 
     public IDevice getDevice() {
