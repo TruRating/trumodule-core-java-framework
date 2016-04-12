@@ -1,26 +1,28 @@
-package com.trurating.properties;
+package com.trurating.trumodule.testharness.configuration;
 
 import java.io.File;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
+import com.trurating.properties.ITruModuleProperties;
+
 /**
  * Created by Paul on 2016. :)
  */
-public class UnitTestProperties implements ITruModuleProperties {
+public class TestProperties implements ITruModuleProperties {
 
-    private static Logger log = Logger.getLogger(UnitTestProperties.class);
+    private static Logger log = Logger.getLogger(TestProperties.class);
     private Properties properties = null;
     private File propertiesFile;
     private String pathToResources;
-    private static UnitTestProperties INSTANCE=null;
+    private static TestProperties INSTANCE=null;
 
-    private UnitTestProperties() {}
+    public TestProperties() {}
 
-    public static synchronized UnitTestProperties getInstance() {
+    public static synchronized TestProperties getInstance() {
         if (INSTANCE==null) {
-            return INSTANCE= new UnitTestProperties();
+            return INSTANCE= new TestProperties();
         }
         return INSTANCE;
     }
@@ -30,11 +32,12 @@ public class UnitTestProperties implements ITruModuleProperties {
     }
 
     public String getTid() {
-        return "65321";
+        return "00000tR2";
+        //return "12345";
     }
 
     public String getLanguageCode() {
-        return "en";
+        return "en-GB";
     }
 
     public boolean getIncludeReceipt() {
@@ -58,23 +61,23 @@ public class UnitTestProperties implements ITruModuleProperties {
     }
 
     public String getDeviceFormat() {
-        return "RAW";
+        return "TEXT_CENTER";
     }
 
     public String getDeviceFirmware() {
-        return "RAM0973";
+        return "Windows 10";
     }
 
     public String getDeviceFontType() {
-        return "FIXED";
+        return "PROPORTIONAL";
     }
 
 	public int getQuestionTimeout() {
 		return 50000;
 	}
-
-	public String getServerId() {
-        return "1";
+    
+    public String getServerId() {
+        return "123456789";
     }
 
     public String getPpaFirmware() {
@@ -82,7 +85,8 @@ public class UnitTestProperties implements ITruModuleProperties {
     }
 
     public String getTruServiceIPAddress() {
-        return "40.76.5.14";
+    	//return "40.113.86.17" ;
+        return "tru-sand-service-aci.cloudapp.net";
     }
 
     public int getTruServiceSocketTimeoutInMilliSeconds() {

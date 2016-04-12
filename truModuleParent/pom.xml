@@ -14,112 +14,11 @@
         <javaVersion>1.5</javaVersion>
         <maven.compiler.source>1.5</maven.compiler.source>
         <maven.compiler.target>1.5</maven.compiler.target>
-        <!--Add this line back if for standalone build-->
-        <baseInstallDirectory>c:\truModuleForACI\</baseInstallDirectory>
     </properties>
 
     <modules>
         <module>../truModule</module>
-        <module>../truModuleMockPaymentApp</module>
-        <module>../truShared</module>
+        <module>../truModuleTestHarness</module>
+        <!--<module>../truShared</module>-->
     </modules>
-
-    <!--<profiles>-->
-        <!--<profile>-->
-            <!--<id>TRUMODULE_BUILD</id>-->
-            <!--<build>-->
-                <!--<plugins>-->
-                    <!--<plugin>-->
-                        <!--<groupId>org.apache.maven.plugins</groupId>-->
-                        <!--<artifactId>maven-compiler-plugin</artifactId>-->
-                        <!--<version>2.4</version>-->
-                        <!--<configuration>-->
-                            <!--<source>${javaVersion}</source>-->
-                            <!--<target>${javaVersion}</target>-->
-                        <!--</configuration>-->
-                    <!--</plugin>-->
-
-                    <!--<plugin>-->
-                        <!--<groupId>org.apache.maven.plugins</groupId>-->
-                        <!--<artifactId>maven-shade-plugin</artifactId>-->
-                        <!--<configuration>-->
-                            <!--<createDependencyReducedPom>false</createDependencyReducedPom>-->
-                        <!--</configuration>-->
-                        <!--<version>2.4.3</version>-->
-
-                        <!--<executions>-->
-                            <!--<execution>-->
-                                <!--<id>truModuleID</id>-->
-                                <!--<phase>package</phase>-->
-                                <!--<goals>-->
-                                    <!--<goal>shade</goal>-->
-                                <!--</goals>-->
-
-                                <!--<configuration>-->
-                                    <!--<outputFile>${baseInstallDirectory}truModule4ACI.jar</outputFile>-->
-                                    <!--<transformers>-->
-                                        <!--<transformer-->
-                                                <!--implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">-->
-                                            <!--<mainClass>com.truRating.paymentApplication.PaymentApplicationClient-->
-                                            <!--</mainClass>-->
-                                        <!--</transformer>-->
-                                    <!--</transformers>-->
-
-                                    <!--<filters>-->
-                                        <!--<filter>-->
-                                            <!--<artifact>*:*</artifact>-->
-                                            <!--<excludes>-->
-                                                <!--<exclude>META-INF/*.SF</exclude>-->
-                                                <!--<exclude>META-INF/*.DSA</exclude>-->
-                                                <!--<exclude>META-INF/*.RSA</exclude>-->
-                                                <!--<exclude>properties/**</exclude>-->
-                                                <!--<exclude>properties/*.properties</exclude>-->
-                                                <!--<exclude>testProps/*.properties</exclude>-->
-                                                <!--<exclude>scripts/**</exclude>-->
-                                                <!--<exclude>*.bat</exclude>-->
-                                                <!--<exclude>*log4j.properties</exclude>-->
-                                                <!--<exclude>junit/**</exclude>-->
-                                                <!--<exclude>mockit/**</exclude>-->
-                                                <!--<exclude>hamcrest/**</exclude>-->
-                                                <!--<exclude>*.log</exclude>-->
-                                            <!--</excludes>-->
-                                        <!--</filter>-->
-                                    <!--</filters>-->
-                                <!--</configuration>-->
-                            <!--</execution>-->
-                        <!--</executions>-->
-                    <!--</plugin>-->
-
-                    <!--<plugin>-->
-                        <!--<artifactId>maven-resources-plugin</artifactId>-->
-                        <!--<version>2.6</version>-->
-                        <!--<executions>-->
-                            <!--<execution>-->
-                                <!--<id>copy-resources</id>-->
-                                <!--<phase>validate</phase>-->
-                                <!--<goals>-->
-                                    <!--<goal>copy-resources</goal>-->
-                                <!--</goals>-->
-                                <!--<configuration>-->
-                                    <!--<outputDirectory>${baseInstallDirectory}</outputDirectory>-->
-                                    <!--<resources>-->
-                                        <!--<resource>-->
-                                            <!--<directory>src/main/resources</directory>-->
-                                            <!--<excludes>-->
-                                                <!--<exclude>scripts/**</exclude>-->
-                                                <!--<exclude>META-INF/**</exclude>-->
-                                                <!--<exclude>*log4j.properties</exclude>-->
-                                                <!--<exclude>testProps/**</exclude>-->
-                                                <!--<exclude>*.log</exclude>-->
-                                            <!--</excludes>-->
-                                        <!--</resource>-->
-                                    <!--</resources>-->
-                                <!--</configuration>-->
-                            <!--</execution>-->
-                        <!--</executions>-->
-                    <!--</plugin>-->
-                <!--</plugins>-->
-            <!--</build>-->
-        <!--</profile>-->
-    <!--</profiles>-->
 </project>

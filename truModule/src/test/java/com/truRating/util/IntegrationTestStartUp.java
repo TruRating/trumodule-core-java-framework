@@ -1,8 +1,8 @@
-package com.truRating.util;
+package com.trurating.util;
 
 import java.io.File;
 
-import com.truRating.properties.UnitTestProperties;
+import com.trurating.properties.UnitTestProperties;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;

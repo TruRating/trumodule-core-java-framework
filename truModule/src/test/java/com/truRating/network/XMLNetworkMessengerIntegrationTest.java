@@ -1,4 +1,6 @@
-package com.truRating.network;
+package com.trurating.network;
+
+import static mockit.Deencapsulation.setField;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -12,15 +14,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.truRating.properties.UnitTestProperties;
-import com.truRating.truModule.TruModule;
-import com.truRating.truModule.network.xml.XMLNetworkMessenger;
-import com.truRating.truModule.payment.IPaymentResponse;
-import com.truRating.truModule.properties.ITruModuleProperties;
-import com.truRating.truModule.rating.Rating;
-import com.truRating.truModule.xml.questionResponse.QuestionResponseJAXB;
-import com.truRating.truModule.xml.ratingResponse.RatingResponseJAXB;
-import com.truRating.util.IntegrationTestStartUp;
+import com.trurating.TruModule;
+import com.trurating.network.xml.TruRatingMessageFactory;
+import com.trurating.network.xml.XMLNetworkMessenger;
+import com.trurating.properties.ITruModuleProperties;
+import com.trurating.properties.UnitTestProperties;
+import com.trurating.util.IntegrationTestStartUp;
+import com.trurating.xml.questionResponse.QuestionResponseJAXB;
+import com.trurating.xml.ratingDelivery.RatingDeliveryJAXB;
+import com.trurating.xml.ratingResponse.RatingResponseJAXB;
 
 /**
  * Created by Paul on 11/03/2016.
@@ -31,38 +33,22 @@ public class XMLNetworkMessengerIntegrationTest {
     @Tested
     TruModule truModule;
     @Injectable
-    ITruModuleProperties properties;    
-    @Injectable
-    IPaymentResponse paymentResponse;
+    ITruModuleProperties properties;
 	
     @Before
     public void init() {
     	properties = UnitTestProperties.getInstance();
     }
-    
+
     @Test
     public void TestgetQuestionFromService_checkForReturnedMessage() {
         IntegrationTestStartUp.setupLog4J();
         IntegrationTestStartUp.startup();
+
         XMLNetworkMessenger xmlNetworkMessenger = new XMLNetworkMessenger();
-        QuestionResponseJAXB questionResponse = xmlNetworkMessenger.getQuestionFromService(properties);
+        QuestionResponseJAXB questionResponse = xmlNetworkMessenger.getQuestionFromService(properties, 12345);
         Assert.assertNotNull(questionResponse);
     }
-
-    @Test
-    public void getQuestionFromService_sendAnIncorrectlyFormattedQuestion() {
-        IntegrationTestStartUp.setupLog4J();
-        IntegrationTestStartUp.startup();
-        XMLNetworkMessenger xmlNetworkMessenger = new XMLNetworkMessenger();
-        QuestionResponseJAXB questionResponse = xmlNetworkMessenger.getQuestionFromService(properties);
-        Assert.assertNotNull(questionResponse.getErrortext());
-    }
-
-    public static String now() {
-	    Calendar cal = Calendar.getInstance();
-	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-	    return sdf.format(cal.getTime());
-    }    
     
     @Test
     public void deliveryRatingToService_checkForReturnedMessage() {
@@ -71,11 +57,15 @@ public class XMLNetworkMessengerIntegrationTest {
         IntegrationTestStartUp.startup();
 
         XMLNetworkMessenger xmlNetworkMessenger = new XMLNetworkMessenger();
-        Rating rating = new Rating();
-        rating.setValue(5);
-        rating.setRatingDateTime(now());
-        RatingResponseJAXB ratingResponseJAXB= xmlNetworkMessenger.deliveryRatingToService(rating, paymentResponse, properties);
-        Assert.assertNull(ratingResponseJAXB);
+        // Open the connection
+        QuestionResponseJAXB questionResponse = xmlNetworkMessenger.getQuestionFromService(properties, 12345);
+        
+        RatingDeliveryJAXB ratingRecord = new TruRatingMessageFactory().createRatingRecord(properties);
+        ratingRecord.getRating().setValue((short) 5);
+        
+        // Deliver the result
+        RatingResponseJAXB ratingResponseJAXB= xmlNetworkMessenger.deliverRatingToService(ratingRecord);
+        Assert.assertNotNull(ratingResponseJAXB);
     }
 
     //todo make a full rating for test purposes.. :)
