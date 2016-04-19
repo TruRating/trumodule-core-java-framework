@@ -141,8 +141,8 @@ public class TruModule implements ITruModule  {
         		if (ratingResponseJAXB != null) {
         			if ((ratingResponseJAXB.getErrortext() != null) && (ratingResponseJAXB.getErrortext().length() > 0))
         				log.error(ratingResponseJAXB.getErrortext());
-        			else {
-        				final Receipt ratingResponseReceipt = ratingResponseJAXB.getLanguages().getLanguage().getReceipt();
+        			else { //todo this needs to be on a /language basis
+        				final Receipt ratingResponseReceipt = ratingResponseJAXB.getLanguages().get(0).getReceipt();
 
         				if (currentRatingRecord.getRating().getValue() > 0)
         					setReceiptMessage(ratingResponseReceipt.getRatedvalue());

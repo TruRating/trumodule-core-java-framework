@@ -2,6 +2,8 @@
 package com.trurating.xml.ratingDelivery;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -45,9 +47,9 @@ import javax.xml.bind.annotation.XmlType;
  *           &lt;complexType>
  *             &lt;complexContent>
  *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;attribute name="value" use="required" type="{http://www.w3.org/2001/XMLSchema}short" />
- *                 &lt;attribute name="responsetimemilliseconds" use="required" type="{http://www.w3.org/2001/XMLSchema}long" />
- *                 &lt;attribute name="qid" use="required" type="{http://www.w3.org/2001/XMLSchema}long" />
+ *                 &lt;attribute name="value" use="required" type="{http://www.w3.org/2001/XMLSchema}Short" />
+ *                 &lt;attribute name="responsetimemilliseconds" use="required" type="{http://www.w3.org/2001/XMLSchema}Long" />
+ *                 &lt;attribute name="qid" use="required" type="{http://www.w3.org/2001/XMLSchema}Long" />
  *                 &lt;attribute name="prizecode" type="{http://www.w3.org/2001/XMLSchema}string" />
  *                 &lt;attribute name="ratinglanguage" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *               &lt;/restriction>
@@ -58,10 +60,10 @@ import javax.xml.bind.annotation.XmlType;
  *           &lt;complexType>
  *             &lt;complexContent>
  *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;attribute name="txnid" use="required" type="{http://www.w3.org/2001/XMLSchema}unsignedInt" />
+ *                 &lt;attribute name="txnid" use="required" type="{http://www.w3.org/2001/XMLSchema}unsignedInteger" />
  *                 &lt;attribute name="datetime" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *                 &lt;attribute name="amount" use="required" type="{http://www.w3.org/2001/XMLSchema}int" />
- *                 &lt;attribute name="gratuity" use="required" type="{http://www.w3.org/2001/XMLSchema}int" />
+ *                 &lt;attribute name="amount" use="required" type="{http://www.w3.org/2001/XMLSchema}Integer" />
+ *                 &lt;attribute name="gratuity" use="required" type="{http://www.w3.org/2001/XMLSchema}Integer" />
  *                 &lt;attribute name="currency" use="required" type="{http://www.w3.org/2001/XMLSchema}unsignedByte" />
  *                 &lt;attribute name="cardtype" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *                 &lt;attribute name="entrymode" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
@@ -113,7 +115,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;attribute name="mid" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="tid" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="errortext" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="errorcode" type="{http://www.w3.org/2001/XMLSchema}integer" />
+ *       &lt;attribute name="errorcode" type="{http://www.w3.org/2001/XMLSchema}Integereger" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -515,7 +517,7 @@ public class RatingDeliveryJAXB {
     public static class Languages {
 
         @XmlElement(name = "Language")
-        protected RatingDeliveryJAXB.Languages.Language language;
+        protected List language = new ArrayList();
 
         /**
          * Gets the value of the language property.
@@ -525,8 +527,8 @@ public class RatingDeliveryJAXB {
          *     {@link RatingDeliveryJAXB.Languages.Language }
          *     
          */
-        public RatingDeliveryJAXB.Languages.Language getLanguage() {
-            return language;
+        public RatingDeliveryJAXB.Languages.Language getLanguage(Integer i) {
+            return (RatingDeliveryJAXB.Languages.Language)language.get(i);
         }
 
         /**
@@ -537,8 +539,12 @@ public class RatingDeliveryJAXB {
          *     {@link RatingDeliveryJAXB.Languages.Language }
          *     
          */
-        public void setLanguage(RatingDeliveryJAXB.Languages.Language value) {
-            this.language = value;
+        public void addLanguage(RatingDeliveryJAXB.Languages.Language value) {
+            this.language.add(value);
+        }
+
+        public Integer getLanguageSize() {
+            return this.language.size();
         }
 
 
@@ -631,9 +637,9 @@ public class RatingDeliveryJAXB {
      * &lt;complexType>
      *   &lt;complexContent>
      *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       &lt;attribute name="value" use="required" type="{http://www.w3.org/2001/XMLSchema}short" />
-     *       &lt;attribute name="responsetimemilliseconds" use="required" type="{http://www.w3.org/2001/XMLSchema}long" />
-     *       &lt;attribute name="qid" use="required" type="{http://www.w3.org/2001/XMLSchema}long" />
+     *       &lt;attribute name="value" use="required" type="{http://www.w3.org/2001/XMLSchema}Short" />
+     *       &lt;attribute name="responsetimemilliseconds" use="required" type="{http://www.w3.org/2001/XMLSchema}Long" />
+     *       &lt;attribute name="qid" use="required" type="{http://www.w3.org/2001/XMLSchema}Long" />
      *       &lt;attribute name="prizecode" type="{http://www.w3.org/2001/XMLSchema}string" />
      *       &lt;attribute name="ratinglanguage" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
      *     &lt;/restriction>
@@ -648,11 +654,11 @@ public class RatingDeliveryJAXB {
     public static class Rating {
 
         @XmlAttribute(name = "value", required = true)
-        protected short value;
+        protected Short value;
         @XmlAttribute(name = "responsetimemilliseconds", required = true)
-        protected long responsetimemilliseconds;
+        protected Long responsetimemilliseconds;
         @XmlAttribute(name = "qid", required = true)
-        protected long qid;
+        protected Long qid;
         @XmlAttribute(name = "prizecode")
         protected String prizecode;
         @XmlAttribute(name = "ratinglanguage", required = true)
@@ -662,7 +668,7 @@ public class RatingDeliveryJAXB {
          * Gets the value of the value property.
          * 
          */
-        public short getValue() {
+        public Short getValue() {
             return value;
         }
 
@@ -670,7 +676,7 @@ public class RatingDeliveryJAXB {
          * Sets the value of the value property.
          * 
          */
-        public void setValue(short value) {
+        public void setValue(Short value) {
             this.value = value;
         }
 
@@ -678,7 +684,7 @@ public class RatingDeliveryJAXB {
          * Gets the value of the responsetimemilliseconds property.
          * 
          */
-        public long getResponsetimemilliseconds() {
+        public Long getResponsetimemilliseconds() {
             return responsetimemilliseconds;
         }
 
@@ -686,7 +692,7 @@ public class RatingDeliveryJAXB {
          * Sets the value of the responsetimemilliseconds property.
          * 
          */
-        public void setResponsetimemilliseconds(long value) {
+        public void setResponsetimemilliseconds(Long value) {
             this.responsetimemilliseconds = value;
         }
 
@@ -694,7 +700,7 @@ public class RatingDeliveryJAXB {
          * Gets the value of the qid property.
          * 
          */
-        public long getQid() {
+        public Long getQid() {
             return qid;
         }
 
@@ -702,7 +708,7 @@ public class RatingDeliveryJAXB {
          * Sets the value of the qid property.
          * 
          */
-        public void setQid(long value) {
+        public void setQid(Long value) {
             this.qid = value;
         }
 
@@ -766,10 +772,10 @@ public class RatingDeliveryJAXB {
      * &lt;complexType>
      *   &lt;complexContent>
      *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       &lt;attribute name="txnid" use="required" type="{http://www.w3.org/2001/XMLSchema}unsignedInt" />
+     *       &lt;attribute name="txnid" use="required" type="{http://www.w3.org/2001/XMLSchema}unsignedInteger" />
      *       &lt;attribute name="datetime" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
-     *       &lt;attribute name="amount" use="required" type="{http://www.w3.org/2001/XMLSchema}int" />
-     *       &lt;attribute name="gratuity" use="required" type="{http://www.w3.org/2001/XMLSchema}int" />
+     *       &lt;attribute name="amount" use="required" type="{http://www.w3.org/2001/XMLSchema}Integer" />
+     *       &lt;attribute name="gratuity" use="required" type="{http://www.w3.org/2001/XMLSchema}Integer" />
      *       &lt;attribute name="currency" use="required" type="{http://www.w3.org/2001/XMLSchema}unsignedByte" />
      *       &lt;attribute name="cardtype" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
      *       &lt;attribute name="entrymode" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
@@ -795,17 +801,17 @@ public class RatingDeliveryJAXB {
     public static class Transaction {
 
         @XmlAttribute(name = "txnid", required = true)
-        @XmlSchemaType(name = "unsignedInt")
-        protected long txnid;
+        @XmlSchemaType(name = "unsignedInteger")
+        protected Long txnid;
         @XmlAttribute(name = "datetime", required = true)
         protected String datetime;
         @XmlAttribute(name = "amount", required = true)
-        protected int amount;
+        protected Integer amount;
         @XmlAttribute(name = "gratuity", required = true)
-        protected int gratuity;
+        protected Integer gratuity;
         @XmlAttribute(name = "currency", required = true)
         @XmlSchemaType(name = "unsignedByte")
-        protected short currency;
+        protected Short currency;
         @XmlAttribute(name = "cardtype", required = true)
         protected String cardtype;
         @XmlAttribute(name = "entrymode", required = true)
@@ -821,7 +827,7 @@ public class RatingDeliveryJAXB {
          * Gets the value of the txnid property.
          * 
          */
-        public long getTxnid() {
+        public Long getTxnid() {
             return txnid;
         }
 
@@ -829,7 +835,7 @@ public class RatingDeliveryJAXB {
          * Sets the value of the txnid property.
          * 
          */
-        public void setTxnid(long value) {
+        public void setTxnid(Long value) {
             this.txnid = value;
         }
 
@@ -861,7 +867,7 @@ public class RatingDeliveryJAXB {
          * Gets the value of the amount property.
          * 
          */
-        public int getAmount() {
+        public Integer getAmount() {
             return amount;
         }
 
@@ -869,7 +875,7 @@ public class RatingDeliveryJAXB {
          * Sets the value of the amount property.
          * 
          */
-        public void setAmount(int value) {
+        public void setAmount(Integer value) {
             this.amount = value;
         }
 
@@ -877,7 +883,7 @@ public class RatingDeliveryJAXB {
          * Gets the value of the gratuity property.
          * 
          */
-        public int getGratuity() {
+        public Integer getGratuity() {
             return gratuity;
         }
 
@@ -885,7 +891,7 @@ public class RatingDeliveryJAXB {
          * Sets the value of the gratuity property.
          * 
          */
-        public void setGratuity(int value) {
+        public void setGratuity(Integer value) {
             this.gratuity = value;
         }
 
@@ -893,7 +899,7 @@ public class RatingDeliveryJAXB {
          * Gets the value of the currency property.
          * 
          */
-        public short getCurrency() {
+        public Short getCurrency() {
             return currency;
         }
 
@@ -901,7 +907,7 @@ public class RatingDeliveryJAXB {
          * Sets the value of the currency property.
          * 
          */
-        public void setCurrency(short value) {
+        public void setCurrency(Short value) {
             this.currency = value;
         }
 

@@ -85,8 +85,8 @@ public class TestProperties implements ITruModuleProperties {
     }
 
     public String getTruServiceIPAddress() {
-    	//return "40.113.86.17" ;
-        return "tru-sand-service-aci.cloudapp.net";
+        return "127.0.0.1";
+//        return "13.95.156.19";
     }
 
     public int getTruServiceSocketTimeoutInMilliSeconds() {

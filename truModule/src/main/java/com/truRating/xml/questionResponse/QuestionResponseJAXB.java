@@ -1,7 +1,10 @@
 
 package com.trurating.xml.questionResponse;
 
+import com.trurating.xml.questionRequest.QuestionRequestJAXB;
+
 import java.math.BigInteger;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -404,7 +407,7 @@ public class QuestionResponseJAXB {
     public static class Languages {
 
         @XmlElement(name = "Language")
-        protected QuestionResponseJAXB.Languages.Language language;
+        protected List<Language> language;
 
         /**
          * Gets the value of the language property.
@@ -414,8 +417,8 @@ public class QuestionResponseJAXB {
          *     {@link QuestionResponseJAXB.Languages.Language }
          *     
          */
-        public QuestionResponseJAXB.Languages.Language getLanguage() {
-            return language;
+        public QuestionResponseJAXB.Languages.Language getLanguage(int i) {
+            return language.get(0);
         }
 
         /**
@@ -426,8 +429,14 @@ public class QuestionResponseJAXB {
          *     {@link QuestionResponseJAXB.Languages.Language }
          *     
          */
-        public void setLanguage(QuestionResponseJAXB.Languages.Language value) {
+        public void setLanguages(List<QuestionResponseJAXB.Languages.Language> value) {
             this.language = value;
+        }
+
+        public void addLanguage(QuestionResponseJAXB.Languages.Language language) { this.language.add(language); }
+
+        public int getLanguageSize() {
+            return this.language.size();
         }
 
 
@@ -1011,7 +1020,7 @@ public class QuestionResponseJAXB {
                 public static class Question {
 
                     @XmlAttribute(name = "qid", required = true)
-                    protected long qid;
+                    protected Long qid;
                     @XmlAttribute(name = "value", required = true)
                     protected String value;
                     @XmlAttribute(name = "questiontimeout")
@@ -1022,7 +1031,7 @@ public class QuestionResponseJAXB {
                      * Gets the value of the qid property.
                      * 
                      */
-                    public long getQid() {
+                    public Long getQid() {
                         return qid;
                     }
 
@@ -1030,7 +1039,7 @@ public class QuestionResponseJAXB {
                      * Sets the value of the qid property.
                      * 
                      */
-                    public void setQid(long value) {
+                    public void setQid(Long value) {
                         this.qid = value;
                     }
 

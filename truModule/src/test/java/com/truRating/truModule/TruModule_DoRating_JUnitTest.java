@@ -2,7 +2,6 @@ package com.trurating.truModule;
 
 import static mockit.Deencapsulation.setField;
 
-import com.trurating.network.xml.XMLNetworkMessenger;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Tested;
@@ -88,8 +87,8 @@ public class TruModule_DoRating_JUnitTest {
         Rating rating = iRatingRecord.getRating() ;
 
         Assert.assertNotNull(iRatingRecord.getTransaction().getDatetime());
-        Assert.assertEquals(8, rating.getValue());
-        Assert.assertEquals(12345L, rating.getQid());
+        Assert.assertEquals((Short)(short)8, rating.getValue());
+        Assert.assertEquals(new Long(12345), rating.getQid());
         Assert.assertEquals("555", rating.getPrizecode());
     }
 
@@ -107,7 +106,7 @@ public class TruModule_DoRating_JUnitTest {
         TruModuleProperties properties = new TruModuleProperties() ;
         truModule.doRating(properties);
         RatingDeliveryJAXB iRatingRecord = truModule.getRatingRecord(properties) ;
-        Assert.assertEquals(iRatingRecord.getRating().getValue(), TruModule.NO_RATING_VALUE); 
+        Assert.assertEquals(iRatingRecord.getRating().getValue(), (Short)TruModule.NO_RATING_VALUE);
         // We should have a value
     }
 
@@ -159,7 +158,7 @@ public class TruModule_DoRating_JUnitTest {
 
         truModule.doRating(properties);
         Rating rating = truModule.getRatingRecord(properties).getRating() ;
-        Assert.assertEquals(rating.getValue(), TruModule.USER_CANCELLED); 
+        Assert.assertEquals(rating.getValue(), (Short)TruModule.USER_CANCELLED);
         Assert.assertEquals("", rating.getPrizecode());
     }
 
@@ -185,7 +184,7 @@ public class TruModule_DoRating_JUnitTest {
 
         truModule.doRating(properties);
         Rating rating = truModule.getRatingRecord(properties).getRating() ;
-        Assert.assertEquals(rating.getValue(), TruModule.USER_CANCELLED); 
+        Assert.assertEquals(rating.getValue(), (Short)TruModule.USER_CANCELLED);
         Assert.assertEquals("", rating.getPrizecode());
     }
     
@@ -225,7 +224,7 @@ public class TruModule_DoRating_JUnitTest {
         RatingDeliveryJAXB.Languages.Language language = new RatingDeliveryJAXB.Languages.Language();
         language.setIncludereceipt(false);
         language.setLanguagetype("en-GB");
-        languages.setLanguage(language);
+        languages.addLanguage(language);
         ratingDeliveryJAXB.setLanguages(languages);
 
         ratingDeliveryJAXB.setMid("12345");
@@ -234,7 +233,7 @@ public class TruModule_DoRating_JUnitTest {
         Rating rating = new Rating();
         rating.setValue(TruModule.NO_RATING_VALUE);
         rating.setPrizecode("");
-        rating.setResponsetimemilliseconds(5);
+        rating.setResponsetimemilliseconds(5L);
         ratingDeliveryJAXB.setRating(rating);
         ratingDeliveryJAXB.setUid(new BigInteger("123456789"));
 

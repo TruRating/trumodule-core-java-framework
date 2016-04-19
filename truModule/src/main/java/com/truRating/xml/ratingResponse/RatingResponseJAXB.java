@@ -2,6 +2,7 @@
 package com.trurating.xml.ratingResponse;
 
 import java.math.BigInteger;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -85,7 +86,7 @@ import javax.xml.bind.annotation.XmlType;
 public class RatingResponseJAXB {
 
     @XmlElement(name = "Languages")
-    protected RatingResponseJAXB.Languages languages;
+    protected List<Languages.Language> languages;
     @XmlAttribute(name = "uid", required = true)
     @XmlSchemaType(name = "unsignedLong")
     protected BigInteger uid;
@@ -108,7 +109,7 @@ public class RatingResponseJAXB {
      *     {@link RatingResponseJAXB.Languages }
      *     
      */
-    public RatingResponseJAXB.Languages getLanguages() {
+    public List<Languages.Language> getLanguages() {
         return languages;
     }
 
@@ -120,8 +121,13 @@ public class RatingResponseJAXB {
      *     {@link RatingResponseJAXB.Languages }
      *     
      */
-    public void setLanguages(RatingResponseJAXB.Languages value) {
+    public void setLanguages(List<RatingResponseJAXB.Languages.Language> value) {
         this.languages = value;
+    }
+
+
+    public void addLanguage(Languages.Language language) {
+        this.languages.add(language);
     }
 
     /**

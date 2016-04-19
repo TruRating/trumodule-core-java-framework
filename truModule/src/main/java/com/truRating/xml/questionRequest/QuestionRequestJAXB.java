@@ -249,11 +249,11 @@ public class QuestionRequestJAXB {
 
     /**
      * Sets the value of the messagetype property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setMessagetype(String value) {
         this.messagetype = value;
@@ -628,6 +628,10 @@ public class QuestionRequestJAXB {
     })
     public static class Languages {
 
+        public int getLanguagesSize() {
+            return language.size();
+        }
+
         @XmlElement(name = "Language", required = true)
         protected List<QuestionRequestJAXB.Languages.Language> language;
 
@@ -651,13 +655,10 @@ public class QuestionRequestJAXB {
          * Objects of the following type(s) are allowed in the list
          * {@link QuestionRequestJAXB.Languages.Language }
          * 
-         * 
+         *
          */
-        public List<QuestionRequestJAXB.Languages.Language> getLanguage() {
-            if (language == null) {
-                language = new ArrayList<QuestionRequestJAXB.Languages.Language>();
-            }
-            return this.language;
+        public QuestionRequestJAXB.Languages.Language getLanguage(int i) {
+            return this.language.get(i);
         }
 
 
