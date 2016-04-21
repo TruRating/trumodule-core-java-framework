@@ -4,6 +4,7 @@ package com.trurating.xml.questionResponse;
 import com.trurating.xml.questionRequest.QuestionRequestJAXB;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -407,7 +408,7 @@ public class QuestionResponseJAXB {
     public static class Languages {
 
         @XmlElement(name = "Language")
-        protected List<Language> language;
+        protected List<Language> language = new ArrayList<Language>();
 
         /**
          * Gets the value of the language property.

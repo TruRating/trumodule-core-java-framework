@@ -3,6 +3,8 @@ package com.trurating.truModule;
 import static mockit.Deencapsulation.setField;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 import mockit.Expectations;
 import mockit.Injectable;
@@ -86,7 +88,7 @@ public class TruModule_RecordResponse_JUnitTest {
 
     private RatingResponseJAXB getRatingResponseMockJAXBTest() {
         RatingResponseJAXB ratingResponseJAXB = new RatingResponseJAXB();
-        Languages languages = new Languages();
+        List<Language> languages= new ArrayList<Language>();
         Language language = new Language();
 
         Receipt receipt = new Receipt();
@@ -95,7 +97,7 @@ public class TruModule_RecordResponse_JUnitTest {
         language.setReceipt(receipt);
         language.setIncludereceipt(true);
         language.setLanguagetype("EN-GB");
-        languages.setLanguage(language);
+        languages.add(language);
         ratingResponseJAXB.setLanguages(languages);
 
         ratingResponseJAXB.setErrorcode(new BigInteger("0"));

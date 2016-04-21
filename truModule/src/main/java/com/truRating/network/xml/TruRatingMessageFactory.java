@@ -54,7 +54,7 @@ public class TruRatingMessageFactory {
             language.setIncludeacknowledgement(new Boolean(properties.getIncludeAcknowledgement()));
             language.setIncludereceipt(new Boolean(properties.getIncludeReceipt()));
             QuestionRequestJAXB.Languages languages = new QuestionRequestJAXB.Languages();
-            languages.getLanguage().add(language);
+            languages.addLanguage(language);
             questionRequestJAXB.setLanguages(languages);
 
             QuestionRequestJAXB.DeviceInfo deviceInfoType = new QuestionRequestJAXB.DeviceInfo();

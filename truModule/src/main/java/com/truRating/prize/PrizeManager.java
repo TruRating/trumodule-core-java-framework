@@ -36,8 +36,8 @@ public class PrizeManager {
 	 */
     public String checkForAPrize(IDevice iDevice, QuestionResponseJAXB questionResponseJAXB) {
     	String prizeCode = "";
-        if (questionResponseJAXB.getLanguages().getLanguage().getDisplayElements().getPrize() != null) {
-            prizeCode = questionResponseJAXB.getLanguages().getLanguage().getDisplayElements().getPrize().toString();
+        if (questionResponseJAXB.getLanguages().getLanguage(0).getDisplayElements().getPrize() != null) {
+            prizeCode = questionResponseJAXB.getLanguages().getLanguage(0).getDisplayElements().getPrize().toString();
             if (prizeCode.length() > 0) {
                 //we have a winner
                 iDevice.displayMessageWaitForKey("Congratulations! You won a prize, check your receipt... Press Enter.", 30000);

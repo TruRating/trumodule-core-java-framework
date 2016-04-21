@@ -15,9 +15,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for anonymous complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType>
  *   &lt;complexContent>
@@ -107,14 +107,12 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "languages",
-    "deviceInfo",
-    "serverInfo"
+        "languages",
+        "deviceInfo",
+        "serverInfo"
 })
 @XmlRootElement(name = "ServiceMessage")
 public class QuestionRequestJAXB {
@@ -141,11 +139,9 @@ public class QuestionRequestJAXB {
 
     /**
      * Gets the value of the languages property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link QuestionRequestJAXB.Languages }
-     *     
+     *
+     * @return possible object is
+     * {@link QuestionRequestJAXB.Languages }
      */
     public QuestionRequestJAXB.Languages getLanguages() {
         return languages;
@@ -153,11 +149,9 @@ public class QuestionRequestJAXB {
 
     /**
      * Sets the value of the languages property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link QuestionRequestJAXB.Languages }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link QuestionRequestJAXB.Languages }
      */
     public void setLanguages(QuestionRequestJAXB.Languages value) {
         this.languages = value;
@@ -165,11 +159,9 @@ public class QuestionRequestJAXB {
 
     /**
      * Gets the value of the deviceInfo property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link QuestionRequestJAXB.DeviceInfo }
-     *     
+     *
+     * @return possible object is
+     * {@link QuestionRequestJAXB.DeviceInfo }
      */
     public QuestionRequestJAXB.DeviceInfo getDeviceInfo() {
         return deviceInfo;
@@ -177,11 +169,9 @@ public class QuestionRequestJAXB {
 
     /**
      * Sets the value of the deviceInfo property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link QuestionRequestJAXB.DeviceInfo }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link QuestionRequestJAXB.DeviceInfo }
      */
     public void setDeviceInfo(QuestionRequestJAXB.DeviceInfo value) {
         this.deviceInfo = value;
@@ -189,11 +179,9 @@ public class QuestionRequestJAXB {
 
     /**
      * Gets the value of the serverInfo property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link QuestionRequestJAXB.ServerInfo }
-     *     
+     *
+     * @return possible object is
+     * {@link QuestionRequestJAXB.ServerInfo }
      */
     public QuestionRequestJAXB.ServerInfo getServerInfo() {
         return serverInfo;
@@ -201,11 +189,9 @@ public class QuestionRequestJAXB {
 
     /**
      * Sets the value of the serverInfo property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link QuestionRequestJAXB.ServerInfo }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link QuestionRequestJAXB.ServerInfo }
      */
     public void setServerInfo(QuestionRequestJAXB.ServerInfo value) {
         this.serverInfo = value;
@@ -213,11 +199,9 @@ public class QuestionRequestJAXB {
 
     /**
      * Gets the value of the uid property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link BigInteger }
-     *     
+     *
+     * @return possible object is
+     * {@link BigInteger }
      */
     public BigInteger getUid() {
         return uid;
@@ -225,11 +209,9 @@ public class QuestionRequestJAXB {
 
     /**
      * Sets the value of the uid property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link BigInteger }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link BigInteger }
      */
     public void setUid(BigInteger value) {
         this.uid = value;
@@ -237,11 +219,9 @@ public class QuestionRequestJAXB {
 
     /**
      * Gets the value of the messagetype property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getMessagetype() {
         return messagetype;
@@ -250,10 +230,8 @@ public class QuestionRequestJAXB {
     /**
      * Sets the value of the messagetype property.
      *
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setMessagetype(String value) {
         this.messagetype = value;
@@ -261,11 +239,9 @@ public class QuestionRequestJAXB {
 
     /**
      * Gets the value of the mid property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getMid() {
         return mid;
@@ -273,11 +249,9 @@ public class QuestionRequestJAXB {
 
     /**
      * Sets the value of the mid property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setMid(String value) {
         this.mid = value;
@@ -285,11 +259,9 @@ public class QuestionRequestJAXB {
 
     /**
      * Gets the value of the tid property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getTid() {
         return tid;
@@ -297,11 +269,9 @@ public class QuestionRequestJAXB {
 
     /**
      * Sets the value of the tid property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setTid(String value) {
         this.tid = value;
@@ -309,11 +279,9 @@ public class QuestionRequestJAXB {
 
     /**
      * Gets the value of the errortext property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getErrortext() {
         return errortext;
@@ -321,11 +289,9 @@ public class QuestionRequestJAXB {
 
     /**
      * Sets the value of the errortext property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setErrortext(String value) {
         this.errortext = value;
@@ -333,11 +299,9 @@ public class QuestionRequestJAXB {
 
     /**
      * Gets the value of the errorcode property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link BigInteger }
-     *     
+     *
+     * @return possible object is
+     * {@link BigInteger }
      */
     public BigInteger getErrorcode() {
         return errorcode;
@@ -345,11 +309,9 @@ public class QuestionRequestJAXB {
 
     /**
      * Sets the value of the errorcode property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link BigInteger }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link BigInteger }
      */
     public void setErrorcode(BigInteger value) {
         this.errorcode = value;
@@ -358,9 +320,9 @@ public class QuestionRequestJAXB {
 
     /**
      * <p>Java class for anonymous complex type.
-     * 
+     * <p/>
      * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
+     * <p/>
      * <pre>
      * &lt;complexType>
      *   &lt;complexContent>
@@ -393,8 +355,6 @@ public class QuestionRequestJAXB {
      *   &lt;/complexContent>
      * &lt;/complexType>
      * </pre>
-     * 
-     * 
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "")
@@ -420,11 +380,9 @@ public class QuestionRequestJAXB {
 
         /**
          * Gets the value of the device property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *
+         * @return possible object is
+         * {@link String }
          */
         public String getDevice() {
             return device;
@@ -432,11 +390,9 @@ public class QuestionRequestJAXB {
 
         /**
          * Sets the value of the device property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *
+         * @param value allowed object is
+         *              {@link String }
          */
         public void setDevice(String value) {
             this.device = value;
@@ -444,11 +400,9 @@ public class QuestionRequestJAXB {
 
         /**
          * Gets the value of the firmware property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *
+         * @return possible object is
+         * {@link String }
          */
         public String getFirmware() {
             return firmware;
@@ -456,11 +410,9 @@ public class QuestionRequestJAXB {
 
         /**
          * Sets the value of the firmware property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *
+         * @param value allowed object is
+         *              {@link String }
          */
         public void setFirmware(String value) {
             this.firmware = value;
@@ -468,7 +420,6 @@ public class QuestionRequestJAXB {
 
         /**
          * Gets the value of the nlines property.
-         * 
          */
         public byte getNlines() {
             return nlines;
@@ -476,7 +427,6 @@ public class QuestionRequestJAXB {
 
         /**
          * Sets the value of the nlines property.
-         * 
          */
         public void setNlines(byte value) {
             this.nlines = value;
@@ -484,7 +434,6 @@ public class QuestionRequestJAXB {
 
         /**
          * Gets the value of the cpl property.
-         * 
          */
         public byte getCpl() {
             return cpl;
@@ -492,7 +441,6 @@ public class QuestionRequestJAXB {
 
         /**
          * Sets the value of the cpl property.
-         * 
          */
         public void setCpl(byte value) {
             this.cpl = value;
@@ -500,11 +448,9 @@ public class QuestionRequestJAXB {
 
         /**
          * Gets the value of the format property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *
+         * @return possible object is
+         * {@link String }
          */
         public String getFormat() {
             return format;
@@ -512,11 +458,9 @@ public class QuestionRequestJAXB {
 
         /**
          * Sets the value of the format property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *
+         * @param value allowed object is
+         *              {@link String }
          */
         public void setFormat(String value) {
             this.format = value;
@@ -524,11 +468,9 @@ public class QuestionRequestJAXB {
 
         /**
          * Gets the value of the fieldseparator property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *
+         * @return possible object is
+         * {@link String }
          */
         public String getFieldseparator() {
             return fieldseparator;
@@ -536,11 +478,9 @@ public class QuestionRequestJAXB {
 
         /**
          * Sets the value of the fieldseparator property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *
+         * @param value allowed object is
+         *              {@link String }
          */
         public void setFieldseparator(String value) {
             this.fieldseparator = value;
@@ -548,11 +488,9 @@ public class QuestionRequestJAXB {
 
         /**
          * Gets the value of the fonttype property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *
+         * @return possible object is
+         * {@link String }
          */
         public String getFonttype() {
             if (fonttype == null) {
@@ -564,11 +502,9 @@ public class QuestionRequestJAXB {
 
         /**
          * Sets the value of the fonttype property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *
+         * @param value allowed object is
+         *              {@link String }
          */
         public void setFonttype(String value) {
             this.fonttype = value;
@@ -576,7 +512,6 @@ public class QuestionRequestJAXB {
 
         /**
          * Gets the value of the receiptwidth property.
-         * 
          */
         public short getReceiptwidth() {
             return receiptwidth;
@@ -584,7 +519,6 @@ public class QuestionRequestJAXB {
 
         /**
          * Sets the value of the receiptwidth property.
-         * 
          */
         public void setReceiptwidth(short value) {
             this.receiptwidth = value;
@@ -595,9 +529,9 @@ public class QuestionRequestJAXB {
 
     /**
      * <p>Java class for anonymous complex type.
-     * 
+     * <p/>
      * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
+     * <p/>
      * <pre>
      * &lt;complexType>
      *   &lt;complexContent>
@@ -619,12 +553,10 @@ public class QuestionRequestJAXB {
      *   &lt;/complexContent>
      * &lt;/complexType>
      * </pre>
-     * 
-     * 
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
-        "language"
+            "language"
     })
     public static class Languages {
 
@@ -633,40 +565,41 @@ public class QuestionRequestJAXB {
         }
 
         @XmlElement(name = "Language", required = true)
-        protected List<QuestionRequestJAXB.Languages.Language> language;
+        protected List<QuestionRequestJAXB.Languages.Language> language = new ArrayList<Language>();
 
         /**
          * Gets the value of the language property.
-         * 
-         * <p>
+         * <p/>
+         * <p/>
          * This accessor method returns a reference to the live list,
          * not a snapshot. Therefore any modification you make to the
          * returned list will be present inside the JAXB object.
          * This is why there is not a <CODE>set</CODE> method for the language property.
-         * 
-         * <p>
+         * <p/>
+         * <p/>
          * For example, to add a new item, do as follows:
          * <pre>
          *    getLanguage().add(newItem);
          * </pre>
-         * 
-         * 
-         * <p>
+         * <p/>
+         * <p/>
+         * <p/>
          * Objects of the following type(s) are allowed in the list
          * {@link QuestionRequestJAXB.Languages.Language }
-         * 
-         *
          */
         public QuestionRequestJAXB.Languages.Language getLanguage(int i) {
             return this.language.get(i);
         }
 
+        public void addLanguage(QuestionRequestJAXB.Languages.Language language) {
+            this.language.add(language);
+        }
 
         /**
          * <p>Java class for anonymous complex type.
-         * 
+         * <p/>
          * <p>The following schema fragment specifies the expected content contained within this class.
-         * 
+         * <p/>
          * <pre>
          * &lt;complexType>
          *   &lt;complexContent>
@@ -678,8 +611,6 @@ public class QuestionRequestJAXB {
          *   &lt;/complexContent>
          * &lt;/complexType>
          * </pre>
-         * 
-         * 
          */
         @XmlAccessorType(XmlAccessType.FIELD)
         @XmlType(name = "")
@@ -694,11 +625,9 @@ public class QuestionRequestJAXB {
 
             /**
              * Gets the value of the languagetype property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link String }
-             *     
+             *
+             * @return possible object is
+             * {@link String }
              */
             public String getLanguagetype() {
                 return languagetype;
@@ -706,11 +635,9 @@ public class QuestionRequestJAXB {
 
             /**
              * Sets the value of the languagetype property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link String }
-             *     
+             *
+             * @param value allowed object is
+             *              {@link String }
              */
             public void setLanguagetype(String value) {
                 this.languagetype = value;
@@ -718,11 +645,9 @@ public class QuestionRequestJAXB {
 
             /**
              * Gets the value of the includereceipt property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link Boolean }
-             *     
+             *
+             * @return possible object is
+             * {@link Boolean }
              */
             public Boolean isIncludereceipt() {
                 return includereceipt;
@@ -730,11 +655,9 @@ public class QuestionRequestJAXB {
 
             /**
              * Sets the value of the includereceipt property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link Boolean }
-             *     
+             *
+             * @param value allowed object is
+             *              {@link Boolean }
              */
             public void setIncludereceipt(Boolean value) {
                 this.includereceipt = value;
@@ -742,11 +665,9 @@ public class QuestionRequestJAXB {
 
             /**
              * Gets the value of the includeacknowledgement property.
-             * 
-             * @return
-             *     possible object is
-             *     {@link Boolean }
-             *     
+             *
+             * @return possible object is
+             * {@link Boolean }
              */
             public Boolean isIncludeacknowledgement() {
                 return includeacknowledgement;
@@ -754,11 +675,9 @@ public class QuestionRequestJAXB {
 
             /**
              * Sets the value of the includeacknowledgement property.
-             * 
-             * @param value
-             *     allowed object is
-             *     {@link Boolean }
-             *     
+             *
+             * @param value allowed object is
+             *              {@link Boolean }
              */
             public void setIncludeacknowledgement(Boolean value) {
                 this.includeacknowledgement = value;
@@ -771,9 +690,9 @@ public class QuestionRequestJAXB {
 
     /**
      * <p>Java class for anonymous complex type.
-     * 
+     * <p/>
      * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
+     * <p/>
      * <pre>
      * &lt;complexType>
      *   &lt;complexContent>
@@ -784,8 +703,6 @@ public class QuestionRequestJAXB {
      *   &lt;/complexContent>
      * &lt;/complexType>
      * </pre>
-     * 
-     * 
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "")
@@ -798,11 +715,9 @@ public class QuestionRequestJAXB {
 
         /**
          * Gets the value of the serverid property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *
+         * @return possible object is
+         * {@link String }
          */
         public String getServerid() {
             return serverid;
@@ -810,11 +725,9 @@ public class QuestionRequestJAXB {
 
         /**
          * Sets the value of the serverid property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *
+         * @param value allowed object is
+         *              {@link String }
          */
         public void setServerid(String value) {
             this.serverid = value;
@@ -822,11 +735,9 @@ public class QuestionRequestJAXB {
 
         /**
          * Gets the value of the ppafirmware property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
+         *
+         * @return possible object is
+         * {@link String }
          */
         public String getPpafirmware() {
             return ppafirmware;
@@ -834,11 +745,9 @@ public class QuestionRequestJAXB {
 
         /**
          * Sets the value of the ppafirmware property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
+         *
+         * @param value allowed object is
+         *              {@link String }
          */
         public void setPpafirmware(String value) {
             this.ppafirmware = value;

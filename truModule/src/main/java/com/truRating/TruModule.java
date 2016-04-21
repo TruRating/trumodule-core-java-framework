@@ -179,10 +179,10 @@ public class TruModule implements ITruModule  {
                 }
             }
             else if ((questionResponseJAXB != null) &&
-                    (questionResponseJAXB.getLanguages().getLanguage().getDisplayElements().getQuestion().getValue().length() > 0)) {
+                    (questionResponseJAXB.getLanguages().getLanguage(0).getDisplayElements().getQuestion().getValue().length() > 0)) {
             	// We have a question
             	final com.trurating.xml.questionResponse.QuestionResponseJAXB.Languages.Language.Receipt receipt = 
-            			questionResponseJAXB.getLanguages().getLanguage().getReceipt() ;
+            			questionResponseJAXB.getLanguages().getLanguage(0).getReceipt() ;
             	
             	if (receipt != null)
             		setReceiptMessage(receipt.getNotratedvalue());	        
@@ -198,7 +198,7 @@ public class TruModule implements ITruModule  {
         String keyStroke = String.valueOf(NO_QUESTION_ASKED) ;
         long totalTimeTaken = 0; 
         try {        	
-	        final Question question = questionResponseJAXB.getLanguages().getLanguage().getDisplayElements().getQuestion();
+	        final Question question = questionResponseJAXB.getLanguages().getLanguage(0).getDisplayElements().getQuestion();
 	        
             final int displayWidth = properties.getDeviceCpl();
 	        String qText = question.getValue() ;
@@ -221,7 +221,7 @@ public class TruModule implements ITruModule  {
 	        if ((new Integer(keyStroke) > 0)) {
 	        	// Update the receipt text to indicate that the user rated
 	        	final com.trurating.xml.questionResponse.QuestionResponseJAXB.Languages.Language.Receipt receipt = 
-	        			questionResponseJAXB.getLanguages().getLanguage().getReceipt() ;
+	        			questionResponseJAXB.getLanguages().getLanguage(0).getReceipt() ;
 	        	setReceiptMessage(receipt.getRatedvalue());	        
 	        	rating.setPrizecode(checkForPrize.checkForAPrize(getDevice(), questionResponseJAXB));
 	        }
