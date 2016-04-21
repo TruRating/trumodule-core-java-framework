@@ -82,7 +82,7 @@ public class UnitTestProperties implements ITruModuleProperties {
     }
 
     public String getTruServiceIPAddress() {
-        return "40.76.5.14";
+        return "tru-sand-service-fis.cloudapp.net";
     }
 
     public int getTruServiceSocketTimeoutInMilliSeconds() {

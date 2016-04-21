@@ -110,7 +110,7 @@ public class TruRatingMessageFactory {
         language.setLanguagetype(properties.getLanguageCode());
         language.setIncludereceipt(true);
         RatingDeliveryJAXB.Languages languages = new RatingDeliveryJAXB.Languages();
-        languages.addLanguage(language);
+        languages.getLanguage().add(language);
         ratingDeliveryJAXB.setLanguages(languages);
 
         // Transaction element
