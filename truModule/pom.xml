@@ -11,6 +11,7 @@
     <groupId>com.truRating</groupId>
     <artifactId>truModule</artifactId>
     <version>${build.number}</version>
+
     <parent>
         <groupId>com.truRating</groupId>
         <artifactId>truModuleParent</artifactId>

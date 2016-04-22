@@ -15,17 +15,18 @@
     <parent>
         <groupId>com.truRating</groupId>
         <artifactId>truModuleParent</artifactId>
-        <version>1.0.0</version>
+        <version>${build.number}</version>
         <relativePath>../truModuleParent</relativePath>
     </parent>
 
+
     <dependencies>
 
-        <dependency>
-            <groupId>com.truRating</groupId>
-            <artifactId>truModule</artifactId>
-            <version>1.0.0</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.truRating</groupId>-->
+            <!--<artifactId>truModule</artifactId>-->
+            <!--<version>${build.number}</version>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>log4j</groupId>
