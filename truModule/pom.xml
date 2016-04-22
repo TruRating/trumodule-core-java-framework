@@ -4,14 +4,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <properties>
+        <moduleversion>1.0.1</moduleversion>
+    </properties>
+
     <groupId>com.truRating</groupId>
     <artifactId>truModule</artifactId>
-    <version>1.1-SNAPSHOT</version>
 
     <parent>
         <groupId>com.truRating</groupId>
         <artifactId>truModuleParent</artifactId>
-        <version>1.1-SNAPSHOT</version>
+        <version>1.0.1</version>
         <relativePath>../truModuleParent</relativePath>
     </parent>
 
