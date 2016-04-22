@@ -210,38 +210,42 @@ public class TruModule implements ITruModule  {
         String keyStroke = String.valueOf(NO_QUESTION_ASKED) ;
         long totalTimeTaken = 0; 
         try {        	
-        	final QuestionResponseJAXB.Languages.Language language = 
-        			getLanguageManager().getLanguage(questionResponseJAXB, properties.getLanguageCode()) ;
-	        final Question question = language.getDisplayElements().getQuestion();
-	        
-            final int displayWidth = properties.getDeviceCpl();
-	        String qText = question.getValue() ;
-	        if (qText != null) {
-	            String[] qTextWraps = qText.split("\\\\n") ;
-	            if ((qTextWraps.length == 1) && (qTextWraps[0].length() > displayWidth))
-	            	qTextWraps = StringUtilities.wordWrap(qText, displayWidth);
-	
-		        int timeout = properties.getQuestionTimeout() ;
-		        if (timeout < 1000)
-		        	timeout = 60000 ;
-	            
-		        final long startTime = System.currentTimeMillis();
-		        keyStroke = iDevice.displayTruratingQuestionGetKeystroke(qTextWraps, qText, timeout);
-		        final long endTime = System.currentTimeMillis();
-		        totalTimeTaken = endTime - startTime;
-	        }
-	        //if user rated then check if there is a prize
-	        Rating rating = getRatingRecord(properties).getRating();
-	        if ((new Integer(keyStroke) > 0)) {
-	        	// Update the receipt text to indicate that the user rated
-	        	final QuestionResponseJAXB.Languages.Language.Receipt receipt = language.getReceipt() ;
-	        	setReceiptMessage(receipt.getRatedvalue());	        
-	        	rating.setPrizecode(checkForPrize.checkForAPrize(getDevice(), questionResponseJAXB, properties.getLanguageCode()));
-	        }
-	        rating.setValue(new Short(keyStroke));
-	        rating.setResponsetimemilliseconds(totalTimeTaken);
-	        rating.setQid(question.getQid());
-	
+        	if (questionResponseJAXB == null) {
+        		log.info("TruModule.runQuestion called with a null question response");
+        	}
+        	else {
+        		final QuestionResponseJAXB.Languages.Language language = 
+        				getLanguageManager().getLanguage(questionResponseJAXB, properties.getLanguageCode()) ;
+        		final Question question = language.getDisplayElements().getQuestion();
+
+        		final int displayWidth = properties.getDeviceCpl();
+        		String qText = question.getValue() ;
+        		if (qText != null) {
+        			String[] qTextWraps = qText.split("\\\\n") ;
+        			if ((qTextWraps.length == 1) && (qTextWraps[0].length() > displayWidth))
+        				qTextWraps = StringUtilities.wordWrap(qText, displayWidth);
+
+        			int timeout = properties.getQuestionTimeout() ;
+        			if (timeout < 1000)
+        				timeout = 60000 ;
+
+        			final long startTime = System.currentTimeMillis();
+        			keyStroke = iDevice.displayTruratingQuestionGetKeystroke(qTextWraps, qText, timeout);
+        			final long endTime = System.currentTimeMillis();
+        			totalTimeTaken = endTime - startTime;
+        		}
+        		//if user rated then check if there is a prize
+        		Rating rating = getRatingRecord(properties).getRating();
+        		if ((new Integer(keyStroke) > 0)) {
+        			// Update the receipt text to indicate that the user rated
+        			final QuestionResponseJAXB.Languages.Language.Receipt receipt = language.getReceipt() ;
+        			setReceiptMessage(receipt.getRatedvalue());	        
+        			rating.setPrizecode(checkForPrize.checkForAPrize(getDevice(), questionResponseJAXB, properties.getLanguageCode()));
+        		}
+        		rating.setValue(new Short(keyStroke));
+        		rating.setResponsetimemilliseconds(totalTimeTaken);
+        		rating.setQid(question.getQid());
+        	}	
 	    } catch (Exception e) {
 	        log.error("truModule error", e);
 	    }	    	
