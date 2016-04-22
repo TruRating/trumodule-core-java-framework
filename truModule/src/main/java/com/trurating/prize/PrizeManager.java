@@ -17,10 +17,10 @@
  * OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE OR ITS DERIVATIVES.
  */
 
-package com.truRating.prize;
+package com.trurating.prize;
 
-//import com.trurating.device.IDevice;
-//import com.trurating.xml.LanguageManager;
+import com.trurating.device.IDevice;
+import com.trurating.xml.LanguageManager;
 import com.trurating.xml.questionResponse.QuestionResponseJAXB;
 
 /**
