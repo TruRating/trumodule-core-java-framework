@@ -6,22 +6,22 @@
     <packaging>pom</packaging>
 
 
+    <groupId>com.truRating</groupId>
+    <artifactId>truModuleParent</artifactId>
+    <version>${build.number}</version>
+
     <properties>
         <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
         <javaVersion>1.5</javaVersion>
         <maven.compiler.source>1.5</maven.compiler.source>
         <maven.compiler.target>1.5</maven.compiler.target>
-        <moduleversion>1.0.2</moduleversion>
+        <build.number>local-build</build.number>
     </properties>
 
 
-    <groupId>com.truRating</groupId>
-    <artifactId>truModuleParent</artifactId>
-    <version>${moduleversion}</version>
-
     <modules>
         <module>../truModule</module>
-        <!--<module>../truModuleTestHarness</module>-->
+        <module>../truModuleTestHarness</module>
         <module>../truShared</module>
     </modules>
 </project>

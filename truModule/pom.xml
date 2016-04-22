@@ -5,16 +5,16 @@
     <modelVersion>4.0.0</modelVersion>
 
     <properties>
-        <moduleversion>1.0.1</moduleversion>
+        <build.number>local-build</build.number>
     </properties>
 
     <groupId>com.truRating</groupId>
     <artifactId>truModule</artifactId>
-
+    <version>${build.number}</version>
     <parent>
         <groupId>com.truRating</groupId>
         <artifactId>truModuleParent</artifactId>
-        <version>1.0.1</version>
+        <version>${build.number}</version>
         <relativePath>../truModuleParent</relativePath>
     </parent>
 

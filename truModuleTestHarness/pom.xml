@@ -6,12 +6,17 @@
 
     <groupId>com.truRating</groupId>
     <artifactId>truModuleTestHarness</artifactId>
-    <version>1.0.0</version>
+    <version>${build.number}</version>
+
+    <properties>
+        <build.number>local-build</build.number>
+    </properties>
+
 
     <parent>
         <groupId>com.truRating</groupId>
         <artifactId>truModuleParent</artifactId>
-        <version>1.0.0</version>
+        <version>${build.number}</version>
         <relativePath>../truModuleParent</relativePath>
     </parent>
 
@@ -20,13 +25,13 @@
         <dependency>
             <groupId>com.truRating</groupId>
             <artifactId>truModule</artifactId>
-            <version>${moduleversion}</version>
+            <version>${build.number}</version>
         </dependency>
 
         <dependency>
             <groupId>com.truRating</groupId>
             <artifactId>truShared</artifactId>
-            <version>${moduleversion}</version>
+            <version>${build.number}</version>
         </dependency>
     </dependencies>
 </project>
