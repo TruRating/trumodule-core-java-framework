@@ -45,6 +45,10 @@ public class TruRatingMessageFactory {
 
 		try {
             questionRequestJAXB = new QuestionRequestJAXB();
+
+            questionRequestJAXB.setErrortext("");
+            questionRequestJAXB.setErrorcode(new BigInteger("0"));
+
             QuestionRequestJAXB.Languages.Language language = new QuestionRequestJAXB.Languages.Language();
             language.setLanguagetype(properties.getLanguageCode());
             language.setIncludeacknowledgement(new Boolean(properties.getIncludeAcknowledgement()));
@@ -60,6 +64,7 @@ public class TruRatingMessageFactory {
             deviceInfoType.setCpl((byte) properties.getDeviceCpl());
             deviceInfoType.setFormat(properties.getDeviceFormat());
             deviceInfoType.setFonttype(properties.getDeviceFontType());
+            deviceInfoType.setReceiptwidth((byte)20);
             questionRequestJAXB.setDeviceInfo(deviceInfoType);
 
             QuestionRequestJAXB.ServerInfo serverInfo = new QuestionRequestJAXB.ServerInfo();
@@ -94,8 +99,8 @@ public class TruRatingMessageFactory {
         // Rating element
         RatingDeliveryJAXB.Rating ratingElement = new RatingDeliveryJAXB.Rating();
         ratingElement.setValue(TruModule.NO_RATING_VALUE); // No rating value
-        ratingElement.setResponsetimemilliseconds(0);
-        ratingElement.setQid(0);
+        ratingElement.setResponsetimemilliseconds(0L);
+        ratingElement.setQid(0L);
         ratingElement.setPrizecode("");
         ratingElement.setRatinglanguage(properties.getLanguageCode());
         ratingDeliveryJAXB.setRating(ratingElement);
@@ -105,7 +110,7 @@ public class TruRatingMessageFactory {
         language.setLanguagetype(properties.getLanguageCode());
         language.setIncludereceipt(true);
         RatingDeliveryJAXB.Languages languages = new RatingDeliveryJAXB.Languages();
-        languages.setLanguage(language);
+        languages.getLanguage().add(language);
         ratingDeliveryJAXB.setLanguages(languages);
 
         // Transaction element

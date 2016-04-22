@@ -40,7 +40,7 @@ public class ServerConnectionManager {
 
     private Socket socket = null;
     private int PORT = 9999;
-    private String NODE = "40.76.5.14";
+    private String NODE = "127.0.0.1"; //"40.76.5.14";
     private int TIMEOUT = 1 * 5000;
     private final Logger log = Logger.getLogger(ServerConnectionManager.class);
 

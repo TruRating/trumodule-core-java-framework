@@ -86,7 +86,7 @@ public class TruModule_RecordResponse_JUnitTest {
 
     private RatingResponseJAXB getRatingResponseMockJAXBTest() {
         RatingResponseJAXB ratingResponseJAXB = new RatingResponseJAXB();
-        Languages languages = new Languages();
+        RatingResponseJAXB.Languages languages = new Languages();
         Language language = new Language();
 
         Receipt receipt = new Receipt();
@@ -95,7 +95,7 @@ public class TruModule_RecordResponse_JUnitTest {
         language.setReceipt(receipt);
         language.setIncludereceipt(true);
         language.setLanguagetype("EN-GB");
-        languages.setLanguage(language);
+        languages.getLanguage().add(language);
         ratingResponseJAXB.setLanguages(languages);
 
         ratingResponseJAXB.setErrorcode(new BigInteger("0"));

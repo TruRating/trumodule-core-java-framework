@@ -5,11 +5,11 @@
             <xs:sequence>
                 <xs:element name="Languages" minOccurs="0">
                     <xs:annotation>
-                        <xs:documentation>Defines one or more languages required for truRating display and receipt text</xs:documentation>
+                        <xs:documentation>Defines one or more languages required for truRating display and receipt errorText</xs:documentation>
                     </xs:annotation>
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element name="Language" minOccurs="0">
+                            <xs:element name="Language" minOccurs="0" maxOccurs="2">
                                 <xs:complexType>
                                     <xs:sequence>
                                         <xs:element name="DisplayElements" minOccurs="1">
@@ -52,13 +52,13 @@
                                                             </xs:attribute>
                                                             <xs:attribute name="value" type="xs:string" use="optional">
                                                                 <xs:annotation>
-                                                                    <xs:documentation>text associated with the prize
+                                                                    <xs:documentation>errorText associated with the prize
 </xs:documentation>
                                                                 </xs:annotation>
                                                             </xs:attribute>
                                                             <xs:attribute name="prizetimeout" type="xs:unsignedShort" use="optional">
                                                                 <xs:annotation>
-                                                                    <xs:documentation>how long to display the prize text and code</xs:documentation>
+                                                                    <xs:documentation>how long to display the prize errorText and code</xs:documentation>
                                                                 </xs:annotation>
                                                             </xs:attribute>
                                                         </xs:complexType>
@@ -70,12 +70,12 @@
                                                         <xs:complexType>
                                                             <xs:attribute name="ratedvalue" type="xs:string" use="optional">
                                                                 <xs:annotation>
-                                                                    <xs:documentation>acknowledgement text when a rating has occurred</xs:documentation>
+                                                                    <xs:documentation>acknowledgement errorText when a rating has occurred</xs:documentation>
                                                                 </xs:annotation>
                                                             </xs:attribute>
                                                             <xs:attribute name="notratedvalue" type="xs:string" use="optional">
                                                                 <xs:annotation>
-                                                                    <xs:documentation>acknowledgement text when no rating has occurred</xs:documentation>
+                                                                    <xs:documentation>acknowledgement errorText when no rating has occurred</xs:documentation>
                                                                 </xs:annotation>
                                                             </xs:attribute>
                                                             <xs:attribute name="acknowledgetimeout" type="xs:unsignedShort" use="optional">
@@ -92,12 +92,12 @@
                                             <xs:complexType>
                                                 <xs:attribute name="ratedvalue" type="xs:string" use="required">
                                                     <xs:annotation>
-                                                        <xs:documentation>receipt text when a rating has occurred.</xs:documentation>
+                                                        <xs:documentation>receipt errorText when a rating has occurred.</xs:documentation>
                                                     </xs:annotation>
                                                 </xs:attribute>
                                                 <xs:attribute name="notratedvalue" type="xs:string" use="required">
                                                     <xs:annotation>
-                                                        <xs:documentation>receipt text when no rating has occurred.</xs:documentation>
+                                                        <xs:documentation>receipt errorText when no rating has occurred.</xs:documentation>
                                                     </xs:annotation>
                                                 </xs:attribute>
                                             </xs:complexType>
@@ -110,14 +110,14 @@
                                     </xs:attribute>
                                     <xs:attribute name="includereceipt" type="xs:boolean" use="required">
                                         <xs:annotation>
-                                            <xs:documentation>true - include truRating receipt text
-false - do not include truRating receipt text</xs:documentation>
+                                            <xs:documentation>true - include truRating receipt errorText
+false - do not include truRating receipt errorText</xs:documentation>
                                         </xs:annotation>
                                     </xs:attribute>
                                     <xs:attribute name="includeacknowledgement" type="xs:boolean">
                                         <xs:annotation>
-                                            <xs:documentation>true - include truRating Acknowledgement text
-false - do not include truRating Acknowledgement text</xs:documentation>
+                                            <xs:documentation>true - include truRating Acknowledgement errorText
+false - do not include truRating Acknowledgement errorText</xs:documentation>
                                         </xs:annotation>
                                     </xs:attribute>
                                 </xs:complexType>
@@ -157,7 +157,7 @@ false - do not include truRating Acknowledgement text</xs:documentation>
             </xs:attribute>
             <xs:attribute name="errortext" type="xs:string" use="optional">
                 <xs:annotation>
-                    <xs:documentation>text describing the error</xs:documentation>
+                    <xs:documentation>errorText describing the error</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="errorcode" type="xs:integer" use="optional">

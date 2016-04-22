@@ -56,7 +56,7 @@ public class PaymentApplicationSimulator  {
         // "INSERT CARD"; //etc
 
     	// Transaction Id
-       	transaction.setTxnid(12345);
+       	transaction.setTxnid(12345L);
 
        	// Currency
        	transaction.setCurrency((short)826);

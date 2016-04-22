@@ -29,9 +29,9 @@ public interface IXMLNetworkMessenger {
     /**
     Send the request for a question, if no response after timeOut seconds, will return null;
      */
-	public abstract QuestionResponseJAXB getQuestionFromService(ITruModuleProperties properties, long transactionId) ;
+	QuestionResponseJAXB getQuestionFromService(ITruModuleProperties properties, long transactionId) ;
 	
-    public abstract RatingResponseJAXB deliverRatingToService(RatingDeliveryJAXB rating) ;
+    RatingResponseJAXB deliverRatingToService(RatingDeliveryJAXB rating) ;
     
-    public abstract void close() ;
+    void close() ;
 }

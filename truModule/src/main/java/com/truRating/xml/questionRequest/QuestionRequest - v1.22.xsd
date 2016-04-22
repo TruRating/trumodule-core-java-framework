@@ -5,7 +5,7 @@
             <xs:sequence>
                 <xs:element name="Languages" minOccurs="1" maxOccurs="1">
                     <xs:annotation>
-                        <xs:documentation>Defines one or more languages required for truRating display and receipt text</xs:documentation>
+                        <xs:documentation>Defines one or more languages required for truRating display and receipt errorText</xs:documentation>
                     </xs:annotation>
                     <xs:complexType>
                         <xs:sequence>
@@ -18,14 +18,14 @@
                                     </xs:attribute>
                                     <xs:attribute name="includereceipt" type="xs:boolean" use="optional">
                                         <xs:annotation>
-                                            <xs:documentation>true - include truRating receipt text
-false - do not include truRating receipt text</xs:documentation>
+                                            <xs:documentation>true - include truRating receipt errorText
+false - do not include truRating receipt errorText</xs:documentation>
                                         </xs:annotation>
                                     </xs:attribute>
                                     <xs:attribute name="includeacknowledgement" type="xs:boolean">
                                         <xs:annotation>
-                                            <xs:documentation>true - include truRating Acknowledgement text
-false - do not include truRating Acknowledgement text</xs:documentation>
+                                            <xs:documentation>true - include truRating Acknowledgement errorText
+false - do not include truRating Acknowledgement errorText</xs:documentation>
                                         </xs:annotation>
                                     </xs:attribute>
                                 </xs:complexType>
@@ -47,12 +47,12 @@ false - do not include truRating Acknowledgement text</xs:documentation>
                         </xs:attribute>
                         <xs:attribute name="nlines" type="xs:byte" use="required">
                             <xs:annotation>
-                                <xs:documentation>number of lines of text terminal can display</xs:documentation>
+                                <xs:documentation>number of lines of errorText terminal can display</xs:documentation>
                             </xs:annotation>
                         </xs:attribute>
                         <xs:attribute name="cpl" type="xs:byte" use="required">
                             <xs:annotation>
-                                <xs:documentation>number of text characters per line terminal can display</xs:documentation>
+                                <xs:documentation>number of errorText characters per line terminal can display</xs:documentation>
                             </xs:annotation>
                         </xs:attribute>
                         <xs:attribute name="format" use="required">
@@ -134,7 +134,7 @@ false - do not include truRating Acknowledgement text</xs:documentation>
             </xs:attribute>
             <xs:attribute name="errortext" type="xs:string" use="optional">
                 <xs:annotation>
-                    <xs:documentation>text describing the error</xs:documentation>
+                    <xs:documentation>errorText describing the error</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="errorcode" type="xs:integer" use="optional">
