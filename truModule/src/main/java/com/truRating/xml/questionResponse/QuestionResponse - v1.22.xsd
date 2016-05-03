@@ -9,7 +9,7 @@
                     </xs:annotation>
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element name="Language" minOccurs="0">
+                            <xs:element name="Language" minOccurs="0" maxOccurs="2">
                                 <xs:complexType>
                                     <xs:sequence>
                                         <xs:element name="DisplayElements" minOccurs="1">

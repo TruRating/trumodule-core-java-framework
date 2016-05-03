@@ -28,12 +28,11 @@ public class TestProperties implements ITruModuleProperties {
     }
 
     public String getMid() {
-        return "123456";
+        return "FIS1234";
     }
 
     public String getTid() {
         return "00000tR2";
-        //return "12345";
     }
 
     public String getLanguageCode() {
@@ -85,7 +84,7 @@ public class TestProperties implements ITruModuleProperties {
     }
 
     public String getTruServiceIPAddress() {
-        return "127.0.0.1";
+        return "tru-sand-service-fis.cloudapp.net";
 //        return "13.95.156.19";
     }
 

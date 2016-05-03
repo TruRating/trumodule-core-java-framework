@@ -19,6 +19,6 @@
     <modules>
         <module>../truModule</module>
         <module>../truModuleTestHarness</module>
-        <!--<module>../truShared</module>-->
+        <module>../truShared</module>
     </modules>
 </project>
