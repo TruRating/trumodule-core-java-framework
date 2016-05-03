@@ -413,11 +413,7 @@ public class QuestionResponseJAXB {
     public static class Languages {
 
         @XmlElement(name = "Language")
-<<<<<<< HEAD
-        protected List<Language> language = new ArrayList<Language>();
-=======
         protected List<QuestionResponseJAXB.Languages.Language> language;
->>>>>>> origin/master
 
         /**
          * Gets the value of the language property.

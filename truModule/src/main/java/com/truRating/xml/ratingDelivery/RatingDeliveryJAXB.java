@@ -8,6 +8,8 @@
 
 package com.trurating.xml.ratingDelivery;
 
+import com.trurating.xml.questionRequest.QuestionRequestJAXB;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -529,6 +531,7 @@ public class RatingDeliveryJAXB {
         /**
          * Gets the value of the language property.
          * 
+<<<<<<< Updated upstream
          * <p>
          * This accessor method returns a reference to the live list,
          * not a snapshot. Therefore any modification you make to the
@@ -546,7 +549,19 @@ public class RatingDeliveryJAXB {
          * Objects of the following type(s) are allowed in the list
          * {@link RatingDeliveryJAXB.Languages.Language }
          * 
-         * 
+=======
+         * @return
+         *     possible object is
+         *     {@link RatingDeliveryJAXB.Languages.Language }
+         *     
+         */
+        public RatingDeliveryJAXB.Languages.Language getLanguage(int i) {
+            return (RatingDeliveryJAXB.Languages.Language)language.get(i);
+        }
+
+        /**
+         * Sets the value of the language property.
+         *
          */
         public List<RatingDeliveryJAXB.Languages.Language> getLanguage() {
             if (language == null) {
@@ -555,6 +570,9 @@ public class RatingDeliveryJAXB {
             return this.language;
         }
 
+        public int getLanguageSize() {
+            return this.language.size();
+        }
 
         /**
          * <p>Java class for anonymous complex type.

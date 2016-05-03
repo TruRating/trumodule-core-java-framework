@@ -236,6 +236,7 @@ public class QuestionRequestJAXB {
 
     /**
      * Sets the value of the messagetype property.
+<<<<<<< Updated upstream
 <<<<<<< HEAD
      *
      * @param value allowed object is
@@ -247,6 +248,13 @@ public class QuestionRequestJAXB {
      *     {@link String }
      *     
 >>>>>>> origin/master
+=======
+     *
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *
+>>>>>>> Stashed changes
      */
     public void setMessagetype(String value) {
         this.messagetype = value;
@@ -575,6 +583,10 @@ public class QuestionRequestJAXB {
     })
     public static class Languages {
 
+        public int getLanguagesSize() {
+            return language.size();
+        }
+
         @XmlElement(name = "Language", required = true)
         protected List<QuestionRequestJAXB.Languages.Language> language = new ArrayList<Language>();
 
@@ -597,12 +609,7 @@ public class QuestionRequestJAXB {
          * <p/>
          * Objects of the following type(s) are allowed in the list
          * {@link QuestionRequestJAXB.Languages.Language }
-<<<<<<< HEAD
-=======
-         * 
-         * 
->>>>>>> origin/master
-         */
+*/
         public List<QuestionRequestJAXB.Languages.Language> getLanguage() {
             if (language == null) {
                 language = new ArrayList<QuestionRequestJAXB.Languages.Language>();

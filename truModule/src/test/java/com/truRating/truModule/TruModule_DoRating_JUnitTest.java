@@ -206,11 +206,7 @@ public class TruModule_DoRating_JUnitTest {
                 new Language.Receipt();
         receipt.setRatedvalue("8");
         language.setReceipt(receipt);
-<<<<<<< HEAD
-        languages.addLanguage(language);
-=======
         languages.getLanguage().add(language);
->>>>>>> origin/master
 
         questionResponseJAXB.setLanguages(languages);
 
