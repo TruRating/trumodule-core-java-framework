@@ -46,7 +46,7 @@ public class PrizeManager {
             if (prizeCode.length() > 0) {
                 //we have a winner
                 iDevice.displayMessageWaitForKey("Congratulations! You won a prize, check your receipt... Press Enter.", 30000);
-                iDevice.displayMessage(prizeCode);
+//                iDevice.displayMessage(prizeCode);
             }
         }
 

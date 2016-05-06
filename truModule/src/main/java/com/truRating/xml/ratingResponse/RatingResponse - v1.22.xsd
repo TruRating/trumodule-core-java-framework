@@ -75,12 +75,12 @@ false - do not include truRating receipt errorText</xs:documentation>
             </xs:attribute>
             <xs:attribute name="errortext" type="xs:string" use="optional">
                 <xs:annotation>
-                    <xs:documentation>errorText describing the error</xs:documentation>
+                    <xs:documentation>errorText describing the validationStatus</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="errorcode" type="xs:integer" use="optional">
                 <xs:annotation>
-                    <xs:documentation>predefined error code</xs:documentation>
+                    <xs:documentation>predefined validationStatus code</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
         </xs:complexType>
