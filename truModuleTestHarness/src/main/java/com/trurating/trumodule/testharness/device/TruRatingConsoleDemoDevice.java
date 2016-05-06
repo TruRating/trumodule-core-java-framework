@@ -51,8 +51,11 @@ public class TruRatingConsoleDemoDevice implements IDevice {
 
     public void displayMessageWaitForKey(String string, int timeout) {
         log.info("Displaying message and waiting for key");
-        ConsoleManager consoleManager = new ConsoleManager();
-        consoleManager.getKey();
+        JOptionPane.showConfirmDialog(
+                null,
+                string,
+                "Winner!",
+                JOptionPane.CLOSED_OPTION);
         return;
     }
 
@@ -81,7 +84,7 @@ public class TruRatingConsoleDemoDevice implements IDevice {
         }
 
 //        ConsoleManager consoleManager = new ConsoleManager();
-        log.info("---> KEYBOARD INPUT REQUIRED!! <---");
+//        log.info("---> KEYBOARD INPUT REQUIRED!! <---");
 //        return new Integer(consoleManager.getKey()).toString();
         return integer.toString();
     }

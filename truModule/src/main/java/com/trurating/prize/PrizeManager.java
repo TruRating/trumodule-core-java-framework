@@ -28,34 +28,20 @@ import com.trurating.xml.questionResponse.QuestionResponseJAXB;
  */
 public class PrizeManager {
 
-	private LanguageManager languageManager = null;
-	
-	private LanguageManager getLanguageManager() {
-		if (languageManager == null) 
-			languageManager = new LanguageManager() ;
-		return languageManager ;
-	}
-	
-	/**
-	 * 
-	 * @param iDevice
-	 * @param questionResponseJAXB
-	 * @param prizeCode
-	 * @return
-	 */
     public String checkForAPrize(IDevice iDevice, QuestionResponseJAXB questionResponseJAXB, String languageCode) {
     	String prizeCode = "";
-    	QuestionResponseJAXB.Languages.Language language = getLanguageManager().getLanguage(questionResponseJAXB, languageCode) ;
-    	QuestionResponseJAXB.Languages.Language.DisplayElements.Prize prize = language.getDisplayElements().getPrize() ; 
+    	QuestionResponseJAXB.Languages.Language language = new LanguageManager().getLanguage(questionResponseJAXB, languageCode) ;
+    	QuestionResponseJAXB.Languages.Language.DisplayElements.Prize prize = language.getDisplayElements().getPrize() ;
 
     	if (prize != null) {
-            prizeCode = prize.toString();
+            prizeCode = prize.getValue();
             if (prizeCode.length() > 0) {
                 //we have a winner
                 iDevice.displayMessageWaitForKey("Congratulations! You won a prize, check your receipt... Press Enter.", 30000);
                 iDevice.displayMessage(prizeCode);
             }
         }
+
         return prizeCode;
     }
 

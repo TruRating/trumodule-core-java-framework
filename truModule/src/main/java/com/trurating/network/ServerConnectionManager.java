@@ -128,7 +128,9 @@ public class ServerConnectionManager {
             int len = socket.getInputStream().read(buffer);
             os.write(buffer, 0, len);
             os.flush();
-            return os.toByteArray();
+            byte[] toReturn = os.toByteArray();
+            os.close();
+            return toReturn;
         } catch (Exception e) {
             log.error(e);
         }
@@ -140,7 +142,7 @@ public class ServerConnectionManager {
         	try {
 				socket.close();
 	            log.info("ServerConnectionManager closed");
-			} catch (IOException e) {
+			} catch (Exception e) {
 	            log.warn("Exception raised calling to ServerConnectionManager close: ", e);
 			}
         } else {

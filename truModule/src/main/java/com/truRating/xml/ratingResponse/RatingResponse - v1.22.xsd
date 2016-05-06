@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="unqualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="ServiceMessage">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Languages" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>Defines one or more languages required for truRating display and receipt errorText</xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="Language" minOccurs="0" maxOccurs="2">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="Receipt" minOccurs="0" maxOccurs="1">
+                                            <xs:complexType>
+                                                <xs:attribute name="ratedvalue" type="xs:string" use="optional">
+                                                    <xs:annotation>
+                                                        <xs:documentation>receipt errorText when a rating has occurred.</xs:documentation>
+                                                    </xs:annotation>
+                                                </xs:attribute>
+                                                <xs:attribute name="notratedvalue" type="xs:string" use="optional">
+                                                    <xs:annotation>
+                                                        <xs:documentation>receipt errorText when no rating has occurred.</xs:documentation>
+                                                    </xs:annotation>
+                                                </xs:attribute>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                    <xs:attribute name="languagetype" type="xs:string" use="required">
+                                        <xs:annotation>
+                                            <xs:documentation>The local language idnetifer as defined by RFC 5646</xs:documentation>
+                                        </xs:annotation>
+                                    </xs:attribute>
+                                    <xs:attribute name="includereceipt" type="xs:boolean" use="required">
+                                        <xs:annotation>
+                                            <xs:documentation>true - include truRating receipt errorText
+false - do not include truRating receipt errorText</xs:documentation>
+                                        </xs:annotation>
+                                    </xs:attribute>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+            <xs:attribute name="uid" type="xs:unsignedLong" use="required">
+                <xs:annotation>
+                    <xs:documentation>unique identification number</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="messagetype" use="required">
+                <xs:annotation>
+                    <xs:documentation>truService Interface message type</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="QuestionRequest" />
+                        <xs:enumeration value="QuestionResponse" />
+                        <xs:enumeration value="RatingDelivery" />
+                        <xs:enumeration value="RatingResponse" />
+                        <xs:enumeration value="Error" />
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="mid" type="xs:string" use="required">
+                <xs:annotation>
+                    <xs:documentation>merchant identifier</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="tid" type="xs:string" use="required">
+                <xs:annotation>
+                    <xs:documentation>terminal identifier</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="errortext" type="xs:string" use="optional">
+                <xs:annotation>
+                    <xs:documentation>errorText describing the validationStatus</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="errorcode" type="xs:integer" use="optional">
+                <xs:annotation>
+                    <xs:documentation>predefined validationStatus code</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

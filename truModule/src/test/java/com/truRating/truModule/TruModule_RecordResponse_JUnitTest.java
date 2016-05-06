@@ -3,6 +3,8 @@ package com.trurating.truModule;
 import static mockit.Deencapsulation.setField;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 import mockit.Expectations;
 import mockit.Injectable;
