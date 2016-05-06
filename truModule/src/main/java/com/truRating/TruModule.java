@@ -135,7 +135,7 @@ public class TruModule implements ITruModule {
             else {
                 //send the rating --todo todo todo this needs cleaning up and organising
                 final RatingResponseJAXB ratingResponseJAXB = xmlNetworkMessenger.deliverRatingToService(currentRatingRecord);
-                if (ratingResponseJAXB != null) { //todo check for null is not correct -- rather mid tid will be null if error msg
+                if (ratingResponseJAXB != null) { //todo check for null is not correct -- rather other fields will be null if msg is in error
                     if ((ratingResponseJAXB.getErrortext() == null) || (ratingResponseJAXB.getErrortext().length() > 0)) {
                         if (ratingResponseJAXB.getErrortext() == null) log.error("The truService sent back a null errorText");
                         else log.error(ratingResponseJAXB.getErrortext());
@@ -143,10 +143,12 @@ public class TruModule implements ITruModule {
                         final RatingResponseJAXB.Languages.Language language = new LanguageManager().getLanguage(ratingResponseJAXB, properties.getLanguageCode());
                         final Receipt ratingResponseReceipt = language.getReceipt();
 
-                        if (currentRatingRecord.getRating().getValue() > 0)
-                            setReceiptMessage(ratingResponseReceipt.getRatedvalue());
-                        else
-                            setReceiptMessage(ratingResponseReceipt.getNotratedvalue());
+                        if (ratingResponseReceipt!=null) {
+                            if (currentRatingRecord.getRating().getValue() > 0)
+                                setReceiptMessage(ratingResponseReceipt.getRatedvalue());
+                            else
+                                setReceiptMessage(ratingResponseReceipt.getNotratedvalue());
+                        }
 
                         rv = true;
                     }
