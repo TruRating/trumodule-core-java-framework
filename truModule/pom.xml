@@ -67,7 +67,7 @@
         <dependency>
             <groupId>com.trurating.messages</groupId>
             <artifactId>truservice-dto</artifactId>
-            <version>1.1.1.17-SNAPSHOT</version>
+            <version>1.1.1.18-SNAPSHOT</version>
         </dependency>
 
     </dependencies>

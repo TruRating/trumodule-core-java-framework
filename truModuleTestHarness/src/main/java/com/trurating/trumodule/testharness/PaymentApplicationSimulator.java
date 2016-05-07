@@ -1,7 +1,8 @@
 package com.trurating.trumodule.testharness;
 
-import com.trurating.payment.IPaymentResponse;
 
+
+import com.trurating.trumodule.testharness.device.IPaymentResponse;
 import org.apache.log4j.Logger;
 
 import com.trurating.ITruModule;
@@ -36,22 +37,22 @@ public class PaymentApplicationSimulator  {
         log.info("Payment application is requesting payment - passing this on to the module");
 
         truModule.doRating(properties);
-        
-    	Transaction transaction = getTransaction(properties) ; 
+
+    	Transaction transaction = getTransaction(properties) ;
 
         //Operator
-		transaction.setOperator(operator);        
-    	
+		transaction.setOperator(operator);
+
     	// Tender type
    		transaction.setTendertype(tenderType.toString());
-        
+
        	// Amount
        	transaction.setAmount(199) ;
     }
 
     //now take payment - at this point card is inserted, therefore we will know card type
     public void completePayment(ITruModuleProperties properties) {
-    	Transaction transaction = getTransaction(properties) ; 
+    	Transaction transaction = getTransaction(properties) ;
 
         // "INSERT CARD"; //etc
 
@@ -60,7 +61,7 @@ public class PaymentApplicationSimulator  {
 
        	// Currency
        	transaction.setCurrency((short)826);
-       
+
     	// Transaction result
    		transaction.setResult(TransactionResult.APPROVED.toString());
 
