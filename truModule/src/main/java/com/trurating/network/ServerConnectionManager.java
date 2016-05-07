@@ -123,7 +123,7 @@ public class ServerConnectionManager {
     public byte[] readInput() {
         byte[] buffer = null;
         try {
-            buffer = new byte[1024 * 2];
+            buffer = new byte[2048];
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             int len = socket.getInputStream().read(buffer);
             os.write(buffer, 0, len);
