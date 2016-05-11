@@ -1,11 +1,8 @@
-package com.truRating.payment;
+package com.trurating.payment;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.trurating.payment.TenderType;
-import com.trurating.payment.TransactionResult;
-import com.trurating.payment.TransactionType;
 import org.apache.log4j.Logger;
 
 import com.trurating.network.xml.TruRatingMessageFactory;
@@ -13,7 +10,7 @@ import com.trurating.network.xml.TruRatingMessageFactory;
 /**
  * Created by Paul on 10/03/2016.
  */
-public class PaymentResponse implements com.trurating.payment.IPaymentResponse {
+public class PaymentResponse implements IPaymentResponse {
 
     private Logger log = Logger.getLogger(TruRatingMessageFactory.class);
     private String operatorId = "";

@@ -12,10 +12,6 @@ import com.trurating.properties.ITruModuleProperties;
  */
 public class TestProperties implements ITruModuleProperties {
 
-    private static Logger log = Logger.getLogger(TestProperties.class);
-    private Properties properties = null;
-    private File propertiesFile;
-    private String pathToResources;
     private static TestProperties INSTANCE=null;
 
     public TestProperties() {}
@@ -28,7 +24,7 @@ public class TestProperties implements ITruModuleProperties {
     }
 
     public String getMid() {
-        return "FIS1234";
+        return "1234567";
     }
 
     public String getTid() {
@@ -60,7 +56,7 @@ public class TestProperties implements ITruModuleProperties {
     }
 
     public String getDeviceFormat() {
-        return "TEXT_CENTER";
+        return "TEXT_CENTERED";
     }
 
     public String getDeviceFirmware() {
@@ -85,8 +81,9 @@ public class TestProperties implements ITruModuleProperties {
 
     public String getTruServiceIPAddress() {
 ///        return "tru-sand-service-fis.cloudapp.net";
-        return "127.0.0.1";
+//        return "tru-sand-service-trurating.cloudapp.net";
 //        return "13.95.156.19";
+        return "127.0.0.1";
     }
 
     public int getTruServiceSocketTimeoutInMilliSeconds() {

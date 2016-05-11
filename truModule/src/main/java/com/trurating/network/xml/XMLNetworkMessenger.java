@@ -212,7 +212,7 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
             log.error("", e);
         }
 
-        if (ratingResponseJAXB.getErrortext()!=null){
+        if (ratingResponseJAXB.getErrortext()!=null && (!ratingResponseJAXB.getErrortext().equals(""))){
             log.info("The truService reported an error with ratings delivery: " + ratingResponseJAXB.getErrortext());
         }
 

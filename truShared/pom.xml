@@ -4,29 +4,24 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <properties>
-        <build.number>local-build</build.number>
-    </properties>
-
     <groupId>com.truRating</groupId>
     <artifactId>truShared</artifactId>
-    <version>${build.number}</version>
+    <version>1.0-SNAPSHOT</version>
 
     <parent>
         <groupId>com.truRating</groupId>
         <artifactId>truModuleParent</artifactId>
-        <version>${build.number}</version>
+        <version>1.1-SNAPSHOT</version>
         <relativePath>../truModuleParent</relativePath>
     </parent>
 
-
     <dependencies>
 
-        <!--<dependency>-->
-            <!--<groupId>com.truRating</groupId>-->
-            <!--<artifactId>truModule</artifactId>-->
-            <!--<version>${build.number}</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>com.truRating</groupId>
+            <artifactId>truModule</artifactId>
+            <version>1.1-SNAPSHOT</version>
+        </dependency>
 
         <dependency>
             <groupId>log4j</groupId>

@@ -46,8 +46,8 @@ public class TruRatingMessageFactory {
 		try {
             questionRequestJAXB = new QuestionRequestJAXB();
 
-            questionRequestJAXB.setErrortext("");
-            questionRequestJAXB.setErrorcode(new BigInteger("0"));
+//            questionRequestJAXB.setErrortext("");
+//            questionRequestJAXB.setErrorcode(new BigInteger("0"));
 
             QuestionRequestJAXB.Languages.Language language = new QuestionRequestJAXB.Languages.Language();
             language.setLanguagetype(properties.getLanguageCode());
@@ -98,10 +98,10 @@ public class TruRatingMessageFactory {
 
         // Rating element
         RatingDeliveryJAXB.Rating ratingElement = new RatingDeliveryJAXB.Rating();
-        ratingElement.setValue(TruModule.NO_RATING_VALUE); // No rating value
+//        ratingElement.setValue(TruModule.NO_RATING_VALUE); // No rating value
         ratingElement.setResponsetimemilliseconds(0L);
         ratingElement.setQid(0L);
-        ratingElement.setPrizecode("");
+//        ratingElement.setPrizecode("");
         ratingElement.setRatinglanguage(properties.getLanguageCode());
         ratingDeliveryJAXB.setRating(ratingElement);
 
@@ -129,12 +129,12 @@ public class TruRatingMessageFactory {
         ratingDeliveryJAXB.setTransaction(transaction);
 
         RatingDeliveryJAXB.CardHash cardHash = new RatingDeliveryJAXB.CardHash();
-        cardHash.setCardhashdatatype("");
-        cardHash.setCardhashdata("");
+//        cardHash.setCardhashdatatype(""); //taking out during refactoring -- this needs adding post payment
+//        cardHash.setCardhashdata("");
         ratingDeliveryJAXB.setCardHash(cardHash);
 
         ratingDeliveryJAXB.setErrorcode(new BigInteger("0"));
-        ratingDeliveryJAXB.setErrortext("");
+//        ratingDeliveryJAXB.setErrortext("");
 
         return ratingDeliveryJAXB;
     }

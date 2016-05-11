@@ -3,9 +3,8 @@ package com.trurating.truModule;
 import static mockit.Deencapsulation.setField;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 
+import com.trurating.network.xml.IXMLNetworkMessenger;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Tested;
@@ -37,13 +36,15 @@ public class TruModule_RecordResponse_JUnitTest {
     @Tested
     TruModule truModule;
     @Injectable
-    XMLNetworkMessenger xmlNetworkMessenger;
+    IXMLNetworkMessenger xmlNetworkMessenger;
     @Injectable
     IDevice iDevice;
     @Injectable
     Logger log;
     @Injectable
     ITruModuleProperties properties;
+    @Injectable
+    RatingDeliveryJAXB.Transaction transaction;
 
     @Before
     public void setUp() {
@@ -65,7 +66,7 @@ public class TruModule_RecordResponse_JUnitTest {
             times = 1;
         }};
 
-        RatingDeliveryJAXB iRatingRecord = truModule.getRatingRecord(properties) ;
+        RatingDeliveryJAXB iRatingRecord = truModule.getCurrentRatingRecord(properties) ;
         Rating rating = iRatingRecord.getRating() ;
         rating.setValue((short)8);
 

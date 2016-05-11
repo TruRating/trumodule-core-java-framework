@@ -65,7 +65,7 @@ public class StringUtilities {
 	}
 
 	public static void main(String[] args) {
-		String[] sa = StringUtilities.wordWrap("trurating: Please rate the food/drinks from 0-9 or clear",16);
+		String[] sa = StringUtilities.wordWrap("truRating: Please rate the food/drinks from 0-9 or clear",16);
         System.out.println();
     }
 }

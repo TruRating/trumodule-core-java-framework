@@ -17,7 +17,7 @@ import com.trurating.TruModule;
 import com.trurating.device.IDevice;
 import com.trurating.network.xml.IXMLNetworkMessenger;
 import com.trurating.network.xml.TruRatingMessageFactory;
-import com.trurating.prize.PrizeManager;
+import com.trurating.prize.PrizeManagerService;
 import com.trurating.properties.ITruModuleProperties;
 import com.trurating.properties.TruModuleProperties;
 import com.trurating.xml.questionResponse.QuestionResponseJAXB;
@@ -44,7 +44,7 @@ public class TruModule_DoRating_JUnitTest {
     @Injectable
     IXMLNetworkMessenger xmlNetworkMessenger;
     @Injectable
-    PrizeManager checkForPrize;
+    PrizeManagerService prizeManagerService;
     @Injectable
     Logger log;
     @Injectable
@@ -56,7 +56,7 @@ public class TruModule_DoRating_JUnitTest {
     public void setUp() {
         truModule =  new TruModule();
         setField(truModule, "xmlNetworkMessenger", xmlNetworkMessenger);
-        setField(truModule, "checkForPrize", checkForPrize);
+        setField(truModule, "prizeManagerService", prizeManagerService);
         setField(truModule, "iDevice", iDevice);
         setField(truModule, "log", log);
         setField(truModule, "truRatingMessageFactory", truRatingMessageFactory);
@@ -74,7 +74,7 @@ public class TruModule_DoRating_JUnitTest {
             iDevice.displayTruratingQuestionGetKeystroke((String[])any, (String)any, anyInt);
             returns ("8");
             times = 1;
-            checkForPrize.checkForAPrize((IDevice) any, (QuestionResponseJAXB)any, (String) any);
+            prizeManagerService.checkForAPrize((IDevice) any, (QuestionResponseJAXB)any, (String) any);
             returns ("555");
             times = 1;
             truRatingMessageFactory.createRatingRecord((ITruModuleProperties)any);
@@ -83,7 +83,7 @@ public class TruModule_DoRating_JUnitTest {
         }};
 
         truModule.doRating(properties);
-        RatingDeliveryJAXB iRatingRecord = truModule.getRatingRecord(properties) ;
+        RatingDeliveryJAXB iRatingRecord = truModule.getCurrentRatingRecord(properties) ;
         Rating rating = iRatingRecord.getRating() ;
 
         Assert.assertNotNull(iRatingRecord.getTransaction().getDatetime());
@@ -105,7 +105,7 @@ public class TruModule_DoRating_JUnitTest {
 
         TruModuleProperties properties = new TruModuleProperties() ;
         truModule.doRating(properties);
-        RatingDeliveryJAXB iRatingRecord = truModule.getRatingRecord(properties) ;
+        RatingDeliveryJAXB iRatingRecord = truModule.getCurrentRatingRecord(properties) ;
         Assert.assertEquals(iRatingRecord.getRating().getValue(), TruModule.NO_RATING_VALUE);
         // We should have a value
     }
@@ -126,13 +126,13 @@ public class TruModule_DoRating_JUnitTest {
             truRatingMessageFactory.createRatingRecord((ITruModuleProperties)any);
             returns (getRatingDeliveryJAXB());
             times = 1;
-            checkForPrize.checkForAPrize((IDevice) any, (QuestionResponseJAXB)any, (String) any);
+            prizeManagerService.checkForAPrize((IDevice) any, (QuestionResponseJAXB)any, (String) any);
             returns ("");
             times = 1;
         }};
 
         truModule.doRating(properties);
-        Rating rating = truModule.getRatingRecord(properties).getRating() ;
+        Rating rating = truModule.getCurrentRatingRecord(properties).getRating() ;
         Assert.assertEquals("", rating.getPrizecode());
     }
 
@@ -151,13 +151,13 @@ public class TruModule_DoRating_JUnitTest {
             truRatingMessageFactory.createRatingRecord((ITruModuleProperties)any);
             returns (getRatingDeliveryJAXB());
             times = 1;
-            checkForPrize.checkForAPrize((IDevice) any, (QuestionResponseJAXB)any, (String) any);
+            prizeManagerService.checkForAPrize((IDevice) any, (QuestionResponseJAXB)any, (String) any);
             returns ("");
             times = 0;
         }};
 
         truModule.doRating(properties);
-        Rating rating = truModule.getRatingRecord(properties).getRating() ;
+        Rating rating = truModule.getCurrentRatingRecord(properties).getRating() ;
         Assert.assertEquals(rating.getValue(), TruModule.USER_CANCELLED);
         Assert.assertEquals("", rating.getPrizecode());
     }
@@ -174,7 +174,7 @@ public class TruModule_DoRating_JUnitTest {
             iDevice.displayTruratingQuestionGetKeystroke((String[])any, (String)any, anyInt);
             returns ("-1");
             times = 1;
-            checkForPrize.checkForAPrize((IDevice) any, (QuestionResponseJAXB)any, (String) any);
+            prizeManagerService.checkForAPrize((IDevice) any, (QuestionResponseJAXB)any, (String) any);
             returns ("555");
             times = 0;
             truRatingMessageFactory.createRatingRecord((ITruModuleProperties)any);
@@ -183,7 +183,7 @@ public class TruModule_DoRating_JUnitTest {
         }};
 
         truModule.doRating(properties);
-        Rating rating = truModule.getRatingRecord(properties).getRating() ;
+        Rating rating = truModule.getCurrentRatingRecord(properties).getRating() ;
         Assert.assertEquals(rating.getValue(), TruModule.USER_CANCELLED);
         Assert.assertEquals("", rating.getPrizecode());
     }

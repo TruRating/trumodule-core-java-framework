@@ -1,8 +1,6 @@
 package com.trurating.trumodule.testharness;
 
 
-
-import com.trurating.trumodule.testharness.device.IPaymentResponse;
 import org.apache.log4j.Logger;
 
 import com.trurating.ITruModule;
@@ -29,7 +27,7 @@ public class PaymentApplicationSimulator  {
     }
 
     private Transaction getTransaction(ITruModuleProperties properties) {
-    	return truModule.getRatingRecord(properties).getTransaction() ;
+    	return truModule.getCurrentRatingRecord(properties).getTransaction() ;
     }
 
     //this is a take payment request - payment will not yet be taken
@@ -47,21 +45,21 @@ public class PaymentApplicationSimulator  {
    		transaction.setTendertype(tenderType.toString());
 
        	// Amount
-       	transaction.setAmount(199) ;
+       	transaction.setAmount(888) ;
     }
 
     //now take payment - at this point card is inserted, therefore we will know card type
     public void completePayment(ITruModuleProperties properties) {
-    	Transaction transaction = getTransaction(properties) ;
+    	Transaction transaction = getTransaction(properties) ; 
 
         // "INSERT CARD"; //etc
 
     	// Transaction Id
-       	transaction.setTxnid(12345L);
+       	transaction.setTxnid(9999999L);
 
        	// Currency
        	transaction.setCurrency((short)826);
-
+       
     	// Transaction result
    		transaction.setResult(TransactionResult.APPROVED.toString());
 
@@ -79,49 +77,4 @@ public class PaymentApplicationSimulator  {
         return iDevice;
     }
 
-    public boolean hasTruratingEnabledAndActive() {
-        return true;
-    }
-
-    public void updateTrurating() {
-        log.error("Not implemented yet!");
-    }
-
-    public boolean initialise() {
-        return false;
-    }
-
-    public void startTransaction(String tillOperator, String salesPerson) {
-        log.info("Starting transaction");
-    }
-
-    public void startTransaction(String tillOperator, String salesPerson, String txnID) {
-        log.error("Not implemented yet");
-    }
-
-    public void startCheckout() {
-        log.info("Starting checkout");
-    }
-
-    public void endCheckout(long amount) {
-        log.info("Starting end checkout");
-    }
-
-    public void endTransaction(IPaymentResponse paymentResponse) {
-        log.info("End transaction");
-    }
-
-    public String getErrorMessage() {
-        return null;
-    }
-
-    public void shutdown() {
-        log.info("Payment application system shutdown called");
-        System.exit(1);
-    }
-
-
-    public ITruModule getTruModule() {
-        return truModule;
-    }
 }

@@ -59,7 +59,7 @@ public class ServerConnectionManager {
         	if (properties.getTruServiceSocketTimeoutInMilliSeconds() > 0)
         		TIMEOUT = properties.getTruServiceSocketTimeoutInMilliSeconds() ;
         }
-        
+
     	if (socket != null) {
     		log.warn("Socket still open from previous transaction");
     		close() ;
@@ -123,7 +123,7 @@ public class ServerConnectionManager {
     public byte[] readInput() {
         byte[] buffer = null;
         try {
-            buffer = new byte[2048];
+            buffer = new byte[1024 * 2];
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             int len = socket.getInputStream().read(buffer);
             os.write(buffer, 0, len);

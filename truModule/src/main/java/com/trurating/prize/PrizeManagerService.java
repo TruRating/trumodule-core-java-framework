@@ -26,7 +26,7 @@ import com.trurating.xml.questionResponse.QuestionResponseJAXB;
 /**
  * Created by Paul on 10/03/2016.
  */
-public class PrizeManager {
+public class PrizeManagerService {
 
     public String checkForAPrize(IDevice iDevice, QuestionResponseJAXB questionResponseJAXB, String languageCode) {
     	String prizeCode = "";
@@ -42,7 +42,7 @@ public class PrizeManager {
             }
         }
 
-        return prizeCode;
+        if (prizeCode.equals("")) return null; else return prizeCode;
     }
 
 }

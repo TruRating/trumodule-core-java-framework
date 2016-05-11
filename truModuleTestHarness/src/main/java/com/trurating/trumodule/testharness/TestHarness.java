@@ -1,6 +1,5 @@
 package com.trurating.trumodule.testharness;
 
-import java.io.File;
 import java.util.Enumeration;
 
 import org.apache.log4j.*;
@@ -38,9 +37,6 @@ public class TestHarness {
 	private void configureLog4JUsingDefaults() {
 		ConsoleAppender fileAppender = new ConsoleAppender(); // create appender
 		String PATTERN = "%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n";
-//		File f = new File("defaultTruModule.log");
-//		fileAppender.setFile("defaultTruModule.log");
-//		fileAppender.setAppend(true);
 		fileAppender.setLayout(new PatternLayout(PATTERN));
 		fileAppender.setThreshold(Level.INFO);
 		fileAppender.activateOptions();

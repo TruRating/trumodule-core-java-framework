@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
 import com.trurating.device.IDevice;
 import com.trurating.network.xml.TruRatingMessageFactory;
 import com.trurating.network.xml.XMLNetworkMessenger;
-import com.trurating.prize.PrizeManager;
+import com.trurating.prize.PrizeManagerService;
 import com.trurating.properties.ITruModuleProperties;
 import com.trurating.util.StringUtilities;
 import com.trurating.xml.LanguageManager;
@@ -54,15 +54,12 @@ public class TruModule implements ITruModule {
     public final static short USER_CANCELLED = -1;
     public final static short QUESTION_TIMEOUT = -2;
     public final static short NO_QUESTION_ASKED = -3;
-
     private final Logger log = Logger.getLogger(TruModule.class);
-
+    private final PrizeManagerService prizeManagerService = new PrizeManagerService();
     private IDevice iDevice = null;
     private IXMLNetworkMessenger xmlNetworkMessenger = null;
     private TruRatingMessageFactory truRatingMessageFactory = null;
-    private final PrizeManager checkForPrize = new PrizeManager();
     private String receiptMessage = "";
-
     private volatile RatingDeliveryJAXB currentRatingRecord = null;
 
     public TruModule() {
@@ -70,20 +67,15 @@ public class TruModule implements ITruModule {
         xmlNetworkMessenger = new XMLNetworkMessenger();
     }
 
-    // Set the device in use
-    public void setDevice(IDevice deviceRef) {
-        this.iDevice = deviceRef;
-    }
-
-    private IDevice getDevice() {
-        return iDevice;
-    }
-
     // Get a reference to the current transaction data
-    public RatingDeliveryJAXB getRatingRecord(ITruModuleProperties properties) {
-        if (currentRatingRecord == null)
-            currentRatingRecord = truRatingMessageFactory.createRatingRecord(properties);
+    public RatingDeliveryJAXB getCurrentRatingRecord(ITruModuleProperties properties) {
+        if (currentRatingRecord == null) currentRatingRecord = truRatingMessageFactory.createRatingRecord(properties);
         return currentRatingRecord;
+    }
+
+    public RatingDeliveryJAXB.Transaction getCurrentRatingRecordTransaction() {
+        if (currentRatingRecord==null) return null;
+        return currentRatingRecord.getTransaction();
     }
 
     /**
@@ -93,7 +85,7 @@ public class TruModule implements ITruModule {
      */
     public void doRating(ITruModuleProperties properties) {
         // Ensure that we are starting a new rating record - nothing left over from before
-        endTransaction();
+        clearValueOfCachedRatingAndReceipt();
         // The rating class generates its own unique (for this till) transaction id
         QuestionResponseJAXB jaxbQuestion = getNextQuestion(properties);
         runQuestion(properties, jaxbQuestion);
@@ -103,10 +95,8 @@ public class TruModule implements ITruModule {
      * Dwell time ratings questions need to be run in a separate thread
      */
     public void doRatingInBackground(final ITruModuleProperties properties) {
-
         // Ensure that we are starting a new rating record - nothing left over from before
-        endTransaction();
-
+        clearValueOfCachedRatingAndReceipt();
         // The rating class generates its own unique (for this till) transaction id
         final QuestionResponseJAXB jaxbQuestion = getNextQuestion(properties);
 
@@ -126,73 +116,49 @@ public class TruModule implements ITruModule {
     }
 
     public boolean deliverRating(ITruModuleProperties properties) {
-
-        boolean rv = false;
         try {
-            if (currentRatingRecord == null)
+            if (currentRatingRecord == null) {
                 log.error("Call to deliverRating when no rating record exists!");
-
+                return false;
+            }
             else {
-                //send the rating --todo todo todo this needs cleaning up and organising
+                //send the rating
                 final RatingResponseJAXB ratingResponseJAXB = xmlNetworkMessenger.deliverRatingToService(currentRatingRecord);
-                if (ratingResponseJAXB != null) { //todo check for null is not correct -- rather other fields will be null if msg is in error
-                    if ((ratingResponseJAXB.getErrortext() == null) || (ratingResponseJAXB.getErrortext().length() > 0)) {
-                        if (ratingResponseJAXB.getErrortext() == null) log.error("The truService sent back a null errorText");
-                        else log.error(ratingResponseJAXB.getErrortext());
-                    } else {
-                        final RatingResponseJAXB.Languages.Language language = new LanguageManager().getLanguage(ratingResponseJAXB, properties.getLanguageCode());
-                        final Receipt ratingResponseReceipt = language.getReceipt();
-
-                        if (ratingResponseReceipt!=null) {
-                            if (currentRatingRecord.getRating().getValue() > 0)
-                                setReceiptMessage(ratingResponseReceipt.getRatedvalue());
-                            else
-                                setReceiptMessage(ratingResponseReceipt.getNotratedvalue());
-                        }
-
-                        rv = true;
-                    }
+                final Receipt ratingResponseReceipt = new LanguageManager().getLanguage(ratingResponseJAXB, properties.getLanguageCode()).getReceipt();
+                if (ratingResponseReceipt != null) {
+                    if (currentRatingRecord.getRating().getValue() > 0)
+                        receiptMessage = ratingResponseReceipt.getRatedvalue();
+                    else
+                        receiptMessage = ratingResponseReceipt.getNotratedvalue();
                 }
             }
         } catch (Exception e) {
             log.error("", e);
+            return false;
         } finally {
-            endTransaction();
+            clearValueOfCachedRatingAndReceipt();
         }
-
         log.info("Everything is finished in truModule!");
-        return rv;
+        return true;
     }
 
     private QuestionResponseJAXB getNextQuestion(ITruModuleProperties properties) {
         QuestionResponseJAXB questionResponseJAXB = null;
 
         try {
-            RatingDeliveryJAXB ratingRecord = getRatingRecord(properties);
+            RatingDeliveryJAXB ratingRecord = getCurrentRatingRecord(properties);
             long transactionId = ratingRecord.getUid().longValue();
             questionResponseJAXB = xmlNetworkMessenger.getQuestionFromService(properties, transactionId);
-
-            if (questionResponseJAXB.getErrortext() != null) {
-                if (!questionResponseJAXB.getErrortext().equals("")) {
-                    log.error("The QuestionRequest produced an error : " + questionResponseJAXB.getErrortext());
-                    return null;
-                }
-            } else if (questionResponseJAXB != null) {
-                QuestionResponseJAXB.Languages.Language language =
-                        new LanguageManager().getLanguage(questionResponseJAXB, properties.getLanguageCode());
-
-                if (language.getDisplayElements().getQuestion().getValue().length() > 0) {
-                    // We have a question
-                    QuestionResponseJAXB.Languages.Language.Receipt receipt = language.getReceipt();
-
-                    if (receipt != null)
-                        setReceiptMessage(receipt.getNotratedvalue());
-                }
+            QuestionResponseJAXB.Languages.Language language =
+                    new LanguageManager().getLanguage(questionResponseJAXB, properties.getLanguageCode());
+            if (language.getDisplayElements().getQuestion().getValue().length() > 0) {
+                // We have a question
+                QuestionResponseJAXB.Languages.Language.Receipt receipt = language.getReceipt();
+                if (receipt != null) receiptMessage = receipt.getNotratedvalue();
             }
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             log.error("Error fetching the next question", e);
         }
-
         return questionResponseJAXB;
     }
 
@@ -227,13 +193,17 @@ public class TruModule implements ITruModule {
                     totalTimeTaken = endTime - startTime;
                 }
                 //if user rated then check if there is a prize
-                Rating rating = getRatingRecord(properties).getRating();
+                Rating rating = getCurrentRatingRecord(properties).getRating();
                 if ((new Integer(keyStroke) > 0)) {
                     // Update the receipt text to indicate that the user rated
                     final QuestionResponseJAXB.Languages.Language.Receipt receipt = language.getReceipt();
-                    setReceiptMessage(receipt.getRatedvalue());
-                    rating.setPrizecode(checkForPrize.checkForAPrize(getDevice(), questionResponseJAXB, properties.getLanguageCode()));
-                }
+                    iDevice.displayMessage(language.getDisplayElements().getAcknowledgement().getRatedvalue());
+                    receiptMessage=receipt.getRatedvalue();
+                    String prizeCode = prizeManagerService.checkForAPrize(getDevice(), questionResponseJAXB, properties.getLanguageCode());
+                    if (prizeCode!=null) rating.setPrizecode(prizeCode);
+                } else
+                    iDevice.displayMessage(language.getDisplayElements().getAcknowledgement().getNotratedvalue());
+
                 rating.setValue(new Short(keyStroke));
                 rating.setResponsetimemilliseconds(totalTimeTaken);
                 rating.setQid(question.getQid());
@@ -251,18 +221,24 @@ public class TruModule implements ITruModule {
         return receiptMessage;
     }
 
-    private void setReceiptMessage(String receiptMessage) {
-        this.receiptMessage = receiptMessage;
+
+    public void close() {
+        clearValueOfCachedRatingAndReceipt();
+        xmlNetworkMessenger.close();
     }
 
-    private void endTransaction() {
+    public void clearValueOfCachedRatingAndReceipt() {
         // Clear the current transaction
         currentRatingRecord = null;
         receiptMessage = "";
     }
 
-    public void close() {
-        endTransaction();
-        xmlNetworkMessenger.close();
+    // Set the device in use
+    public void setDevice(IDevice deviceRef) {
+        this.iDevice = deviceRef;
+    }
+
+    private IDevice getDevice() {
+        return iDevice;
     }
 }
