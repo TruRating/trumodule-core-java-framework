@@ -105,7 +105,7 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
     }
    
     /**
-        Will send the request for a question, if no response after timeOut seconds, will return null;
+        Will send the questionRequest for a question, if no questionResponse after timeOut seconds, will return null;
      */
     public synchronized QuestionResponseJAXB getQuestionFromService(ITruModuleProperties properties, long transactionId) {
 
@@ -113,7 +113,7 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
 
         serverConnectionManager.connectToServer(properties);
 
-        //start listening for a question response for 'timeout' seconds
+        //start listening for a question questionResponse for 'timeout' seconds
         new Thread(new Runnable() {
             public void run() {
                 try {
@@ -133,7 +133,7 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
         }).start();
 
         try {
-            //send question request
+            //send question questionRequest
             XMLStreamWriter questionWriter = xmlOutputFactory.createXMLStreamWriter(serverConnectionManager.getOutputStream(),
                     (String) questionRequestMarshaller.getProperty(Marshaller.JAXB_ENCODING));
             
@@ -163,7 +163,7 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
     public RatingResponseJAXB deliverRatingToService(RatingDeliveryJAXB ratingRecord) {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
 
-        //start listening for a rating response for 'timeout' seconds
+        //start listening for a rating questionResponse for 'timeout' seconds
         new Thread(new Runnable() {
             public void run() {
                 try {
@@ -184,7 +184,7 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
         }).start();
 
         try {
-            //send rating request
+            //send rating questionRequest
             log.info("Writing ratingDelivery XML to Service...");
             XMLStreamWriter ratingWriter = xmlOutputFactory.createXMLStreamWriter(serverConnectionManager.getOutputStream(),
                     (String) ratingDeliveryMarshaller.getProperty(Marshaller.JAXB_ENCODING));

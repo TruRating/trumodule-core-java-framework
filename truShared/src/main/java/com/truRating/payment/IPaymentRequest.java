@@ -28,7 +28,7 @@ package com.trurating.payment;
 /**
  * @author Peter Salmon
  *         <p>
- *         The transaction details that are required for a request for EFT
+ *         The transaction details that are required for a questionRequest for EFT
  *         payment.
  */
 public interface IPaymentRequest {

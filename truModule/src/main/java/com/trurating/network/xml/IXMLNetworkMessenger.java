@@ -27,7 +27,7 @@ import com.trurating.xml.ratingResponse.RatingResponseJAXB;
 public interface IXMLNetworkMessenger {
 
     /**
-    Send the request for a question, if no response after timeOut seconds, will return null;
+    Send the questionRequest for a question, if no questionResponse after timeOut seconds, will return null;
      */
 	QuestionResponseJAXB getQuestionFromService(ITruModuleProperties properties, long transactionId) ;
 	

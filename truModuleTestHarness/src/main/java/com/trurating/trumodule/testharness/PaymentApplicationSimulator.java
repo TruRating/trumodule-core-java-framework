@@ -30,7 +30,7 @@ public class PaymentApplicationSimulator  {
     	return truModule.getCurrentRatingRecord(properties).getTransaction() ;
     }
 
-    //this is a take payment request - payment will not yet be taken
+    //this is a take payment questionRequest - payment will not yet be taken
 	void paymentTrigger(ITruModuleProperties properties, String operator, TenderType tenderType, String product, long cost){
         log.info("Payment application is requesting payment - passing this on to the module");
 

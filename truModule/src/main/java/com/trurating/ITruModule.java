@@ -46,7 +46,7 @@ public interface ITruModule {
 
     /**
      * Background ratings are used for dwell time to allow a cancel command
-     * to be issued in the foreground thread if a payment request is made
+     * to be issued in the foreground thread if a payment questionRequest is made
      */
     void doRatingInBackground(ITruModuleProperties properties);
 

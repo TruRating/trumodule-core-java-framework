@@ -54,7 +54,7 @@ public class TruRatingMessageFactory {
             language.setIncludeacknowledgement(new Boolean(properties.getIncludeAcknowledgement()));
             language.setIncludereceipt(new Boolean(properties.getIncludeReceipt()));
             QuestionRequestJAXB.Languages languages = new QuestionRequestJAXB.Languages();
-            languages.addLanguage(language);
+            languages.getLanguage().add(language);
             questionRequestJAXB.setLanguages(languages);
 
             QuestionRequestJAXB.DeviceInfo deviceInfoType = new QuestionRequestJAXB.DeviceInfo();
@@ -97,13 +97,13 @@ public class TruRatingMessageFactory {
         ratingDeliveryJAXB.setUid(new BigInteger(String.valueOf(now.getTime())));
 
         // Rating element
-        RatingDeliveryJAXB.Rating ratingElement = new RatingDeliveryJAXB.Rating();
+//        RatingDeliveryJAXB.Rating ratingElement = new RatingDeliveryJAXB.Rating();
 //        ratingElement.setValue(TruModule.NO_RATING_VALUE); // No rating value
-        ratingElement.setResponsetimemilliseconds(0L);
-        ratingElement.setQid(0L);
+//        ratingElement.setResponsetimemilliseconds(0L);
+//        ratingElement.setQid(0L);
 //        ratingElement.setPrizecode("");
-        ratingElement.setRatinglanguage(properties.getLanguageCode());
-        ratingDeliveryJAXB.setRating(ratingElement);
+//        ratingElement.setRatinglanguage(properties.getLanguageCode());
+//        ratingDeliveryJAXB.setRating(ratingElement);
 
         // Language element
         RatingDeliveryJAXB.Languages.Language language = new RatingDeliveryJAXB.Languages.Language();

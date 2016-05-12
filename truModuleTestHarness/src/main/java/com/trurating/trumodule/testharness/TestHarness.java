@@ -25,7 +25,7 @@ public class TestHarness {
 		// Set of test properties
 		TestProperties truModuleProperties = new TestProperties();
 
-		// start up the payment App and send a payment request
+		// start up the payment App and send a payment questionRequest
 		PaymentApplicationSimulator paymentApplication = new PaymentApplicationSimulator();
 
 		paymentApplication.paymentTrigger(truModuleProperties, "Operator_Tony",

@@ -78,7 +78,7 @@ public class TruModuleProperties implements ITruModuleProperties {
     
     /**
      * A flag to indicate whether the receipt text should 
-     * be requested as part of the question request
+     * be requested as part of the question questionRequest
      * (It always is in the rating delivery)  
      */
     public boolean getIncludeReceipt() {
@@ -93,7 +93,7 @@ public class TruModuleProperties implements ITruModuleProperties {
     
     /**
      * A flag to indicate whether the acknowledgement text should 
-     * be requested as part of the question request
+     * be requested as part of the question questionRequest
      */
     public boolean getIncludeAcknowledgement() {
         return includeAcknowledgement;

@@ -71,7 +71,7 @@ public interface IPaymentApplication {
 	
 	/**
 	 * New event from POS to payment app to indicate that checkout has finished
-	 * Note that the payment may not be by card - so this is not a request for
+	 * Note that the payment may not be by card - so this is not a questionRequest for
 	 * payment yet
 	 */
 	void endCheckout(IPaymentRequest paymentDetails);

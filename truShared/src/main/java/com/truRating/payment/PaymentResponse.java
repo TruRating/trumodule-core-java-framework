@@ -27,8 +27,9 @@ public class PaymentResponse implements IPaymentResponse {
     private String cardHashData = "";
 	private int errorCode = 0;
 	private String errorMessage = "";
+    private String terminalID="";
 
-	public PaymentResponse() {
+    public PaymentResponse() {
 		Date now = new Date() ;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		transactionDate = sdf.format(now);
@@ -136,11 +137,11 @@ public class PaymentResponse implements IPaymentResponse {
     }
 
     public String getTerminalId() {
-        return null;
+        return terminalID;
     }
 
-    public void setTerminalId(String value) {
-
+    public void setTerminalId(String terminalID) {
+        this.terminalID= terminalID;
     }
 
     public TenderType getTenderType() {

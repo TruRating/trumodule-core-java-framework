@@ -28,7 +28,7 @@ package com.trurating.payment;
 /**
  * @author Peter Salmon
  * 
- *         The details of the final response to a card payment request.
+ *         The details of the final questionResponse to a card payment questionRequest.
  */
 public interface IPaymentResponse {
 

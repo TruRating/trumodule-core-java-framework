@@ -10,7 +10,7 @@ public class LanguageManager {
 
 	public QuestionResponseJAXB.Languages.Language getLanguage (QuestionResponseJAXB response, String languageCode) {
 
-		List<QuestionResponseJAXB.Languages.Language> languages = response.getLanguages().getLanguage() ;		
+		List<QuestionResponseJAXB.Languages.Language> languages = response.getLanguages().getLanguage() ;
     	if (languages == null)
     		return null ;
     	

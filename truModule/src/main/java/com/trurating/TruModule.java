@@ -74,7 +74,7 @@ public class TruModule implements ITruModule {
     }
 
     public RatingDeliveryJAXB.Transaction getCurrentRatingRecordTransaction() {
-        if (currentRatingRecord==null) return null;
+        if (currentRatingRecord == null) return null;
         return currentRatingRecord.getTransaction();
     }
 
@@ -88,6 +88,7 @@ public class TruModule implements ITruModule {
         clearValueOfCachedRatingAndReceipt();
         // The rating class generates its own unique (for this till) transaction id
         QuestionResponseJAXB jaxbQuestion = getNextQuestion(properties);
+        //if there is a question, run it
         runQuestion(properties, jaxbQuestion);
     }
 
@@ -99,7 +100,7 @@ public class TruModule implements ITruModule {
         clearValueOfCachedRatingAndReceipt();
         // The rating class generates its own unique (for this till) transaction id
         final QuestionResponseJAXB jaxbQuestion = getNextQuestion(properties);
-
+        //if there is a question, run it
         new Thread(new Runnable() {
             public void run() {
                 runQuestion(properties, jaxbQuestion);
@@ -117,20 +118,21 @@ public class TruModule implements ITruModule {
 
     public boolean deliverRating(ITruModuleProperties properties) {
         try {
-            if (currentRatingRecord == null) {
-                log.error("Call to deliverRating when no rating record exists!");
-                return false;
-            }
-            else {
-                //send the rating
-                final RatingResponseJAXB ratingResponseJAXB = xmlNetworkMessenger.deliverRatingToService(currentRatingRecord);
-                final Receipt ratingResponseReceipt = new LanguageManager().getLanguage(ratingResponseJAXB, properties.getLanguageCode()).getReceipt();
-                if (ratingResponseReceipt != null) {
-                    if (currentRatingRecord.getRating().getValue() > 0)
-                        receiptMessage = ratingResponseReceipt.getRatedvalue();
-                    else
-                        receiptMessage = ratingResponseReceipt.getNotratedvalue();
-                }
+            final RatingDeliveryJAXB.Transaction transaction = currentRatingRecord.getTransaction();
+            //todo
+            if (transaction.getCardtype().equals("")) transaction.setCardtype(null);
+            if (transaction.getOperator().equals("")) transaction.setOperator(null);
+            if (transaction.getTendertype().equals("")) transaction.setTendertype(null);
+            //end todo
+            //send the rating
+            final RatingResponseJAXB ratingResponseJAXB = xmlNetworkMessenger.deliverRatingToService(currentRatingRecord);
+            final Receipt ratingResponseReceipt = new LanguageManager().getLanguage(ratingResponseJAXB, properties.getLanguageCode()).getReceipt();
+            //if there was a receipt for that language, and there is a rating record available
+            if (ratingResponseReceipt != null && currentRatingRecord.getRating() != null) {
+                if (currentRatingRecord.getRating().getValue() > 0)
+                    receiptMessage = ratingResponseReceipt.getRatedvalue();
+                else
+                    receiptMessage = ratingResponseReceipt.getNotratedvalue();
             }
         } catch (Exception e) {
             log.error("", e);
@@ -151,6 +153,7 @@ public class TruModule implements ITruModule {
             questionResponseJAXB = xmlNetworkMessenger.getQuestionFromService(properties, transactionId);
             QuestionResponseJAXB.Languages.Language language =
                     new LanguageManager().getLanguage(questionResponseJAXB, properties.getLanguageCode());
+            if (language == null) return null; //there is no question to ask
             if (language.getDisplayElements().getQuestion().getValue().length() > 0) {
                 // We have a question
                 QuestionResponseJAXB.Languages.Language.Receipt receipt = language.getReceipt();
@@ -166,48 +169,43 @@ public class TruModule implements ITruModule {
         String keyStroke = String.valueOf(NO_QUESTION_ASKED);
         long totalTimeTaken = 0;
         try {
+            if (questionResponseJAXB==null) return;
+            final QuestionResponseJAXB.Languages.Language language =
+                    new LanguageManager().getLanguage(questionResponseJAXB, properties.getLanguageCode());
+            final Question question = language.getDisplayElements().getQuestion();
 
-            if (questionResponseJAXB == null) {
-                log.error("TruModule.runQuestion called with a null question response. " +
-                        "Check that the tid and clientid are pre-registered with truRating, " +
-                        "and rerun this application");
-            } else {
-                final QuestionResponseJAXB.Languages.Language language =
-                        new LanguageManager().getLanguage(questionResponseJAXB, properties.getLanguageCode());
-                final Question question = language.getDisplayElements().getQuestion();
+            final int displayWidth = properties.getDeviceCpl();
+            String qText = question.getValue();
+            if (qText != null) {
+                String[] qTextWraps = qText.split("\\\\n");
+                if ((qTextWraps.length == 1) && (qTextWraps[0].length() > displayWidth))
+                    qTextWraps = StringUtilities.wordWrap(qText, displayWidth);
 
-                final int displayWidth = properties.getDeviceCpl();
-                String qText = question.getValue();
-                if (qText != null) {
-                    String[] qTextWraps = qText.split("\\\\n");
-                    if ((qTextWraps.length == 1) && (qTextWraps[0].length() > displayWidth))
-                        qTextWraps = StringUtilities.wordWrap(qText, displayWidth);
+                int timeout = properties.getQuestionTimeout();
+                if (timeout < 1000)
+                    timeout = 60000;
 
-                    int timeout = properties.getQuestionTimeout();
-                    if (timeout < 1000)
-                        timeout = 60000;
+                final long startTime = System.currentTimeMillis();
+                keyStroke = iDevice.displayTruratingQuestionGetKeystroke(qTextWraps, qText, timeout);
+                final long endTime = System.currentTimeMillis();
+                totalTimeTaken = endTime - startTime;
+            }
 
-                    final long startTime = System.currentTimeMillis();
-                    keyStroke = iDevice.displayTruratingQuestionGetKeystroke(qTextWraps, qText, timeout);
-                    final long endTime = System.currentTimeMillis();
-                    totalTimeTaken = endTime - startTime;
-                }
-                //if user rated then check if there is a prize
-                Rating rating = getCurrentRatingRecord(properties).getRating();
-                if ((new Integer(keyStroke) > 0)) {
-                    // Update the receipt text to indicate that the user rated
-                    final QuestionResponseJAXB.Languages.Language.Receipt receipt = language.getReceipt();
-                    iDevice.displayMessage(language.getDisplayElements().getAcknowledgement().getRatedvalue());
-                    receiptMessage=receipt.getRatedvalue();
-                    String prizeCode = prizeManagerService.checkForAPrize(getDevice(), questionResponseJAXB, properties.getLanguageCode());
-                    if (prizeCode!=null) rating.setPrizecode(prizeCode);
-                } else
-                    iDevice.displayMessage(language.getDisplayElements().getAcknowledgement().getNotratedvalue());
-
+            Rating rating;
+            if (new Integer(keyStroke) > 0) {
+                rating = new Rating();
                 rating.setValue(new Short(keyStroke));
                 rating.setResponsetimemilliseconds(totalTimeTaken);
                 rating.setQid(question.getQid());
-            }
+
+                // Update the receipt text to indicate that the user rated
+                final QuestionResponseJAXB.Languages.Language.Receipt receipt = language.getReceipt();
+                iDevice.displayMessage(language.getDisplayElements().getAcknowledgement().getRatedvalue());
+                receiptMessage = receipt.getRatedvalue();
+                String prizeCode = prizeManagerService.checkForAPrize(getDevice(), questionResponseJAXB, properties.getLanguageCode());
+                if (prizeCode != null) rating.setPrizecode(prizeCode);
+            } else
+                iDevice.displayMessage(language.getDisplayElements().getAcknowledgement().getNotratedvalue());
         } catch (Exception e) {
             log.error("truModule error", e);
         }

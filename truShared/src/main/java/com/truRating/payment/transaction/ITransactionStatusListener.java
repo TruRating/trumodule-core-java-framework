@@ -38,7 +38,7 @@ public interface ITransactionStatusListener {
 
 	/**
 	 * Indication of progress so far
-	 *            - The ITransactionContext that holds the request and response
+	 *            - The ITransactionContext that holds the questionRequest and questionResponse
 	 *            instances for this transaction
 	 */
 	void statusUpdate(int status, String description);
@@ -47,7 +47,7 @@ public interface ITransactionStatusListener {
 	 * Instruction to print the receipts when it is time to do so
 	 * 
 	 * @param context
-	 *            - The ITransactionContext that holds the request and response
+	 *            - The ITransactionContext that holds the questionRequest and questionResponse
 	 *            instances for this transaction
 	 */
 //	void printReceipts(ITransactionContext context) throws Exception;
