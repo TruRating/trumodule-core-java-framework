@@ -11,7 +11,7 @@ public class LanguageManager {
 	public QuestionResponseJAXB.Languages.Language getLanguage (QuestionResponseJAXB response, String languageCode) {
 
 		List<QuestionResponseJAXB.Languages.Language> languages = response.getLanguages().getLanguage() ;
-    	if (languages == null)
+    	if (languages.size()==0)
     		return null ;
     	
     	QuestionResponseJAXB.Languages.Language lang = null ; 
@@ -28,7 +28,7 @@ public class LanguageManager {
 	public RatingResponseJAXB.Languages.Language getLanguage (RatingResponseJAXB response, String languageCode) {
 
 		List<RatingResponseJAXB.Languages.Language> languages = response.getLanguages().getLanguage() ;		
-    	if (languages == null)
+    	if (languages.size()==0)
     		return null ;
     	
     	RatingResponseJAXB.Languages.Language lang = null ; 
