@@ -19,6 +19,7 @@
     <modules>
         <module>../truModule</module>
         <module>../truModuleTestHarness</module>
-        <module>../truShared</module>
+        <!--<module>../truShared</module>-->
+        <module>../truModuleMockPaymentApp</module>
     </modules>
 </project>
