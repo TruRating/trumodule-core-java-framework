@@ -34,10 +34,10 @@ import org.apache.log4j.Logger;
 
 import com.trurating.network.ServerConnectionManager;
 import com.trurating.properties.ITruModuleProperties;
-import com.trurating.xml.questionRequest.QuestionRequestJAXB;
-import com.trurating.xml.questionResponse.QuestionResponseJAXB;
-import com.trurating.xml.ratingDelivery.RatingDeliveryJAXB;
-import com.trurating.xml.ratingResponse.RatingResponseJAXB;
+import trurating.service.v121.xml.questionRequest.QuestionRequestJAXB;
+import trurating.service.v121.xml.questionResponse.QuestionResponseJAXB;
+import trurating.service.v121.xml.ratingDelivery.RatingDeliveryJAXB;
+import trurating.service.v121.xml.ratingResponse.RatingResponseJAXB;
 
 /**
  * Created by Paul on 08/03/2016.

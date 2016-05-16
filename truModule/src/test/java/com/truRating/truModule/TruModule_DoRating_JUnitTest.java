@@ -20,12 +20,12 @@ import com.trurating.network.xml.TruRatingMessageFactory;
 import com.trurating.prize.PrizeManagerService;
 import com.trurating.properties.ITruModuleProperties;
 import com.trurating.properties.TruModuleProperties;
-import com.trurating.xml.questionResponse.QuestionResponseJAXB;
-import com.trurating.xml.questionResponse.QuestionResponseJAXB.Languages;
-import com.trurating.xml.questionResponse.QuestionResponseJAXB.Languages.Language;
-import com.trurating.xml.questionResponse.QuestionResponseJAXB.Languages.Language.DisplayElements.Question;
-import com.trurating.xml.ratingDelivery.RatingDeliveryJAXB;
-import com.trurating.xml.ratingDelivery.RatingDeliveryJAXB.Rating;
+import trurating.service.v121.xml.questionResponse.QuestionResponseJAXB;
+import trurating.service.v121.xml.questionResponse.QuestionResponseJAXB.Languages;
+import trurating.service.v121.xml.questionResponse.QuestionResponseJAXB.Languages.Language;
+import trurating.service.v121.xml.questionResponse.QuestionResponseJAXB.Languages.Language.DisplayElements.Question;
+import trurating.service.v121.xml.ratingDelivery.RatingDeliveryJAXB;
+import trurating.service.v121.xml.ratingDelivery.RatingDeliveryJAXB.Rating;
 
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
@@ -202,7 +202,7 @@ public class TruModule_DoRating_JUnitTest {
         displayElements.setQuestion(question);
         language.setDisplayElements(displayElements);
 
-        com.trurating.xml.questionResponse.QuestionResponseJAXB.Languages.Language.Receipt receipt =
+        QuestionResponseJAXB.Languages.Language.Receipt receipt =
                 new Language.Receipt();
         receipt.setRatedvalue("8");
         language.setReceipt(receipt);

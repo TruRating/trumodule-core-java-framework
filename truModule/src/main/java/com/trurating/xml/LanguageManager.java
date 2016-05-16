@@ -3,8 +3,8 @@ package com.trurating.xml;
 import java.util.List;
 import java.util.ListIterator;
 
-import com.trurating.xml.questionResponse.QuestionResponseJAXB;
-import com.trurating.xml.ratingResponse.RatingResponseJAXB;
+import trurating.service.v121.xml.questionResponse.QuestionResponseJAXB;
+import trurating.service.v121.xml.ratingResponse.RatingResponseJAXB;
 
 public class LanguageManager {
 

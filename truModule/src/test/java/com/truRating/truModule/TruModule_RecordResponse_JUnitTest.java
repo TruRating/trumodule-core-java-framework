@@ -20,12 +20,12 @@ import com.trurating.TruModule;
 import com.trurating.device.IDevice;
 import com.trurating.network.xml.XMLNetworkMessenger;
 import com.trurating.properties.ITruModuleProperties;
-import com.trurating.xml.ratingDelivery.RatingDeliveryJAXB;
-import com.trurating.xml.ratingDelivery.RatingDeliveryJAXB.Rating;
-import com.trurating.xml.ratingResponse.RatingResponseJAXB;
-import com.trurating.xml.ratingResponse.RatingResponseJAXB.Languages;
-import com.trurating.xml.ratingResponse.RatingResponseJAXB.Languages.Language;
-import com.trurating.xml.ratingResponse.RatingResponseJAXB.Languages.Language.Receipt;
+import trurating.service.v121.xml.ratingDelivery.RatingDeliveryJAXB;
+import trurating.service.v121.xml.ratingDelivery.RatingDeliveryJAXB.Rating;
+import trurating.service.v121.xml.ratingResponse.RatingResponseJAXB;
+import trurating.service.v121.xml.ratingResponse.RatingResponseJAXB.Languages;
+import trurating.service.v121.xml.ratingResponse.RatingResponseJAXB.Languages.Language;
+import trurating.service.v121.xml.ratingResponse.RatingResponseJAXB.Languages.Language.Receipt;
 
 /**
  * Created by Paul on 10/03/2016.

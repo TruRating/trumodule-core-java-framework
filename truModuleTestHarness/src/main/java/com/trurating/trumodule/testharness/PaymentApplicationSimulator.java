@@ -10,7 +10,7 @@ import com.trurating.payment.TenderType;
 import com.trurating.payment.TransactionResult;
 import com.trurating.properties.ITruModuleProperties;
 import com.trurating.trumodule.testharness.device.TruRatingConsoleDemoDevice;
-import com.trurating.xml.ratingDelivery.RatingDeliveryJAXB.Transaction;
+import trurating.service.v121.xml.ratingDelivery.RatingDeliveryJAXB.Transaction;
 
 /**
  * Created by Paul on 01/03/2016.

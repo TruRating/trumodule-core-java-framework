@@ -21,7 +21,7 @@ package com.trurating;
 
 import com.trurating.device.IDevice;
 import com.trurating.properties.ITruModuleProperties;
-import com.trurating.xml.ratingDelivery.RatingDeliveryJAXB;
+import trurating.service.v121.xml.ratingDelivery.RatingDeliveryJAXB;
 
 /**
  * Created by Paul on 01/03/2016.

@@ -20,9 +20,9 @@ import com.trurating.network.xml.XMLNetworkMessenger;
 import com.trurating.properties.ITruModuleProperties;
 import com.trurating.properties.UnitTestProperties;
 import com.trurating.util.IntegrationTestStartUp;
-import com.trurating.xml.questionResponse.QuestionResponseJAXB;
-import com.trurating.xml.ratingDelivery.RatingDeliveryJAXB;
-import com.trurating.xml.ratingResponse.RatingResponseJAXB;
+import trurating.service.v121.xml.questionResponse.QuestionResponseJAXB;
+import trurating.service.v121.xml.ratingDelivery.RatingDeliveryJAXB;
+import trurating.service.v121.xml.ratingResponse.RatingResponseJAXB;
 
 /**
  * Created by Paul on 11/03/2016.

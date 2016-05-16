@@ -20,9 +20,9 @@
 package com.trurating.network.xml;
 
 import com.trurating.properties.ITruModuleProperties;
-import com.trurating.xml.questionResponse.QuestionResponseJAXB;
-import com.trurating.xml.ratingDelivery.RatingDeliveryJAXB;
-import com.trurating.xml.ratingResponse.RatingResponseJAXB;
+import trurating.service.v121.xml.questionResponse.QuestionResponseJAXB;
+import trurating.service.v121.xml.ratingDelivery.RatingDeliveryJAXB;
+import trurating.service.v121.xml.ratingResponse.RatingResponseJAXB;
 
 public interface IXMLNetworkMessenger {
 

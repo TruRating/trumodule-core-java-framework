@@ -28,9 +28,9 @@ import org.apache.log4j.Logger;
 import com.trurating.TruModule;
 import com.trurating.properties.ITruModuleProperties;
 import com.trurating.properties.TruModuleProperties;
-import com.trurating.xml.questionRequest.QuestionRequestJAXB;
-import com.trurating.xml.ratingDelivery.RatingDeliveryJAXB;
-import com.trurating.xml.ratingDelivery.RatingDeliveryJAXB.Rating;
+import trurating.service.v121.xml.questionRequest.QuestionRequestJAXB;
+import trurating.service.v121.xml.ratingDelivery.RatingDeliveryJAXB;
+import trurating.service.v121.xml.ratingDelivery.RatingDeliveryJAXB.Rating;
 
 /**
  * Created by Paul on 09/03/2016.

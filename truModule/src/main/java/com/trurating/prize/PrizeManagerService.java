@@ -21,7 +21,7 @@ package com.trurating.prize;
 
 import com.trurating.device.IDevice;
 import com.trurating.xml.LanguageManager;
-import com.trurating.xml.questionResponse.QuestionResponseJAXB;
+import trurating.service.v121.xml.questionResponse.QuestionResponseJAXB;
 
 /**
  * Created by Paul on 10/03/2016.

@@ -20,6 +20,7 @@
 package com.trurating;
 
 import com.trurating.network.xml.IXMLNetworkMessenger;
+import com.trurating.xml.LanguageManager;
 import org.apache.log4j.Logger;
 
 import com.trurating.device.IDevice;
@@ -28,13 +29,12 @@ import com.trurating.network.xml.XMLNetworkMessenger;
 import com.trurating.prize.PrizeManagerService;
 import com.trurating.properties.ITruModuleProperties;
 import com.trurating.util.StringUtilities;
-import com.trurating.xml.LanguageManager;
-import com.trurating.xml.questionResponse.QuestionResponseJAXB;
-import com.trurating.xml.questionResponse.QuestionResponseJAXB.Languages.Language.DisplayElements.Question;
-import com.trurating.xml.ratingDelivery.RatingDeliveryJAXB;
-import com.trurating.xml.ratingDelivery.RatingDeliveryJAXB.Rating;
-import com.trurating.xml.ratingResponse.RatingResponseJAXB;
-import com.trurating.xml.ratingResponse.RatingResponseJAXB.Languages.Language.Receipt;
+import trurating.service.v121.xml.questionResponse.QuestionResponseJAXB;
+import trurating.service.v121.xml.questionResponse.QuestionResponseJAXB.Languages.Language.DisplayElements.Question;
+import trurating.service.v121.xml.ratingDelivery.RatingDeliveryJAXB;
+import trurating.service.v121.xml.ratingDelivery.RatingDeliveryJAXB.Rating;
+import trurating.service.v121.xml.ratingResponse.RatingResponseJAXB;
+import trurating.service.v121.xml.ratingResponse.RatingResponseJAXB.Languages.Language.Receipt;
 
 /**
  * TruModule is the main class of a library that encapsulates the behaviour
