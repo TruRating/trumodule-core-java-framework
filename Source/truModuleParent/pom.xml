@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <packaging>pom</packaging>
+
+    <groupId>com.truRating</groupId>
+    <artifactId>truModuleParent</artifactId>
+    <version>1.1-SNAPSHOT</version>
+
+    <properties>
+        <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+        <javaVersion>1.5</javaVersion>
+        <maven.compiler.source>1.5</maven.compiler.source>
+        <maven.compiler.target>1.5</maven.compiler.target>
+    </properties>
+
+    <modules>
+        <module>../truModule</module>
+        <module>../truModuleTestHarness</module>
+        <!--<module>../truShared</module>-->
+        <module>../truModuleMockPaymentApp</module>
+    </modules>
+</project>
