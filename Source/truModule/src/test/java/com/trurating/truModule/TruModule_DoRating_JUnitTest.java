@@ -159,7 +159,7 @@ public class TruModule_DoRating_JUnitTest {
         truModule.doRating(properties);
         Rating rating = truModule.getCurrentRatingRecord(properties).getRating() ;
         Assert.assertEquals(rating.getValue(), TruModule.USER_CANCELLED);
-        Assert.assertEquals("", rating.getPrizecode());
+        Assert.assertEquals(null, rating.getPrizecode());
     }
 
     @Test
@@ -185,7 +185,7 @@ public class TruModule_DoRating_JUnitTest {
         truModule.doRating(properties);
         Rating rating = truModule.getCurrentRatingRecord(properties).getRating() ;
         Assert.assertEquals(rating.getValue(), TruModule.USER_CANCELLED);
-        Assert.assertEquals("", rating.getPrizecode());
+        Assert.assertEquals(null, rating.getPrizecode());
     }
     
     private QuestionResponseJAXB getQuestionResponseJAXB() {
@@ -199,6 +199,7 @@ public class TruModule_DoRating_JUnitTest {
         language.setLanguagetype("EN-GB");
 
         Language.DisplayElements displayElements = new Language.DisplayElements();
+        displayElements.setAcknowledgement(new Language.DisplayElements.Acknowledgement());
         displayElements.setQuestion(question);
         language.setDisplayElements(displayElements);
 
