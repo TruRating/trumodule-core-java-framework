@@ -97,13 +97,13 @@ public class TruRatingMessageFactory {
         ratingDeliveryJAXB.setUid(new BigInteger(String.valueOf(now.getTime())));
 
         // Rating element
-//        RatingDeliveryJAXB.Rating ratingElement = new RatingDeliveryJAXB.Rating();
-//        ratingElement.setValue(TruModule.NO_RATING_VALUE); // No rating value
-//        ratingElement.setResponsetimemilliseconds(0L);
-//        ratingElement.setQid(0L);
-//        ratingElement.setPrizecode("");
-//        ratingElement.setRatinglanguage(properties.getLanguageCode());
-//        ratingDeliveryJAXB.setRating(ratingElement);
+        RatingDeliveryJAXB.Rating ratingElement = new RatingDeliveryJAXB.Rating();
+        ratingElement.setValue(TruModule.NO_RATING_VALUE); // No rating value
+        ratingElement.setResponsetimemilliseconds(0L);
+        ratingElement.setQid(0L);
+        ratingElement.setPrizecode("");
+        ratingElement.setRatinglanguage(properties.getLanguageCode());
+        ratingDeliveryJAXB.setRating(ratingElement);
 
         // Language element
         RatingDeliveryJAXB.Languages.Language language = new RatingDeliveryJAXB.Languages.Language();
