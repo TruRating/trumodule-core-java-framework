@@ -198,20 +198,30 @@ public class TruModule implements ITruModule {
             }
 
             Rating rating;
-            if (new Integer(keyStroke) > 0) {
+            int ratingValue = new Integer(keyStroke);
+            if (ratingValue >= -1 && ratingValue <= 9) {
                 rating = new Rating();
                 rating.setValue(new Short(keyStroke));
                 rating.setResponsetimemilliseconds(totalTimeTaken);
                 rating.setQid(question.getQid());
+                if (ratingValue > -1) {
+                    // Update the receipt text to indicate that the user rated
+                    iDevice.displayMessage(language.getDisplayElements().getAcknowledgement().getRatedvalue());
 
-                // Update the receipt text to indicate that the user rated
-                final QuestionResponseJAXB.Languages.Language.Receipt receipt = language.getReceipt();
-                iDevice.displayMessage(language.getDisplayElements().getAcknowledgement().getRatedvalue());
-                receiptMessage = receipt.getRatedvalue();
-                String prizeCode = prizeManagerService.checkForAPrize(getDevice(), questionResponseJAXB, properties.getLanguageCode());
-                if (prizeCode != null) rating.setPrizecode(prizeCode);
-            } else
-                iDevice.displayMessage(language.getDisplayElements().getAcknowledgement().getNotratedvalue());
+                    final QuestionResponseJAXB.Languages.Language.Receipt receipt = language.getReceipt();
+                    receiptMessage = receipt.getRatedvalue();
+
+                    String prizeCode = prizeManagerService.checkForAPrize(getDevice(), questionResponseJAXB, properties.getLanguageCode());
+                    if (prizeCode != null) rating.setPrizecode(prizeCode);
+
+                } else {
+                    iDevice.displayMessage(language.getDisplayElements().getAcknowledgement().getNotratedvalue());
+
+                    final QuestionResponseJAXB.Languages.Language.Receipt receipt = language.getReceipt();
+                    receiptMessage = receipt.getNotratedvalue();
+                }
+                getCurrentRatingRecord(properties).setRating(rating);
+            }
         } catch (Exception e) {
             log.error("truModule error", e);
         }
