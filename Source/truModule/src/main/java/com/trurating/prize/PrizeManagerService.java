@@ -20,21 +20,23 @@
 package com.trurating.prize;
 
 import com.trurating.device.IDevice;
+import com.trurating.service.v200.xml.Response;
+import com.trurating.service.v200.xml.ResponseLanguage;
+import com.trurating.service.v200.xml.ResponseScreen;
 import com.trurating.xml.LanguageManager;
-import trurating.service.v121.xml.questionResponse.QuestionResponseJAXB;
 
 /**
  * Created by Paul on 10/03/2016.
  */
 public class PrizeManagerService {
 
-    public String checkForAPrize(IDevice iDevice, QuestionResponseJAXB questionResponseJAXB, String languageCode) {
+    public String checkForAPrize(IDevice iDevice, Response response, String languageCode) {
     	String prizeCode = "";
-    	QuestionResponseJAXB.Languages.Language language = new LanguageManager().getLanguage(questionResponseJAXB, languageCode) ;
-    	QuestionResponseJAXB.Languages.Language.DisplayElements.Prize prize = language.getDisplayElements().getPrize() ;
+    	ResponseLanguage language = new LanguageManager().getLanguage(response, languageCode) ;
+    	ResponseScreen responseScreen = language.getScreen().get(0);
 
-    	if (prize != null) {
-            prizeCode = prize.getValue();
+    	if (responseScreen != null) {
+            prizeCode = responseScreen.getValue();
             if (prizeCode.length() > 0) {
                 //we have a winner
                 iDevice.displayMessageWaitForKey("Congratulations! You won a prize, check your receipt... Press Enter.", 30000);

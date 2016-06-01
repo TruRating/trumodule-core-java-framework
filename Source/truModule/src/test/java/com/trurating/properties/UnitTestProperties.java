@@ -25,6 +25,11 @@ public class UnitTestProperties implements ITruModuleProperties {
         return INSTANCE;
     }
 
+    @Override
+    public String getPartnerId() {
+        return "truRating";
+    }
+
     public String getMid() {
         return "123456";
     }

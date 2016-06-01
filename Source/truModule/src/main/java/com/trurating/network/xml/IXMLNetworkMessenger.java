@@ -20,18 +20,15 @@
 package com.trurating.network.xml;
 
 import com.trurating.properties.ITruModuleProperties;
-import trurating.service.v121.xml.questionResponse.QuestionResponseJAXB;
-import trurating.service.v121.xml.ratingDelivery.RatingDeliveryJAXB;
-import trurating.service.v121.xml.ratingResponse.RatingResponseJAXB;
+import com.trurating.service.v200.xml.Request;
+import com.trurating.service.v200.xml.Response;
 
 public interface IXMLNetworkMessenger {
 
     /**
     Send the questionRequest for a question, if no questionResponse after timeOut seconds, will return null;
      */
-	QuestionResponseJAXB getQuestionFromService(ITruModuleProperties properties, long transactionId) ;
+	Response getResponseFromService(Request request, ITruModuleProperties properties);
 	
-    RatingResponseJAXB deliverRatingToService(RatingDeliveryJAXB rating) ;
-    
-    void close() ;
+    void close();
 }

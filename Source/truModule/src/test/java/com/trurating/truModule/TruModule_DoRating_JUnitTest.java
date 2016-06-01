@@ -24,8 +24,8 @@ import trurating.service.v121.xml.questionResponse.QuestionResponseJAXB;
 import trurating.service.v121.xml.questionResponse.QuestionResponseJAXB.Languages;
 import trurating.service.v121.xml.questionResponse.QuestionResponseJAXB.Languages.Language;
 import trurating.service.v121.xml.questionResponse.QuestionResponseJAXB.Languages.Language.DisplayElements.Question;
-import trurating.service.v121.xml.ratingDelivery.RatingDeliveryJAXB;
-import trurating.service.v121.xml.ratingDelivery.RatingDeliveryJAXB.Rating;
+import trurating.service.v121.xml.ratingDelivery.RequestRating;
+import trurating.service.v121.xml.ratingDelivery.RequestRating.Rating;
 
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
@@ -68,7 +68,7 @@ public class TruModule_DoRating_JUnitTest {
         final QuestionResponseJAXB questionResponseJAXB = getQuestionResponseJAXB();
 
         new Expectations() {{
-            xmlNetworkMessenger.getQuestionFromService((ITruModuleProperties)any, anyLong);
+            xmlNetworkMessenger.getResponseFromService((ITruModuleProperties)any);
             returns(questionResponseJAXB);
             times = 1;
             iDevice.displayTruratingQuestionGetKeystroke((String[])any, (String)any, anyInt);
@@ -78,12 +78,12 @@ public class TruModule_DoRating_JUnitTest {
             returns ("555");
             times = 1;
             truRatingMessageFactory.createRatingRecord((ITruModuleProperties)any);
-            returns (getRatingDeliveryJAXB());
+            returns (getRequestRating());
             times = 1;
         }};
 
         truModule.doRating(properties);
-        RatingDeliveryJAXB iRatingRecord = truModule.getCurrentRatingRecord(properties) ;
+        RequestRating iRatingRecord = truModule.getCurrentRatingRecord(properties) ;
         Rating rating = iRatingRecord.getRating() ;
 
         Assert.assertNotNull(iRatingRecord.getTransaction().getDatetime());
@@ -96,16 +96,16 @@ public class TruModule_DoRating_JUnitTest {
     public void doRatingServiceFailsTest() {
 
         new Expectations() {{
-            xmlNetworkMessenger.getQuestionFromService((ITruModuleProperties)any, anyLong);
+            xmlNetworkMessenger.getResponseFromService((ITruModuleProperties)any);
             returns(null);
             truRatingMessageFactory.createRatingRecord((ITruModuleProperties)any);
-            returns (getRatingDeliveryJAXB());
+            returns (getRequestRating());
             times = 1;
         }};
 
         TruModuleProperties properties = new TruModuleProperties() ;
         truModule.doRating(properties);
-        RatingDeliveryJAXB iRatingRecord = truModule.getCurrentRatingRecord(properties) ;
+        RequestRating iRatingRecord = truModule.getCurrentRatingRecord(properties) ;
         Assert.assertEquals(iRatingRecord.getRating().getValue(), TruModule.NO_RATING_VALUE);
         // We should have a value
     }
@@ -117,14 +117,14 @@ public class TruModule_DoRating_JUnitTest {
         final QuestionResponseJAXB questionResponseJAXB = getQuestionResponseJAXB();
 
         new Expectations() {{
-            xmlNetworkMessenger.getQuestionFromService((ITruModuleProperties)any, anyLong);
+            xmlNetworkMessenger.getResponseFromService((ITruModuleProperties)any);
             returns(questionResponseJAXB);
             times = 1;
             iDevice.displayTruratingQuestionGetKeystroke((String[])any, (String)any, anyInt);
             returns ("8");
             times = 1;
             truRatingMessageFactory.createRatingRecord((ITruModuleProperties)any);
-            returns (getRatingDeliveryJAXB());
+            returns (getRequestRating());
             times = 1;
             prizeManagerService.checkForAPrize((IDevice) any, (QuestionResponseJAXB)any, (String) any);
             returns ("");
@@ -142,14 +142,14 @@ public class TruModule_DoRating_JUnitTest {
         final QuestionResponseJAXB questionResponseJAXB = getQuestionResponseJAXB();
 
         new Expectations() {{
-            xmlNetworkMessenger.getQuestionFromService((ITruModuleProperties)any, anyLong);
+            xmlNetworkMessenger.getResponseFromService((ITruModuleProperties)any);
             returns(questionResponseJAXB);
             times = 1;
             iDevice.displayTruratingQuestionGetKeystroke((String[])any, (String)any, anyInt);
             returns ("-1");
             times = 1;
             truRatingMessageFactory.createRatingRecord((ITruModuleProperties)any);
-            returns (getRatingDeliveryJAXB());
+            returns (getRequestRating());
             times = 1;
             prizeManagerService.checkForAPrize((IDevice) any, (QuestionResponseJAXB)any, (String) any);
             returns ("");
@@ -168,7 +168,7 @@ public class TruModule_DoRating_JUnitTest {
         final QuestionResponseJAXB questionResponseJAXB = getQuestionResponseJAXB();
 
         new Expectations() {{
-            xmlNetworkMessenger.getQuestionFromService((ITruModuleProperties)any, anyLong);
+            xmlNetworkMessenger.getResponseFromService((ITruModuleProperties)any);
             returns(questionResponseJAXB);
             times = 1;
             iDevice.displayTruratingQuestionGetKeystroke((String[])any, (String)any, anyInt);
@@ -178,7 +178,7 @@ public class TruModule_DoRating_JUnitTest {
             returns ("555");
             times = 0;
             truRatingMessageFactory.createRatingRecord((ITruModuleProperties)any);
-            returns (getRatingDeliveryJAXB());
+            returns (getRequestRating());
             times = 1;
         }};
 
@@ -214,33 +214,33 @@ public class TruModule_DoRating_JUnitTest {
         return questionResponseJAXB;
     }
 
-    private RatingDeliveryJAXB getRatingDeliveryJAXB() {
+    private RequestRating getRequestRating() {
 
-        RatingDeliveryJAXB ratingDeliveryJAXB = new RatingDeliveryJAXB();
-        ratingDeliveryJAXB.setErrortext("");
-        RatingDeliveryJAXB.CardHash cardHash = new RatingDeliveryJAXB.CardHash();
+        RequestRating RequestRating = new RequestRating();
+        RequestRating.setErrortext("");
+        RequestRating.CardHash cardHash = new RequestRating.CardHash();
         cardHash.setCardhashdata("cardHarhValue");
         cardHash.setCardhashdatatype("MD5");
-        ratingDeliveryJAXB.setCardHash(cardHash);
-        RatingDeliveryJAXB.Languages languages = new RatingDeliveryJAXB.Languages();
-        RatingDeliveryJAXB.Languages.Language language = new RatingDeliveryJAXB.Languages.Language();
+        RequestRating.setCardHash(cardHash);
+        RequestRating.Languages languages = new RequestRating.Languages();
+        RequestRating.Languages.Language language = new RequestRating.Languages.Language();
         language.setIncludereceipt(false);
         language.setLanguagetype("en-GB");
         languages.getLanguage().add(language);
-        ratingDeliveryJAXB.setLanguages(languages);
+        RequestRating.setLanguages(languages);
 
-        ratingDeliveryJAXB.setMid("12345");
-        ratingDeliveryJAXB.setTid("12345");
-        ratingDeliveryJAXB.setMessagetype("TYPE");
+        RequestRating.setMid("12345");
+        RequestRating.setTid("12345");
+        RequestRating.setMessagetype("TYPE");
         Rating rating = new Rating();
         rating.setValue(TruModule.NO_RATING_VALUE);
         rating.setPrizecode("");
         rating.setResponsetimemilliseconds(5L);
-        ratingDeliveryJAXB.setRating(rating);
-        ratingDeliveryJAXB.setUid(new BigInteger("123456789"));
+        RequestRating.setRating(rating);
+        RequestRating.setUid(new BigInteger("123456789"));
 
         Date now = new Date();
-        RatingDeliveryJAXB.Transaction transaction = new RatingDeliveryJAXB.Transaction();
+        RequestRating.Transaction transaction = new RequestRating.Transaction();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         transaction.setDatetime(sdf.format(now));
         transaction.setTxnid(now.getTime());
@@ -252,9 +252,9 @@ public class TruModule_DoRating_JUnitTest {
         transaction.setTendertype("");
         transaction.setResult("");
         transaction.setOperator("");
-        ratingDeliveryJAXB.setTransaction(transaction);
+        RequestRating.setTransaction(transaction);
 
-        return ratingDeliveryJAXB;
+        return RequestRating;
     }
 }
 

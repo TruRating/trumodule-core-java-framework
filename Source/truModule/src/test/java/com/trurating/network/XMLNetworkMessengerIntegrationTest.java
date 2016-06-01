@@ -2,9 +2,8 @@ package com.trurating.network;
 
 import static mockit.Deencapsulation.setField;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
+import com.trurating.service.v200.xml.RequestRating;
+import com.trurating.service.v200.xml.Response;
 import mockit.Injectable;
 import mockit.Tested;
 import mockit.integration.junit4.JMockit;
@@ -20,9 +19,6 @@ import com.trurating.network.xml.XMLNetworkMessenger;
 import com.trurating.properties.ITruModuleProperties;
 import com.trurating.properties.UnitTestProperties;
 import com.trurating.util.IntegrationTestStartUp;
-import trurating.service.v121.xml.questionResponse.QuestionResponseJAXB;
-import trurating.service.v121.xml.ratingDelivery.RatingDeliveryJAXB;
-import trurating.service.v121.xml.ratingResponse.RatingResponseJAXB;
 
 /**
  * Created by Paul on 11/03/2016.
@@ -46,7 +42,7 @@ public class XMLNetworkMessengerIntegrationTest {
         IntegrationTestStartUp.startup();
 
         XMLNetworkMessenger xmlNetworkMessenger = new XMLNetworkMessenger();
-        QuestionResponseJAXB questionResponse = xmlNetworkMessenger.getQuestionFromService(properties, 12345);
+        Response questionResponse = xmlNetworkMessenger.getResponseFromService(properties);
         Assert.assertNotNull(questionResponse);
     }
     
@@ -58,14 +54,14 @@ public class XMLNetworkMessengerIntegrationTest {
 
         XMLNetworkMessenger xmlNetworkMessenger = new XMLNetworkMessenger();
         // Open the connection
-        QuestionResponseJAXB questionResponse = xmlNetworkMessenger.getQuestionFromService(properties, 12345);
+        Response responseFromService = xmlNetworkMessenger.getResponseFromService(properties);
         
-        RatingDeliveryJAXB ratingRecord = new TruRatingMessageFactory().createRatingRecord(properties);
-        ratingRecord.getRating().setValue((short) 5);
+        RequestRating requestRating = new TruRatingMessageFactory().createRatingRecord(properties);
+        requestRating.setValue((short) 5);
         
         // Deliver the result
-        RatingResponseJAXB ratingResponseJAXB= xmlNetworkMessenger.deliverRatingToService(ratingRecord);
-        Assert.assertNotNull(ratingResponseJAXB);
+        RequestRating ratingResponse= xmlNetworkMessenger.getResponseFromService(requestRating);
+        Assert.assertNotNull(ratingResponse);
     }
 
     //todo make a full rating for test purposes.. :)

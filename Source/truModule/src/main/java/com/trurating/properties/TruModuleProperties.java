@@ -38,6 +38,11 @@ public class TruModuleProperties implements ITruModuleProperties {
     public TruModuleProperties() {
     }
 
+    public String getPartnerId() {
+        return partnerId;
+    }
+    private String partnerId="";
+
     /**
      * MID - returns a unique idenitifier for the Store 
      */

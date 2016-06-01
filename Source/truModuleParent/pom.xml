@@ -11,9 +11,9 @@
 
     <properties>
         <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-        <javaVersion>1.5</javaVersion>
-        <maven.compiler.source>1.5</maven.compiler.source>
-        <maven.compiler.target>1.5</maven.compiler.target>
+        <javaVersion>1.6</javaVersion>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
     </properties>
 
     <modules>

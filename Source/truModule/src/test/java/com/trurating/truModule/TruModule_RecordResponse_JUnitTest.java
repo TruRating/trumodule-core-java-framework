@@ -20,8 +20,8 @@ import com.trurating.TruModule;
 import com.trurating.device.IDevice;
 import com.trurating.network.xml.XMLNetworkMessenger;
 import com.trurating.properties.ITruModuleProperties;
-import trurating.service.v121.xml.ratingDelivery.RatingDeliveryJAXB;
-import trurating.service.v121.xml.ratingDelivery.RatingDeliveryJAXB.Rating;
+import trurating.service.v121.xml.ratingDelivery.RequestRating;
+import trurating.service.v121.xml.ratingDelivery.RequestRating.Rating;
 import trurating.service.v121.xml.ratingResponse.RatingResponseJAXB;
 import trurating.service.v121.xml.ratingResponse.RatingResponseJAXB.Languages;
 import trurating.service.v121.xml.ratingResponse.RatingResponseJAXB.Languages.Language;
@@ -44,7 +44,7 @@ public class TruModule_RecordResponse_JUnitTest {
     @Injectable
     ITruModuleProperties properties;
     @Injectable
-    RatingDeliveryJAXB.Transaction transaction;
+    RequestRating.Transaction transaction;
 
     @Before
     public void setUp() {
@@ -61,12 +61,12 @@ public class TruModule_RecordResponse_JUnitTest {
         final RatingResponseJAXB ratingResponseJAXB= getRatingResponseMockJAXBTest();
 
         new Expectations() {{
-            xmlNetworkMessenger.deliverRatingToService((RatingDeliveryJAXB) any);
+            xmlNetworkMessenger.deliverRatingToService((RequestRating) any);
             returns(ratingResponseJAXB);
             times = 1;
         }};
 
-        RatingDeliveryJAXB iRatingRecord = truModule.getCurrentRatingRecord(properties) ;
+        RequestRating iRatingRecord = truModule.getCurrentRatingRecord(properties) ;
         Rating rating = iRatingRecord.getRating() ;
         rating.setValue((short)8);
 
@@ -78,7 +78,7 @@ public class TruModule_RecordResponse_JUnitTest {
     public void recordResponseDeliveryFailsTest() {
 
         new Expectations() {{
-            xmlNetworkMessenger.deliverRatingToService((RatingDeliveryJAXB) any);
+            xmlNetworkMessenger.deliverRatingToService((RequestRating) any);
             returns(null);
             times = 0;
         }};

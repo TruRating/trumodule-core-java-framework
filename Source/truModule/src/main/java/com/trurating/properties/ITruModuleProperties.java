@@ -22,12 +22,17 @@ package com.trurating.properties;
 public interface ITruModuleProperties {
 
     /**
-     * MID - returns a unique idenitifier for the Store 
+        PARTNERID - a unique identifier for partners, pre-agreed with truRating
+     */
+    String getPartnerId();
+
+    /**
+     * MID - returns a unique identifier for the Store
      */
     String getMid();
 
     /**
-     * TID - A unique identifer for the till / lane
+     * TID - A unique identifier for the till / lane
      */
     String getTid();
 
@@ -109,4 +114,5 @@ public interface ITruModuleProperties {
      * The timeout to use for socket connections to the truService application
      */
     int getTruServiceSocketTimeoutInMilliSeconds();
+
 }

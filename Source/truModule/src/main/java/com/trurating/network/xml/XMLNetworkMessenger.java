@@ -30,14 +30,11 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import com.trurating.service.v200.xml.*;
 import org.apache.log4j.Logger;
 
 import com.trurating.network.ServerConnectionManager;
 import com.trurating.properties.ITruModuleProperties;
-import trurating.service.v121.xml.questionRequest.QuestionRequestJAXB;
-import trurating.service.v121.xml.questionResponse.QuestionResponseJAXB;
-import trurating.service.v121.xml.ratingDelivery.RatingDeliveryJAXB;
-import trurating.service.v121.xml.ratingResponse.RatingResponseJAXB;
 
 /**
  * Created by Paul on 08/03/2016.
@@ -54,17 +51,14 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
      */
     private ServerConnectionManager serverConnectionManager;
     
-    private volatile QuestionResponseJAXB questionResponseJAXB = null;
-    private volatile RatingResponseJAXB ratingResponseJAXB = null;
+    private volatile Request request = null;
+    private volatile Response response = null;
 
-    private Marshaller questionRequestMarshaller;
-    private Marshaller questionResponseMarshaller;
-    private Unmarshaller questionResponseUnmarshaller;
-    private Marshaller ratingDeliveryMarshaller;
-    private Marshaller ratingResponseMarshaller;
-    private Unmarshaller ratingResponseUnmarshaller;
+    private Marshaller requestMarshaller;
+    private Marshaller responseMarshaller;
+    private Unmarshaller responseUnmarshaller;
     private TruRatingMessageFactory truRatingMessageFactory;
-    private XMLOutputFactory xmlOutputFactory = null ; 
+    private XMLOutputFactory xmlOutputFactory = null ;
 
     public XMLNetworkMessenger() {
 
@@ -73,29 +67,17 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
         	
             xmlOutputFactory = XMLOutputFactory.newInstance();
 
-            JAXBContext contextQuestionRequest = JAXBContext.newInstance(QuestionRequestJAXB.class);
-            JAXBContext contextQuestionResponse = JAXBContext.newInstance(QuestionResponseJAXB.class);
-            JAXBContext contextRatingsDelivery = JAXBContext.newInstance(RatingDeliveryJAXB.class);
-            JAXBContext contextRatingsResponse = JAXBContext.newInstance(RatingResponseJAXB.class);
+            JAXBContext contextRequest = JAXBContext.newInstance(Request.class);
+            JAXBContext contextResponse = JAXBContext.newInstance(Response.class);
 
-            questionRequestMarshaller = contextQuestionRequest.createMarshaller();
-            questionRequestMarshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
-            questionRequestMarshaller.setProperty("jaxb.encoding",  "US-ASCII");
-            questionResponseUnmarshaller = contextQuestionResponse.createUnmarshaller();
+            requestMarshaller = contextRequest.createMarshaller();
+            requestMarshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
+            requestMarshaller.setProperty("jaxb.encoding",  "US-ASCII");
+            responseUnmarshaller = contextResponse.createUnmarshaller();
 
-            questionResponseMarshaller = contextQuestionResponse.createMarshaller();
-            questionRequestMarshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
-            questionRequestMarshaller.setProperty("jaxb.encoding",  "US-ASCII");
-
-            ratingDeliveryMarshaller = contextRatingsDelivery.createMarshaller();
-            ratingDeliveryMarshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
-            ratingDeliveryMarshaller.setProperty("jaxb.encoding",  "US-ASCII");
-
-            ratingResponseMarshaller = contextRatingsResponse.createMarshaller();
-            ratingResponseMarshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
-            ratingResponseMarshaller.setProperty("jaxb.encoding",  "US-ASCII");
-
-            ratingResponseUnmarshaller = contextRatingsResponse.createUnmarshaller();
+            responseMarshaller = contextResponse.createMarshaller();
+            requestMarshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
+            requestMarshaller.setProperty("jaxb.encoding",  "US-ASCII");
 
             truRatingMessageFactory = new TruRatingMessageFactory();
 
@@ -103,11 +85,11 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
             log.error("", e);
         }
     }
-   
+
     /**
         Will send the questionRequest for a question, if no questionResponse after timeOut seconds, will return null;
      */
-    public synchronized QuestionResponseJAXB getQuestionFromService(ITruModuleProperties properties, long transactionId) {
+        public synchronized Response getResponseFromService(Request request, ITruModuleProperties properties) {
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
 
@@ -120,29 +102,28 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
                     log.info("Blocking on question return");
                     final byte[] ba = serverConnectionManager.readInput();
                     final InputStream myInputStream = new ByteArrayInputStream(ba); //this will block until timeout
-                    questionResponseJAXB = (QuestionResponseJAXB) questionResponseUnmarshaller.unmarshal(myInputStream);
+                    response = (Response) responseUnmarshaller.unmarshal(myInputStream);
                     countDownLatch.countDown();
-                    writeQuestionResponseJAXBToLog(questionResponseJAXB);
+                    writeResponseToLog(response);
                     return;
                 } catch (JAXBException e) {
                     log.error("",e);
                 }
-                questionResponseJAXB = null;
+                response = null;
                 countDownLatch.countDown();
             }
         }).start();
 
         try {
             //send question questionRequest
-            XMLStreamWriter questionWriter = xmlOutputFactory.createXMLStreamWriter(serverConnectionManager.getOutputStream(),
-                    (String) questionRequestMarshaller.getProperty(Marshaller.JAXB_ENCODING));
+            XMLStreamWriter requestWriter = xmlOutputFactory.createXMLStreamWriter(serverConnectionManager.getOutputStream(),
+                    (String) requestMarshaller.getProperty(Marshaller.JAXB_ENCODING));
             
-            questionWriter.writeStartDocument((String) questionRequestMarshaller.getProperty(Marshaller.JAXB_ENCODING), "1.0");
-            QuestionRequestJAXB jaxbObject = truRatingMessageFactory.assembleARequestQuestion(properties, transactionId);
-            questionRequestMarshaller.marshal(jaxbObject, questionWriter);
-            questionWriter.writeEndDocument();
-            questionWriter.flush();
-            writeQuestionRequestJAXBToLog(jaxbObject);
+            requestWriter.writeStartDocument((String) requestMarshaller.getProperty(Marshaller.JAXB_ENCODING), "1.0");
+            requestMarshaller.marshal(request, requestWriter);
+            requestWriter.writeEndDocument();
+            requestWriter.flush();
+            writeRequestToLog(request);
 
         } catch (XMLStreamException e) {
             log.error("",e );
@@ -157,92 +138,21 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
             log.error("", e);
         }
 
-        return questionResponseJAXB;
+        return response;
     }
 
-    public RatingResponseJAXB deliverRatingToService(RatingDeliveryJAXB ratingRecord) {
-        final CountDownLatch countDownLatch = new CountDownLatch(1);
-
-        //start listening for a rating questionResponse for 'timeout' seconds
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    log.info("Starting to listen for new incoming deliveryRatingResponse...");
-                    final byte[] ba = serverConnectionManager.readInput();
-                    final InputStream myInputStream = new ByteArrayInputStream(ba); //this will block until timeout
-                    ratingResponseJAXB = (RatingResponseJAXB) ratingResponseUnmarshaller.unmarshal(myInputStream);
-                    countDownLatch.countDown();
-                    writeRatingResponseJAXBToLog(ratingResponseJAXB);
-                    return;
-
-                } catch (JAXBException e) {
-                    log.error("", e);
-                }
-                ratingResponseJAXB=null;
-                countDownLatch.countDown();
-            }
-        }).start();
-
-        try {
-            //send rating questionRequest
-            log.info("Writing ratingDelivery XML to Service...");
-            XMLStreamWriter ratingWriter = xmlOutputFactory.createXMLStreamWriter(serverConnectionManager.getOutputStream(),
-                    (String) ratingDeliveryMarshaller.getProperty(Marshaller.JAXB_ENCODING));
-
-            ratingWriter.writeStartDocument((String) ratingDeliveryMarshaller.getProperty(Marshaller.JAXB_ENCODING), "1.0");
-            ratingDeliveryMarshaller.marshal( ratingRecord, ratingWriter);
-            ratingWriter.writeEndDocument();
-            ratingWriter.flush();
-            writeRatingDeliveryJAXBToLog(ratingRecord);
-
-        } catch (XMLStreamException e) {
-            log.error("Error delivering the rating: ", e);
-        } catch (JAXBException e) {
-            log.error("", e);
-        } catch (NumberFormatException e) {
-            log.error("There was an error in the ratings delivery factory : " +
-                    "perhaps a props file in not correctly set? ", e);
-            return null;
-        }
-
-        //wait for an answer or a timeout
-        try {
-            countDownLatch.await();
-        } catch (InterruptedException e) {
-            log.error("", e);
-        }
-
-        if (ratingResponseJAXB.getErrortext()!=null && (!ratingResponseJAXB.getErrortext().equals(""))){
-            log.info("The truService reported an error with ratings delivery: " + ratingResponseJAXB.getErrortext());
-        }
-
-        serverConnectionManager.close();
-        return ratingResponseJAXB;
-    }
-
-    private void writeQuestionRequestJAXBToLog(QuestionRequestJAXB questionRequestJAXB) throws JAXBException {
+    private void writeResponseToLog(Response response) throws JAXBException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        questionRequestMarshaller.marshal( questionRequestJAXB, baos);
-        log.info("truModule [OUT]bound message:\n " + new String(baos.toByteArray()));
-    }
-
-    private void writeRatingDeliveryJAXBToLog(RatingDeliveryJAXB ratingDeliveryJAXB) throws JAXBException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ratingDeliveryMarshaller.marshal( ratingDeliveryJAXB, baos);
-        log.info("truModule [OUT]bound message:\n" + new String(baos.toByteArray()));
-    }
-
-    private void writeQuestionResponseJAXBToLog(QuestionResponseJAXB questionResponseJAXB) throws JAXBException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        questionResponseMarshaller.marshal( questionResponseJAXB, baos);
+        responseMarshaller.marshal(this.response, baos);
         log.info("truModule [IN]bound message:\n " + new String(baos.toByteArray()));
     }
 
-    private void writeRatingResponseJAXBToLog(RatingResponseJAXB ratingResponseJAXB) throws JAXBException {
+    private void writeRequestToLog(Request request) throws JAXBException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ratingResponseMarshaller.marshal( ratingResponseJAXB, baos);
-        log.info("truModule [IN]bound message:\n" + new String(baos.toByteArray()));
+        requestMarshaller.marshal( request, baos);
+        log.info("truModule [IN]bound message:\n " + new String(baos.toByteArray()));
     }
+
 
     public void close() {
     	if (serverConnectionManager != null)
