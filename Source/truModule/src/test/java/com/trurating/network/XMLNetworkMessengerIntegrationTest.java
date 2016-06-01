@@ -1,11 +1,8 @@
 package com.trurating.network;
 
-import static mockit.Deencapsulation.setField;
-
+import com.trurating.service.v200.xml.Request;
 import com.trurating.service.v200.xml.RequestRating;
 import com.trurating.service.v200.xml.Response;
-import mockit.Injectable;
-import mockit.Tested;
 import mockit.integration.junit4.JMockit;
 
 import org.junit.Assert;
@@ -13,12 +10,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.trurating.TruModule;
 import com.trurating.network.xml.TruRatingMessageFactory;
 import com.trurating.network.xml.XMLNetworkMessenger;
 import com.trurating.properties.ITruModuleProperties;
 import com.trurating.properties.UnitTestProperties;
 import com.trurating.util.IntegrationTestStartUp;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by Paul on 11/03/2016.
@@ -26,45 +26,40 @@ import com.trurating.util.IntegrationTestStartUp;
 @RunWith(JMockit.class)
 public class XMLNetworkMessengerIntegrationTest {
 
-    @Tested
-    TruModule truModule;
-    @Injectable
     ITruModuleProperties properties;
-	
+
     @Before
     public void init() {
     	properties = UnitTestProperties.getInstance();
     }
 
     @Test
-    public void TestgetQuestionFromService_checkForReturnedMessage() {
+    public void deliveryRatingToService_checkForReturnedMessage() throws IOException {
+
         IntegrationTestStartUp.setupLog4J();
         IntegrationTestStartUp.startup();
 
         XMLNetworkMessenger xmlNetworkMessenger = new XMLNetworkMessenger();
-        Response questionResponse = xmlNetworkMessenger.getResponseFromService(properties);
-        Assert.assertNotNull(questionResponse);
-    }
-    
-    @Test
-    public void deliveryRatingToService_checkForReturnedMessage() {
-        //will fail because the rating is not fully setup correctly
-        IntegrationTestStartUp.setupLog4J();
-        IntegrationTestStartUp.startup();
+        TruRatingMessageFactory truRatingMessageFactory = new TruRatingMessageFactory();
+        String sessionId= Long.toString(new Date().getTime());
+        Request request = truRatingMessageFactory.assembleQuestionRequest(properties, sessionId);
 
-        XMLNetworkMessenger xmlNetworkMessenger = new XMLNetworkMessenger();
-        // Open the connection
-        Response responseFromService = xmlNetworkMessenger.getResponseFromService(properties);
+        Response questionResponseFromService = xmlNetworkMessenger.getResponseFromService(request, properties);
+        Assert.assertNotNull(questionResponseFromService);
         
-        RequestRating requestRating = new TruRatingMessageFactory().createRatingRecord(properties);
-        requestRating.setValue((short) 5);
-        
+        Request deliveryRequest = new TruRatingMessageFactory().assembleRatingsDeliveryRequest(properties, sessionId);
+        RequestRating requestRating = new RequestRating();
+        requestRating.setResponseTimeMs(5000);
+        requestRating.setRfc1766("en-GB");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        requestRating.setValue((short)5);
+        requestRating.setDateTime(sdf.format(new Date()));
+
+        deliveryRequest.setRating(requestRating);
         // Deliver the result
-        RequestRating ratingResponse= xmlNetworkMessenger.getResponseFromService(requestRating);
-        Assert.assertNotNull(ratingResponse);
+        Response ratingDeliveryResponseFromService = xmlNetworkMessenger.getResponseFromService(deliveryRequest, properties);
+        Assert.assertNotNull(ratingDeliveryResponseFromService);
     }
-
-    //todo make a full rating for test purposes.. :)
-
-
 }
+
+//            URL url = new URL("http://tru-sand-service-v200.trurating.com/api/servicemessage ");

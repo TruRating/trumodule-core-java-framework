@@ -31,6 +31,7 @@ import com.trurating.prize.PrizeManagerService;
 import com.trurating.properties.ITruModuleProperties;
 import com.trurating.util.StringUtilities;
 
+import java.io.IOException;
 import java.util.Date;
 
 /**
@@ -153,6 +154,8 @@ public class TruModule implements ITruModule {
             }
         } catch (NullPointerException e) {
             log.error("Error fetching the next question", e);
+        } catch (IOException e) {
+            log.error("Network connection exception ", e);
         }
         return response;
     }
@@ -227,7 +230,6 @@ public class TruModule implements ITruModule {
 
     public void close() {
         clearValueOfCachedRatingAndReceipt();
-        xmlNetworkMessenger.close();
     }
 
     public void clearValueOfCachedRatingAndReceipt() {

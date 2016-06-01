@@ -27,19 +27,19 @@ public class UnitTestProperties implements ITruModuleProperties {
 
     @Override
     public String getPartnerId() {
-        return "truRating";
+        return "1";
     }
 
     public String getMid() {
-        return "123456";
+        return "TRU-150";
     }
 
     public String getTid() {
-        return "65321";
+        return "3";
     }
 
     public String getLanguageCode() {
-        return "en";
+        return "en-GB";
     }
 
     public boolean getIncludeReceipt() {
@@ -71,7 +71,7 @@ public class UnitTestProperties implements ITruModuleProperties {
     }
 
     public String getDeviceFontType() {
-        return "FIXED";
+        return "MONOSPACED";
     }
 
 	public int getQuestionTimeout() {

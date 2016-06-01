@@ -20,7 +20,9 @@
 package com.trurating.network.xml;
 
 import java.io.*;
-import java.util.concurrent.CountDownLatch;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -33,7 +35,6 @@ import javax.xml.stream.XMLStreamWriter;
 import com.trurating.service.v200.xml.*;
 import org.apache.log4j.Logger;
 
-import com.trurating.network.ServerConnectionManager;
 import com.trurating.properties.ITruModuleProperties;
 
 /**
@@ -42,29 +43,28 @@ import com.trurating.properties.ITruModuleProperties;
 public class XMLNetworkMessenger implements IXMLNetworkMessenger {
 
     final private Logger log = Logger.getLogger(XMLNetworkMessenger.class);
-	
-    /**
-     * Socket connections last for the duration of a single transaction
-     *  - ie they are used for 2 separate exchanges:
-     *  	1 get a question (makes the connection)
-     *  	2 deliver a rating (closes the connection)
-     */
-    private ServerConnectionManager serverConnectionManager;
-    
-    private volatile Request request = null;
-    private volatile Response response = null;
 
     private Marshaller requestMarshaller;
     private Marshaller responseMarshaller;
     private Unmarshaller responseUnmarshaller;
-    private TruRatingMessageFactory truRatingMessageFactory;
     private XMLOutputFactory xmlOutputFactory = null ;
+    private URL url;
+
+
+    private HttpURLConnection getConnection(URL url) throws IOException {
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setDoOutput(true);
+        connection.setRequestProperty("Accept", "application/xml");
+        connection.setRequestProperty("Accept-Charset", "UTF-8");
+        connection.setRequestProperty("Content-Type", "application/xml");
+        return connection;
+    }
 
     public XMLNetworkMessenger() {
 
         try {
-            serverConnectionManager = new ServerConnectionManager();
-        	
+            url = new URL("http://localhost:47851/api/servicemessage");
+
             xmlOutputFactory = XMLOutputFactory.newInstance();
 
             JAXBContext contextRequest = JAXBContext.newInstance(Request.class);
@@ -72,58 +72,38 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
 
             requestMarshaller = contextRequest.createMarshaller();
             requestMarshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
-            requestMarshaller.setProperty("jaxb.encoding",  "US-ASCII");
             responseUnmarshaller = contextResponse.createUnmarshaller();
 
             responseMarshaller = contextResponse.createMarshaller();
             requestMarshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
-            requestMarshaller.setProperty("jaxb.encoding",  "US-ASCII");
-
-            truRatingMessageFactory = new TruRatingMessageFactory();
 
         } catch (Exception e) {
             log.error("", e);
         }
     }
 
-    /**
-        Will send the questionRequest for a question, if no questionResponse after timeOut seconds, will return null;
-     */
-        public synchronized Response getResponseFromService(Request request, ITruModuleProperties properties) {
+    public synchronized Response getResponseFromService(Request request, ITruModuleProperties properties) throws IOException {
 
-        final CountDownLatch countDownLatch = new CountDownLatch(1);
-
-        serverConnectionManager.connectToServer(properties);
-
-        //start listening for a question questionResponse for 'timeout' seconds
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    log.info("Blocking on question return");
-                    final byte[] ba = serverConnectionManager.readInput();
-                    final InputStream myInputStream = new ByteArrayInputStream(ba); //this will block until timeout
-                    response = (Response) responseUnmarshaller.unmarshal(myInputStream);
-                    countDownLatch.countDown();
-                    writeResponseToLog(response);
-                    return;
-                } catch (JAXBException e) {
-                    log.error("",e);
-                }
-                response = null;
-                countDownLatch.countDown();
-            }
-        }).start();
+        Response response =null;
 
         try {
-            //send question questionRequest
-            XMLStreamWriter requestWriter = xmlOutputFactory.createXMLStreamWriter(serverConnectionManager.getOutputStream(),
+
+            HttpURLConnection httpURLConnection = getConnection(url);
+            URLConnection urlConnection = httpURLConnection;
+            XMLStreamWriter requestWriter = xmlOutputFactory.createXMLStreamWriter(urlConnection.getOutputStream(),
                     (String) requestMarshaller.getProperty(Marshaller.JAXB_ENCODING));
-            
+
             requestWriter.writeStartDocument((String) requestMarshaller.getProperty(Marshaller.JAXB_ENCODING), "1.0");
             requestMarshaller.marshal(request, requestWriter);
             requestWriter.writeEndDocument();
             requestWriter.flush();
+            requestWriter.close();
             writeRequestToLog(request);
+
+            InputStream inputStream = urlConnection.getInputStream();
+            response = (Response) responseUnmarshaller.unmarshal(inputStream);
+            int i = httpURLConnection.getResponseCode();
+            writeResponseToLog(response);
 
         } catch (XMLStreamException e) {
             log.error("",e );
@@ -131,31 +111,18 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
             log.error("",e);
         }
 
-        //wait for an answer or a timeout
-        try {
-            countDownLatch.await();
-        } catch (InterruptedException e) {
-            log.error("", e);
-        }
-
         return response;
     }
 
     private void writeResponseToLog(Response response) throws JAXBException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        responseMarshaller.marshal(this.response, baos);
+        responseMarshaller.marshal(response, baos);
         log.info("truModule [IN]bound message:\n " + new String(baos.toByteArray()));
     }
 
     private void writeRequestToLog(Request request) throws JAXBException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        requestMarshaller.marshal( request, baos);
-        log.info("truModule [IN]bound message:\n " + new String(baos.toByteArray()));
-    }
-
-
-    public void close() {
-    	if (serverConnectionManager != null)
-            serverConnectionManager.close();
+        requestMarshaller.marshal(request, baos);
+        log.info("truModule [OUT]bound message:\n " + new String(baos.toByteArray()));
     }
 }
