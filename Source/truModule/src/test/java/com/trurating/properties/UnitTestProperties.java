@@ -26,7 +26,7 @@ public class UnitTestProperties implements ITruModuleProperties {
     }
 
     public String getTid() {
-        return "388";
+        return "PAULRUSS";
     }
 
     public String getLanguageCode() {
@@ -78,8 +78,8 @@ public class UnitTestProperties implements ITruModuleProperties {
     }
 
     public String getTruServiceIPAddress() {
-        return "http://localhost:47851/api/servicemessage";
-//        return "tru-sand-service-fis.cloudapp.net";
+        //return "http://localhost:47851/api/servicemessage";
+        return "http://tru-sand-service-v200.trurating.com/api/servicemessage";
     }
 
     public int getTruServiceSocketTimeoutInMilliSeconds() {

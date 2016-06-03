@@ -4,25 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.truRating</groupId>
+    <groupId>com.trurating</groupId>
     <artifactId>truModule</artifactId>
     <version>1.1-SNAPSHOT</version>
 
-    <repositories>
-        <repository>
-            <id>trurating.maven</id>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <url>https://tru-maven.azurewebsites.net</url>
-        </repository>
-    </repositories>
-
     <parent>
-        <groupId>com.truRating</groupId>
+        <groupId>com.trurating</groupId>
         <artifactId>truModuleParent</artifactId>
         <version>1.1-SNAPSHOT</version>
         <relativePath>../truModuleParent</relativePath>
@@ -59,10 +46,16 @@
             <version>2.11.0</version>
         </dependency>
 
+        <!--<dependency>-->
+            <!--<groupId>com.trurating.messages</groupId>-->
+            <!--<artifactId>trurating.service.v200</artifactId>-->
+            <!--<version>1.1.4.17-SNAPSHOT</version>-->
+        <!--</dependency>-->
+
         <dependency>
-            <groupId>com.trurating.messages</groupId>
-            <artifactId>trurating.service.v200</artifactId>
-            <version>1.1.4.17-SNAPSHOT</version>
+            <groupId>com.trurating</groupId>
+            <artifactId>core-dto-java</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
 
     </dependencies>

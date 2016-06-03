@@ -1,10 +1,5 @@
 package com.trurating.trumodule.testharness.configuration;
 
-import java.io.File;
-import java.util.Properties;
-
-import org.apache.log4j.Logger;
-
 import com.trurating.properties.ITruModuleProperties;
 
 /**
@@ -23,7 +18,6 @@ public class TestProperties implements ITruModuleProperties {
         return INSTANCE;
     }
 
-    @Override
     public String getPartnerId() {
         return "truRating";
     }

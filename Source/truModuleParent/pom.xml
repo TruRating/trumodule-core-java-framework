@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
 
-    <groupId>com.truRating</groupId>
+    <groupId>com.trurating</groupId>
     <artifactId>truModuleParent</artifactId>
     <version>1.1-SNAPSHOT</version>
 
@@ -19,7 +19,7 @@
     <modules>
         <module>../truModule</module>
         <module>../truModuleTestHarness</module>
-        <!--<module>../truShared</module>-->
+        <module>../../../trushared-core-java-library/truShared</module>
         <module>../truModuleMockPaymentApp</module>
     </modules>
 </project>
