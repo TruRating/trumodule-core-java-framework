@@ -4,7 +4,13 @@ import static mockit.Deencapsulation.setField;
 
 import java.math.BigInteger;
 
+import com.trurating.CachedTruModuleRatingObject;
 import com.trurating.network.xml.IXMLNetworkMessenger;
+import com.trurating.network.xml.TruRatingMessageFactory;
+import com.trurating.properties.UnitTestProperties;
+import com.trurating.service.v200.xml.Request;
+import com.trurating.service.v200.xml.RequestRating;
+import com.trurating.service.v200.xml.Response;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Tested;
@@ -23,85 +29,68 @@ import com.trurating.properties.ITruModuleProperties;
 /**
  * Created by Paul on 10/03/2016.
  */
-//@RunWith(JMockit.class)
+@SuppressWarnings("Duplicates")
+@RunWith(JMockit.class)
 public class TruModule_RecordResponse_JUnitTest {
 
-//    @Tested
-//    TruModule truModule;
-//    @Injectable
-//    IXMLNetworkMessenger xmlNetworkMessenger;
-//    @Injectable
-//    IDevice iDevice;
-//    @Injectable
-//    Logger log;
-//    @Injectable
-//    ITruModuleProperties properties;
-//    @Injectable
-//    RequestRating.Transaction transaction;
-//
-//    @Before
-//    public void setUp() {
-//        truModule = new TruModule();
-//        setField(truModule, "xmlNetworkMessenger", xmlNetworkMessenger);
-//        setField(truModule, "iDevice", iDevice);
-//        setField(truModule, "log", log);
-//
-//    }
-//
-//    @Test
-//    public void recordResponseTest() {
-//
-//        final RatingResponseJAXB ratingResponseJAXB= getRatingResponseMockJAXBTest();
-//
-//        new Expectations() {{
-//            xmlNetworkMessenger.deliverRatingToService((RequestRating) any);
-//            returns(ratingResponseJAXB);
-//            times = 1;
-//        }};
-//
-//        RequestRating iRatingRecord = truModule.getCurrentRatingRecord(properties) ;
-//        Rating rating = iRatingRecord.getRating() ;
-//        rating.setValue((short)8);
-//
-//        boolean methodSucceeded = truModule.deliverRating(properties);
-//        Assert.assertEquals(true, methodSucceeded);
-//    }
-//
-//    @Test
-//    public void recordResponseDeliveryFailsTest() {
-//
-//        new Expectations() {{
-//            xmlNetworkMessenger.deliverRatingToService((RequestRating) any);
-//            returns(null);
-//            times = 0;
-//        }};
-//
-//        boolean methodSucceeded = truModule.deliverRating(properties);
-//        Assert.assertEquals(false, methodSucceeded);
-//    }
-//
-//    private RatingResponseJAXB getRatingResponseMockJAXBTest() {
-//        RatingResponseJAXB ratingResponseJAXB = new RatingResponseJAXB();
-//        RatingResponseJAXB.Languages languages = new Languages();
-//        Language language = new Language();
-//
-//        Receipt receipt = new Receipt();
-//        receipt.setRatedvalue("7");
-//        receipt.setNotratedvalue("8");
-//        language.setReceipt(receipt);
-//        language.setIncludereceipt(true);
-//        language.setLanguagetype("EN-GB");
-//        languages.getLanguage().add(language);
-//        ratingResponseJAXB.setLanguages(languages);
-//
-//        ratingResponseJAXB.setErrorcode(new BigInteger("0"));
-//        ratingResponseJAXB.setErrortext("");
-//        ratingResponseJAXB.setMessagetype("A message type");
-//        ratingResponseJAXB.setMid("MID1");
-//        ratingResponseJAXB.setTid("TID1");
-//        ratingResponseJAXB.setUid(new BigInteger("15"));
-//        return ratingResponseJAXB;
-//    }
+    @Tested
+    TruModule truModule;
+    @Injectable
+    IXMLNetworkMessenger xmlNetworkMessenger;
+    @Injectable
+    IDevice iDevice;
+    @Injectable
+    Logger log;
+    @Injectable
+    ITruModuleProperties properties;
+    @Injectable
+    TruRatingMessageFactory truRatingMessageFactory;
+    @Injectable
+    CachedTruModuleRatingObject cachedTruModuleRatingObject;
+
+    private XSD2TestFactory testFactory;
+
+    @Before
+    public void setUp() {
+        properties = UnitTestProperties.getInstance(); // Set of test properties
+        testFactory = new XSD2TestFactory(properties);
+        truModule = new TruModule(properties);
+        cachedTruModuleRatingObject = new CachedTruModuleRatingObject();
+        setField(truModule, "xmlNetworkMessenger", xmlNetworkMessenger);
+        setField(truModule, "iDevice", iDevice);
+        setField(truModule, "log", log);
+        setField(truModule, "truRatingMessageFactory", truRatingMessageFactory);
+        setField(truModule, "cachedTruModuleRatingObject", cachedTruModuleRatingObject);
+    }
+
+    @Test
+    public void deliverySucceedsTest() {
+        new Expectations() {{
+            xmlNetworkMessenger.getResponseRatingDeliveryFromService((Request) any);
+            returns(testFactory.generateResponseForQuestion());
+            times = 1;
+            truRatingMessageFactory.assembleRatingsDeliveryRequest((ITruModuleProperties)any, (String)any);
+            returns (testFactory.generateRequestForQuestion());
+            times = 1;
+        }};
+
+        Assert.assertTrue(truModule.deliverRating());
+    }
+
+    @Test
+    public void recordResponseDeliveryFailsTest() {
+        new Expectations() {{
+            xmlNetworkMessenger.getResponseRatingDeliveryFromService((Request) any);
+            returns(null);
+            times = 1;
+            truRatingMessageFactory.assembleRatingsDeliveryRequest((ITruModuleProperties)any, (String)any);
+            returns (testFactory.generateRequestForQuestion());
+            times = 0;
+        }};
+
+        boolean truModuleOutcome =truModule.deliverRating();
+        Assert.assertFalse(truModuleOutcome);
+    }
 }
 
 

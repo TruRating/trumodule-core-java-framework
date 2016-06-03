@@ -1,19 +1,10 @@
 package com.trurating.properties;
 
-import java.io.File;
-import java.util.Properties;
-
-import org.apache.log4j.Logger;
-
 /**
  * Created by Paul on 2016. :)
  */
 public class UnitTestProperties implements ITruModuleProperties {
 
-    private static Logger log = Logger.getLogger(UnitTestProperties.class);
-    private Properties properties = null;
-    private File propertiesFile;
-    private String pathToResources;
     private static UnitTestProperties INSTANCE=null;
 
     private UnitTestProperties() {}
@@ -35,7 +26,7 @@ public class UnitTestProperties implements ITruModuleProperties {
     }
 
     public String getTid() {
-        return "3";
+        return "388";
     }
 
     public String getLanguageCode() {
@@ -87,7 +78,8 @@ public class UnitTestProperties implements ITruModuleProperties {
     }
 
     public String getTruServiceIPAddress() {
-        return "tru-sand-service-fis.cloudapp.net";
+        return "http://localhost:47851/api/servicemessage";
+//        return "tru-sand-service-fis.cloudapp.net";
     }
 
     public int getTruServiceSocketTimeoutInMilliSeconds() {

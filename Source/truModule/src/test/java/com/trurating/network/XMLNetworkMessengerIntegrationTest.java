@@ -16,7 +16,6 @@ import com.trurating.properties.ITruModuleProperties;
 import com.trurating.properties.UnitTestProperties;
 import com.trurating.util.IntegrationTestStartUp;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -26,7 +25,7 @@ import java.util.Date;
 @RunWith(JMockit.class)
 public class XMLNetworkMessengerIntegrationTest {
 
-    ITruModuleProperties properties;
+    private ITruModuleProperties properties;
 
     @Before
     public void init() {
@@ -34,17 +33,17 @@ public class XMLNetworkMessengerIntegrationTest {
     }
 
     @Test
-    public void deliveryRatingToService_checkForReturnedMessage() throws IOException {
+    public void deliveryRatingToService_checkForReturnedMessage(){
 
         IntegrationTestStartUp.setupLog4J();
         IntegrationTestStartUp.startup();
 
-        XMLNetworkMessenger xmlNetworkMessenger = new XMLNetworkMessenger();
+        XMLNetworkMessenger xmlNetworkMessenger = new XMLNetworkMessenger(properties);
         TruRatingMessageFactory truRatingMessageFactory = new TruRatingMessageFactory();
         String sessionId= Long.toString(new Date().getTime());
         Request request = truRatingMessageFactory.assembleQuestionRequest(properties, sessionId);
 
-        Response questionResponseFromService = xmlNetworkMessenger.getResponseFromService(request, properties);
+        Response questionResponseFromService = xmlNetworkMessenger.getResponseQuestionFromService(request);
         Assert.assertNotNull(questionResponseFromService);
         
         Request deliveryRequest = new TruRatingMessageFactory().assembleRatingsDeliveryRequest(properties, sessionId);
@@ -56,8 +55,8 @@ public class XMLNetworkMessengerIntegrationTest {
         requestRating.setDateTime(sdf.format(new Date()));
 
         deliveryRequest.setRating(requestRating);
-        // Deliver the result
-        Response ratingDeliveryResponseFromService = xmlNetworkMessenger.getResponseFromService(deliveryRequest, properties);
+
+        Response ratingDeliveryResponseFromService = xmlNetworkMessenger.getResponseQuestionFromService(deliveryRequest);
         Assert.assertNotNull(ratingDeliveryResponseFromService);
     }
 }

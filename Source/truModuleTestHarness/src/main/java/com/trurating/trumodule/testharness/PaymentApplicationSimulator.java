@@ -2,6 +2,7 @@ package com.trurating.trumodule.testharness;
 
 
 import com.trurating.service.v200.xml.RequestTransaction;
+import com.trurating.trumodule.testharness.configuration.TestProperties;
 import org.apache.log4j.Logger;
 
 import com.trurating.ITruModule;
@@ -19,19 +20,21 @@ public class PaymentApplicationSimulator  {
     private final ITruModule truModule;
     private final Logger log = Logger.getLogger(PaymentApplicationSimulator.class);
     private IDevice iDevice;
+    private ITruModuleProperties truModuleProperties;
 
     public PaymentApplicationSimulator() {
-        this.truModule = new TruModule();
+        truModuleProperties = new TestProperties(); // Set of test properties
+        this.truModule = new TruModule(truModuleProperties);
         this.truModule.setDevice(getDevice());
     }
 
     //this is a take payment questionRequest - payment will not yet be taken
-	void paymentTrigger(ITruModuleProperties properties, String operator, TenderType tenderType, String product, long cost){
+	void paymentTrigger(String operator, TenderType tenderType, String product, long cost){
         log.info("Payment application is requesting payment - passing this on to the module");
 
-        truModule.doRating(properties);
+        truModule.doRating();
 
-    	RequestTransaction transaction = truModule.getCurrentRatingRecord(properties).getTransaction();
+    	RequestTransaction transaction = truModule.getCurrentRatingRecord().getTransaction();
 
         //Operator
 //		transaction.(operator);
@@ -44,8 +47,8 @@ public class PaymentApplicationSimulator  {
     }
 
     //now take payment - at this point card is inserted, therefore we will know card type
-    public void completePayment(ITruModuleProperties properties) {
-    	RequestTransaction transaction = truModule.getCurrentRatingRecord(properties).getTransaction();
+    public void completePayment() {
+    	RequestTransaction transaction = truModule.getCurrentRatingRecord().getTransaction();
 
         // "INSERT CARD"; //etc
 
@@ -61,7 +64,7 @@ public class PaymentApplicationSimulator  {
     	// Card type
 //   		transaction.set("VISA");
 
-        if (truModule.deliverRating(properties))
+        if (truModule.deliverRating())
         	getDevice().displayMessage("Rating delivery succeeded");
         else
         	getDevice().displayMessage("Rating delivery failed");

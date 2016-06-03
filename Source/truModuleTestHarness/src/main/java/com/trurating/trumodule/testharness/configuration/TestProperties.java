@@ -86,7 +86,8 @@ public class TestProperties implements ITruModuleProperties {
 
     public String getTruServiceIPAddress() {
 ///        return "tru-sand-service-fis.cloudapp.net";
-        return "tru-sand-service-trurating.cloudapp.net";
+        return "http://localhost:47851/api/servicemessage";
+//        return "tru-sand-service-trurating.cloudapp.net";
 //        return "13.95.156.19";
 //        return "127.0.0.1";
     }

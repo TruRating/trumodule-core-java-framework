@@ -47,23 +47,26 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
     private Marshaller requestMarshaller;
     private Marshaller responseMarshaller;
     private Unmarshaller responseUnmarshaller;
-    private XMLOutputFactory xmlOutputFactory = null ;
+    private XMLOutputFactory xmlOutputFactory = null;
     private URL url;
+    private int httpTimeout;
 
 
     private HttpURLConnection getConnection(URL url) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setDoOutput(true);
+        connection.setConnectTimeout(httpTimeout);
         connection.setRequestProperty("Accept", "application/xml");
         connection.setRequestProperty("Accept-Charset", "UTF-8");
         connection.setRequestProperty("Content-Type", "application/xml");
         return connection;
     }
 
-    public XMLNetworkMessenger() {
+    public XMLNetworkMessenger(ITruModuleProperties truModuleProperties) {
 
         try {
-            url = new URL("http://localhost:47851/api/servicemessage");
+            url = new URL(truModuleProperties.getTruServiceIPAddress());
+            httpTimeout = truModuleProperties.getTruServiceSocketTimeoutInMilliSeconds();
 
             xmlOutputFactory = XMLOutputFactory.newInstance();
 
@@ -82,13 +85,22 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
         }
     }
 
-    public synchronized Response getResponseFromService(Request request, ITruModuleProperties properties) throws IOException {
+    public synchronized Response getResponseRatingDeliveryFromService(Request request) {
+        return exchangeMessageWithServer(request);
+    }
 
-        Response response =null;
+    public synchronized Response getResponseQuestionFromService(Request request) {
+        return exchangeMessageWithServer(request);
+    }
+
+    private Response exchangeMessageWithServer(Request request) {
+        Response response = null;
 
         try {
 
-            HttpURLConnection httpURLConnection = getConnection(url);
+            HttpURLConnection httpURLConnection;
+
+            httpURLConnection = getConnection(url);
             URLConnection urlConnection = httpURLConnection;
             XMLStreamWriter requestWriter = xmlOutputFactory.createXMLStreamWriter(urlConnection.getOutputStream(),
                     (String) requestMarshaller.getProperty(Marshaller.JAXB_ENCODING));
@@ -102,13 +114,20 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
 
             InputStream inputStream = urlConnection.getInputStream();
             response = (Response) responseUnmarshaller.unmarshal(inputStream);
-            int i = httpURLConnection.getResponseCode();
+
+            if (httpURLConnection.getResponseCode() > 200) {
+                log.error("There was a problem with the http exchange, please see server logs for more details");
+                return null;
+            }
+
             writeResponseToLog(response);
 
         } catch (XMLStreamException e) {
-            log.error("",e );
+            log.error("", e);
         } catch (JAXBException e) {
-            log.error("",e);
+            log.error("", e);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         return response;

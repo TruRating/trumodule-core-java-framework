@@ -22,16 +22,13 @@ public class TestHarness {
 
 		if (!log4JIsConfigured()) configureLog4JUsingDefaults();
 
-		// Set of test properties
-		TestProperties truModuleProperties = new TestProperties();
-
 		// start up the payment App and send a payment questionRequest
 		PaymentApplicationSimulator paymentApplication = new PaymentApplicationSimulator();
 
-		paymentApplication.paymentTrigger(truModuleProperties, "Operator_Tony",
+		paymentApplication.paymentTrigger("Operator_Tony",
 				TenderType.SMARTCARD, "A Product", 199);
 
-		paymentApplication.completePayment(truModuleProperties);
+		paymentApplication.completePayment();
 	}
 
 	private void configureLog4JUsingDefaults() {

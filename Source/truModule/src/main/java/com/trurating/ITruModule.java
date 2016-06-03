@@ -20,9 +20,7 @@
 package com.trurating;
 
 import com.trurating.device.IDevice;
-import com.trurating.properties.ITruModuleProperties;
 import com.trurating.service.v200.xml.RequestRating;
-import com.trurating.service.v200.xml.RequestTransaction;
 
 /**
  * Created by Paul on 01/03/2016.
@@ -31,19 +29,19 @@ public interface ITruModule {
 
     void setDevice(IDevice deviceRef);
 
-    RequestRating getCurrentRatingRecord(ITruModuleProperties properties);
+    RequestRating getCurrentRatingRecord();
 
-    void doRating(ITruModuleProperties properties);
+    void doRating();
 
-    void doRatingInBackground(ITruModuleProperties properties);
+    void doRatingInBackground();
 
     void cancelRating();
 
-    boolean deliverRating(ITruModuleProperties properties);
+    boolean deliverRating();
 
     String getReceiptMessage();
 
     void close();
 
-    void clearValueOfCachedRatingAndReceipt();
+    void clearCachedRatingInformation();
 }

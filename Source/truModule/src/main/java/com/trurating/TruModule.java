@@ -21,17 +21,15 @@ package com.trurating;
 
 import com.trurating.network.xml.IXMLNetworkMessenger;
 import com.trurating.service.v200.xml.*;
-import com.trurating.xml.LanguageManager;
 import org.apache.log4j.Logger;
 
 import com.trurating.device.IDevice;
 import com.trurating.network.xml.TruRatingMessageFactory;
 import com.trurating.network.xml.XMLNetworkMessenger;
-import com.trurating.prize.PrizeManagerService;
 import com.trurating.properties.ITruModuleProperties;
 import com.trurating.util.StringUtilities;
 
-import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -43,142 +41,101 @@ import java.util.Date;
  * - check for a prize,
  * - issue an appropriate receipt message
  * - and deliver the rating to truService
- * <p/>
  * Created by Paul on 01/03/2016.
  */
 public class TruModule implements ITruModule {
 
-    public final static short NO_RATING_VALUE = -99;
-    public final static short USER_CANCELLED = -1;
-    public final static short QUESTION_TIMEOUT = -2;
-    public final static short NO_QUESTION_ASKED = -3;
     private final Logger log = Logger.getLogger(TruModule.class);
-    private final PrizeManagerService prizeManagerService = new PrizeManagerService();
+    private final ITruModuleProperties truModuleProperties;
     private IDevice iDevice = null;
     private IXMLNetworkMessenger xmlNetworkMessenger = null;
     private TruRatingMessageFactory truRatingMessageFactory = null;
-    private String receiptMessage = "";
-    private volatile Request currentRequest = null;
-    private Response response = null;
-    private String sessionID = "";
+    private CachedTruModuleRatingObject cachedTruModuleRatingObject;
 
-
-    public TruModule() {
+    public TruModule(ITruModuleProperties truModuleProperties) {
+        this.truModuleProperties = truModuleProperties;
         truRatingMessageFactory = new TruRatingMessageFactory();
-        xmlNetworkMessenger = new XMLNetworkMessenger();
+        xmlNetworkMessenger = new XMLNetworkMessenger(truModuleProperties);
     }
 
-    public RequestRating getCurrentRatingRecord(ITruModuleProperties properties) {
-        if (currentRequest == null) {
-            sessionID = Long.toString(new Date().getTime());
-            currentRequest = truRatingMessageFactory.assembleRatingsDeliveryRequest(properties, sessionID);
-        }
-        return currentRequest.getRating();
+    public void doRating() {
+        clearCachedRatingInformation();
+        cachedTruModuleRatingObject = new CachedTruModuleRatingObject();
+        Request request = truRatingMessageFactory.assembleQuestionRequest(truModuleProperties, cachedTruModuleRatingObject.sessionID);
+        cachedTruModuleRatingObject = requestQuestionFromServerAndCacheResult(request);
+        runQuestion();
     }
 
-    /**
-     * Request to run a rating question
-     * If this needs to be done in a background thread then the assumption is
-     * that the thread will already have been created and this call will have been made from it.
-     */
-    public void doRating(ITruModuleProperties properties) {
-        // Ensure that we are starting a new rating record - nothing left over from before
-        clearValueOfCachedRatingAndReceipt();
-        // The rating class generates its own unique (for this till) transaction id
-        final Response response = getQuestionFromService(properties);
-        //if there is a question, run it
-        runQuestion(properties, response);
-    }
-
-    /**
-     * Dwell time ratings questions need to be run in a separate thread
-     */
-    public void doRatingInBackground(final ITruModuleProperties properties) {
-        // Ensure that we are starting a new rating record - nothing left over from before
-        clearValueOfCachedRatingAndReceipt();
-        // The rating class generates its own unique (for this till) transaction id
-        final Response response = getQuestionFromService(properties);
-        //if there is a question, run it
+    public void doRatingInBackground() {
+        clearCachedRatingInformation();
+        cachedTruModuleRatingObject = new CachedTruModuleRatingObject();
+        Request request = truRatingMessageFactory.assembleQuestionRequest(truModuleProperties, cachedTruModuleRatingObject.sessionID);
+        cachedTruModuleRatingObject = requestQuestionFromServerAndCacheResult(request);
         new Thread(new Runnable() {
             public void run() {
-                runQuestion(properties, response);
+                runQuestion();
             }
         }).start();
     }
 
-    /**
-     * Clear the question ready for payment
-     */
-    public void cancelRating() {
-        getDevice().cancelInput();
-    }
-
-    public boolean deliverRating(ITruModuleProperties properties) {
+    public boolean deliverRating() {
+        final Response response;
         try {
-            //send the rating
-            final Response response = xmlNetworkMessenger.getResponseFromService(currentRequest, properties);
-            final ResponseLanguage language = new LanguageManager().getLanguage(response, properties.getLanguageCode());
-            ResponseReceipt ratingResponseReceipt = null;
-            if (language != null) {
-                ratingResponseReceipt = language.getReceipt().get(0);
-            }
-            //if there was a receipt for that language, and there is a rating record available
-            if (ratingResponseReceipt != null && currentRequest != null) {
-                if (currentRequest.getRating().getValue() > 0) {
-                    receiptMessage = ratingResponseReceipt.getValue();
-                } else {
-                    receiptMessage = ratingResponseReceipt.getValue(); //...
-                }
-            }
+            response = xmlNetworkMessenger.getResponseRatingDeliveryFromService(cachedTruModuleRatingObject.request);
+            if (response==null) return false;
+            truRatingMessageFactory.assembleRatingsDeliveryRequest(truModuleProperties, cachedTruModuleRatingObject.sessionID);
         } catch (Exception e) {
             log.error("", e);
             return false;
         } finally {
-            clearValueOfCachedRatingAndReceipt();
+            clearCachedRatingInformation();
         }
         log.info("Everything is finished in truModule!");
         return true;
     }
 
-    private Response getQuestionFromService(ITruModuleProperties properties) {
-
+    private CachedTruModuleRatingObject requestQuestionFromServerAndCacheResult(Request request) {
+        cachedTruModuleRatingObject.response = xmlNetworkMessenger.getResponseQuestionFromService(request);
+        Response response = cachedTruModuleRatingObject.response;
         try {
-            response = xmlNetworkMessenger.getResponseFromService(currentRequest, properties);
-            ResponseLanguage language =
-                    new LanguageManager().getLanguage(response, properties.getLanguageCode());
-            if (language == null) return null; //there is no question to ask
-            if (response.getDisplay().toString().length() > 0) {
-                // We have a question
-                ResponseReceipt receipt = response.getDisplay().getLanguage().get(0).getReceipt().get(0);
-//                if (receipt != null) receiptMessage = receipt.getNotratedvalue();
+            String desiredLanguage = truModuleProperties.getLanguageCode();
+            if (response.getDisplay()==null || response.getDisplay().getLanguage()==null) {
+                log.warn("Response getDisplay or getLanguage were null");
+                return cachedTruModuleRatingObject;
+            }
+
+            for (int i=0; i<response.getDisplay().getLanguage().size(); i++) { //loop through all the possible languages until we get one that matches
+                if (response.getDisplay().getLanguage().get(i).getRfc1766().equals(desiredLanguage)) {
+                    cachedTruModuleRatingObject.question = response.getDisplay().getLanguage().get(i).getQuestion().getValue();
+                    cachedTruModuleRatingObject.receiptNoRating = response.getDisplay().getLanguage().get(i).getReceipt().get(0).getValue();
+                    cachedTruModuleRatingObject.receiptWithRating = response.getDisplay().getLanguage().get(i).getReceipt().get(1).getValue();
+                    cachedTruModuleRatingObject.responseNoRating = response.getDisplay().getLanguage().get(i).getScreen().get(0).getValue();
+                    cachedTruModuleRatingObject.responseWithRating = response.getDisplay().getLanguage().get(i).getScreen().get(1).getValue();
+                    return cachedTruModuleRatingObject;
+                }
             }
         } catch (NullPointerException e) {
             log.error("Error fetching the next question", e);
-        } catch (IOException e) {
-            log.error("Network connection exception ", e);
         }
-        return response;
+
+        return cachedTruModuleRatingObject;
     }
 
-    private void runQuestion(ITruModuleProperties properties, Response response) {
-
+    private void runQuestion() {
         String keyStroke = String.valueOf(NO_QUESTION_ASKED);
         long totalTimeTaken = 0;
 
         try {
-            if (response == null) return;
-            final ResponseLanguage language =
-                    new LanguageManager().getLanguage(response, properties.getLanguageCode());
-            final ResponseQuestion question = language.getQuestion();
+            if (cachedTruModuleRatingObject.response == null) return;
 
-            final int displayWidth = properties.getDeviceCpl();
-            String qText = question.getValue();
+            final int displayWidth = truModuleProperties.getDeviceCpl();
+            String qText = cachedTruModuleRatingObject.question;
             if (qText != null) {
                 String[] qTextWraps = qText.split("\\\\n");
                 if ((qTextWraps.length == 1) && (qTextWraps[0].length() > displayWidth))
                     qTextWraps = StringUtilities.wordWrap(qText, displayWidth);
 
-                int timeout = properties.getQuestionTimeout();
+                int timeout = truModuleProperties.getQuestionTimeout();
                 if (timeout < 1000)
                     timeout = 60000;
 
@@ -194,56 +151,58 @@ public class TruModule implements ITruModule {
                 rating = new RequestRating();
                 rating.setValue(new Short(keyStroke));
                 rating.setResponseTimeMs(new Long(totalTimeTaken).intValue());
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                rating.setDateTime(sdf.format(new Date()));
+
                 if (ratingValue > -1) {
                     // Update the receipt text to indicate that the user rated
-                    String questionText = response.getDisplay().getLanguage().get(0).getQuestion().getValue();
+                    String questionText = cachedTruModuleRatingObject.question;
                     iDevice.displayMessage(questionText);
 
-                    final ResponseReceipt receipt = this.response.getDisplay().getLanguage().get(0).getReceipt().get(0);
-                    receiptMessage = receipt.getValue();
-
-//                    String prizeCode = prizeManagerService.checkForAPrize(getDevice(), response., properties.getLanguageCode());
-//                    if (prizeCode != null) rating.setPrizecode(prizeCode);
-
                 } else {
-                    String noRateText = "Sorry you didn't rate";
-                    iDevice.displayMessage(noRateText);
-
-                    final ResponseReceipt receipt = language.getReceipt().get(0);
-                    receiptMessage = receipt.getValue();
+                    iDevice.displayMessage(cachedTruModuleRatingObject.responseNoRating);
                 }
-                getCurrentRatingRecord(properties).setValue(rating.getValue());
+                cachedTruModuleRatingObject.rating=rating;
             }
         } catch (Exception e) {
             log.error("truModule error", e);
         }
     }
 
-    /**
-     * The message that should appear on the receipt as a consequence
-     * of the outcome of this rating question
-     */
     public String getReceiptMessage() {
-        return receiptMessage;
+        if (getCurrentRatingRecord().getValue()>-99) {
+            return cachedTruModuleRatingObject.receiptWithRating;
+        } else {
+            return cachedTruModuleRatingObject.receiptNoRating;
+        }
     }
-
 
     public void close() {
-        clearValueOfCachedRatingAndReceipt();
+        clearCachedRatingInformation();
     }
 
-    public void clearValueOfCachedRatingAndReceipt() {
-        // Clear the current transaction
-        currentRequest = null;
-        receiptMessage = "";
+    public void clearCachedRatingInformation() {
+        cachedTruModuleRatingObject = null;
     }
 
-    // Set the device in use
     public void setDevice(IDevice deviceRef) {
         this.iDevice = deviceRef;
+    }
+
+    public void cancelRating() {
+        getDevice().cancelInput();
+    }
+
+    public RequestRating getCurrentRatingRecord() {
+        return cachedTruModuleRatingObject.rating;
     }
 
     private IDevice getDevice() {
         return iDevice;
     }
+
+    public static final short NO_RATING_VALUE = -99;
+    public static final short USER_CANCELLED = -1;
+    public static final short QUESTION_TIMEOUT = -2;
+    public static final short NO_QUESTION_ASKED = -3;
 }

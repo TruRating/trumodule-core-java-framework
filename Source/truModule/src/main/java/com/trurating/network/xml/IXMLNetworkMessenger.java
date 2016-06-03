@@ -19,7 +19,6 @@
 
 package com.trurating.network.xml;
 
-import com.trurating.properties.ITruModuleProperties;
 import com.trurating.service.v200.xml.Request;
 import com.trurating.service.v200.xml.Response;
 
@@ -29,7 +28,10 @@ public interface IXMLNetworkMessenger {
 
     /**
     Send the questionRequest for a question, if no questionResponse after timeOut seconds, will return null;
+     These methods are distinct to aid unit testing
      */
-	Response getResponseFromService(Request request, ITruModuleProperties properties) throws IOException;
+	Response getResponseQuestionFromService(Request request);
+
+    Response getResponseRatingDeliveryFromService(Request request);
 	
 }
