@@ -2,6 +2,7 @@ package com.trurating;
 
 import com.trurating.service.v200.xml.Request;
 import com.trurating.service.v200.xml.RequestRating;
+import com.trurating.service.v200.xml.RequestTransaction;
 import com.trurating.service.v200.xml.Response;
 
 import java.util.Date;
@@ -10,6 +11,7 @@ import java.util.Date;
  * Created by Paul on 02/06/2016.
  */
 public class CachedTruModuleRatingObject {
+
 
     public CachedTruModuleRatingObject() {
         sessionID = Long.toString(new Date().getTime());

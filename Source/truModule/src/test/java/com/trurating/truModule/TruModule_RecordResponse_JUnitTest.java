@@ -2,15 +2,12 @@ package com.trurating.truModule;
 
 import static mockit.Deencapsulation.setField;
 
-import java.math.BigInteger;
-
 import com.trurating.CachedTruModuleRatingObject;
 import com.trurating.network.xml.IXMLNetworkMessenger;
 import com.trurating.network.xml.TruRatingMessageFactory;
 import com.trurating.properties.UnitTestProperties;
 import com.trurating.service.v200.xml.Request;
-import com.trurating.service.v200.xml.RequestRating;
-import com.trurating.service.v200.xml.Response;
+import com.trurating.service.v200.xml.RequestTransaction;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Tested;
@@ -66,7 +63,7 @@ public class TruModule_RecordResponse_JUnitTest {
     @Test
     public void deliverySucceedsTest() {
         new Expectations() {{
-            xmlNetworkMessenger.getResponseRatingDeliveryFromService((Request) any);
+            xmlNetworkMessenger.getResponseRatingFromRatingsDeliveryToService((Request) any);
             returns(testFactory.generateResponseForQuestion());
             times = 1;
             truRatingMessageFactory.assembleRatingsDeliveryRequest((ITruModuleProperties)any, (String)any);
@@ -74,13 +71,14 @@ public class TruModule_RecordResponse_JUnitTest {
             times = 1;
         }};
 
-        Assert.assertTrue(truModule.deliverRating());
+        RequestTransaction transaction = new RequestTransaction();
+        Assert.assertTrue(truModule.deliverRating(transaction));
     }
 
     @Test
     public void recordResponseDeliveryFailsTest() {
         new Expectations() {{
-            xmlNetworkMessenger.getResponseRatingDeliveryFromService((Request) any);
+            xmlNetworkMessenger.getResponseRatingFromRatingsDeliveryToService((Request) any);
             returns(null);
             times = 1;
             truRatingMessageFactory.assembleRatingsDeliveryRequest((ITruModuleProperties)any, (String)any);
@@ -88,7 +86,8 @@ public class TruModule_RecordResponse_JUnitTest {
             times = 0;
         }};
 
-        boolean truModuleOutcome =truModule.deliverRating();
+        RequestTransaction transaction = new RequestTransaction();
+        boolean truModuleOutcome =truModule.deliverRating(transaction);
         Assert.assertFalse(truModuleOutcome);
     }
 }

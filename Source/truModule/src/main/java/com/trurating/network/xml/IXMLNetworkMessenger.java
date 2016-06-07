@@ -32,6 +32,6 @@ public interface IXMLNetworkMessenger {
      */
 	Response getResponseQuestionFromService(Request request);
 
-    Response getResponseRatingDeliveryFromService(Request request);
+    Response getResponseRatingFromRatingsDeliveryToService(Request request);
 	
 }

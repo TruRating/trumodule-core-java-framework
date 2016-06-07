@@ -10,48 +10,49 @@ import com.trurating.trumodule.testharness.configuration.TestProperties;
 /**
  * Created by Paul on 01/03/2016.
  */
+@SuppressWarnings("Duplicates")
 public class TestHarness {
 
-	Logger log = Logger.getLogger(TestHarness.class);
+    Logger log = Logger.getLogger(TestHarness.class);
 
-	public static void main(String[] args) {
-		new TestHarness().run();
-	}
+    public static void main(String[] args) {
+        new TestHarness().run();
+    }
 
-	private void run() {
+    private void run() {
 
-		if (!log4JIsConfigured()) configureLog4JUsingDefaults();
+        if (!log4JIsConfigured()) configureLog4JUsingDefaults();
 
-		// start up the payment App and send a payment questionRequest
-		PaymentApplicationSimulator paymentApplication = new PaymentApplicationSimulator();
+        // start up the payment App and send a payment questionRequest
+        PaymentApplicationSimulator paymentApplication = new PaymentApplicationSimulator();
 
-		paymentApplication.paymentTrigger("Operator_Tony",
-				TenderType.SMARTCARD, "A Product", 199);
+        paymentApplication.paymentTrigger("Operator_Tony",
+                TenderType.SMARTCARD, "A Product", 199);
 
-		paymentApplication.completePayment();
-	}
+        paymentApplication.completePayment();
+    }
 
-	private void configureLog4JUsingDefaults() {
-		ConsoleAppender fileAppender = new ConsoleAppender(); // create appender
-		String PATTERN = "%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n";
-		fileAppender.setLayout(new PatternLayout(PATTERN));
-		fileAppender.setThreshold(Level.INFO);
-		fileAppender.activateOptions();
-		Logger.getRootLogger().addAppender(fileAppender);
-	}
+    private void configureLog4JUsingDefaults() {
+        ConsoleAppender fileAppender = new ConsoleAppender(); // create appender
+        String PATTERN = "%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n";
+        fileAppender.setLayout(new PatternLayout(PATTERN));
+        fileAppender.setThreshold(Level.INFO);
+        fileAppender.activateOptions();
+        Logger.getRootLogger().addAppender(fileAppender);
+    }
 
-	private static boolean log4JIsConfigured() {
-		Enumeration appenders = Logger.getRootLogger().getAllAppenders();
-		if (appenders.hasMoreElements()) {
-			return true;
-		} else {
-			Enumeration loggers = LogManager.getCurrentLoggers();
-			while (loggers.hasMoreElements()) {
-				Logger c = (Logger) loggers.nextElement();
-				if (c.getAllAppenders().hasMoreElements())
-					return true;
-			}
-		}
-		return false;
-	}
+    private static boolean log4JIsConfigured() {
+        Enumeration appenders = Logger.getRootLogger().getAllAppenders();
+        if (appenders.hasMoreElements()) {
+            return true;
+        } else {
+            Enumeration loggers = LogManager.getCurrentLoggers();
+            while (loggers.hasMoreElements()) {
+                Logger c = (Logger) loggers.nextElement();
+                if (c.getAllAppenders().hasMoreElements())
+                    return true;
+            }
+        }
+        return false;
+    }
 }

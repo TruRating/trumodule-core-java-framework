@@ -85,7 +85,7 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
         }
     }
 
-    public synchronized Response getResponseRatingDeliveryFromService(Request request) {
+    public synchronized Response getResponseRatingFromRatingsDeliveryToService(Request request) {
         return exchangeMessageWithServer(request);
     }
 

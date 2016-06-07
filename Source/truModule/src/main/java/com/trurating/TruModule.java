@@ -50,7 +50,7 @@ public class TruModule implements ITruModule {
     private IDevice iDevice = null;
     private IXMLNetworkMessenger xmlNetworkMessenger = null;
     private TruRatingMessageFactory truRatingMessageFactory = null;
-    private CachedTruModuleRatingObject cachedTruModuleRatingObject;
+    private static volatile CachedTruModuleRatingObject cachedTruModuleRatingObject;
 
     public TruModule(ITruModuleProperties truModuleProperties) {
         this.truModuleProperties = truModuleProperties;
@@ -78,10 +78,12 @@ public class TruModule implements ITruModule {
         }).start();
     }
 
-    public boolean deliverRating() {
+    public boolean deliverRating(RequestTransaction transaction) {
         final Response response;
         try {
-            response = xmlNetworkMessenger.getResponseRatingDeliveryFromService(cachedTruModuleRatingObject.request);
+            Request request = truRatingMessageFactory.assembleRatingsDeliveryRequest(truModuleProperties, cachedTruModuleRatingObject.sessionID);
+            request.setTransaction(transaction);
+            response = xmlNetworkMessenger.getResponseRatingFromRatingsDeliveryToService(request);
             if (response==null) return false;
             truRatingMessageFactory.assembleRatingsDeliveryRequest(truModuleProperties, cachedTruModuleRatingObject.sessionID);
         } catch (Exception e) {
@@ -126,24 +128,27 @@ public class TruModule implements ITruModule {
         long totalTimeTaken = 0;
 
         try {
-            if (cachedTruModuleRatingObject.response == null) return;
+            if (cachedTruModuleRatingObject.response == null) {
+                log.warn("Cached truModuleRatingObject was null");
+                return;
+            }
 
             final int displayWidth = truModuleProperties.getDeviceCpl();
             String qText = cachedTruModuleRatingObject.question;
-            if (qText != null) {
-                String[] qTextWraps = qText.split("\\\\n");
-                if ((qTextWraps.length == 1) && (qTextWraps[0].length() > displayWidth))
-                    qTextWraps = StringUtilities.wordWrap(qText, displayWidth);
+            if (qText==null) return;
 
-                int timeout = truModuleProperties.getQuestionTimeout();
-                if (timeout < 1000)
-                    timeout = 60000;
+            String[] qTextWraps = qText.split("\\\\n");
+            if ((qTextWraps.length == 1) && (qTextWraps[0].length() > displayWidth))
+                qTextWraps = StringUtilities.wordWrap(qText, displayWidth);
 
-                final long startTime = System.currentTimeMillis();
-                keyStroke = iDevice.displayTruratingQuestionGetKeystroke(qTextWraps, qText, timeout);
-                final long endTime = System.currentTimeMillis();
-                totalTimeTaken = endTime - startTime;
-            }
+            int timeout = truModuleProperties.getQuestionTimeout();
+            if (timeout < 1000)
+                timeout = 60000;
+
+            final long startTime = System.currentTimeMillis();
+            keyStroke = iDevice.displayTruratingQuestionGetKeystroke(qTextWraps, qText, timeout);
+            final long endTime = System.currentTimeMillis();
+            totalTimeTaken = endTime - startTime;
 
             RequestRating rating;
             int ratingValue = new Integer(keyStroke);
@@ -156,7 +161,7 @@ public class TruModule implements ITruModule {
 
                 if (ratingValue > -1) {
                     // Update the receipt text to indicate that the user rated
-                    String questionText = cachedTruModuleRatingObject.question;
+                    String questionText = cachedTruModuleRatingObject.responseWithRating;
                     iDevice.displayMessage(questionText);
 
                 } else {

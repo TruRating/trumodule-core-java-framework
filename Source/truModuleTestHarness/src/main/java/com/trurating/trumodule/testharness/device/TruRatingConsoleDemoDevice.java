@@ -46,7 +46,6 @@ public class TruRatingConsoleDemoDevice implements IDevice {
 
     public void displayMessage(String string) {
         JOptionPane.showMessageDialog(null, string);
-        log.info(string);
     }
 
     public void displayMessageWaitForKey(String string, int timeout) {
@@ -66,8 +65,6 @@ public class TruRatingConsoleDemoDevice implements IDevice {
     }
 
     public String displayTruratingQuestionGetKeystroke(String[] prompts, String promptText, int timeout) {
-        log.info(promptText);
-
         Object[] ratingValues = {1,2,3,4,5,6,7,8,9,0};
         Integer integer = (Integer)JOptionPane.showInputDialog(
                 null,
@@ -82,10 +79,6 @@ public class TruRatingConsoleDemoDevice implements IDevice {
         if ((integer == null)) {
             integer=-1;
         }
-
-//        ConsoleManager consoleManager = new ConsoleManager();
-//        log.info("---> KEYBOARD INPUT REQUIRED!! <---");
-//        return new Integer(consoleManager.getKey()).toString();
         return integer.toString();
     }
 

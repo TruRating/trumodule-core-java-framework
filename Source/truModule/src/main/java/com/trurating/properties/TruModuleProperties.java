@@ -21,6 +21,8 @@ package com.trurating.properties;
 
 import org.apache.log4j.Logger;
 
+import java.io.File;
+
 /**
  * A general loader of system properties.
  * This particular implementation uses java.util.Properties
@@ -34,6 +36,7 @@ import org.apache.log4j.Logger;
 public class TruModuleProperties implements ITruModuleProperties {
 
     private static Logger log = Logger.getLogger(TruModuleProperties.class);
+    private File propertiesFilesLocation;
 
     public TruModuleProperties() {
     }
@@ -235,7 +238,7 @@ public class TruModuleProperties implements ITruModuleProperties {
     public void setTruServiceIPAddress(String value) {
     	ipAddress = value;
     }
-    private String ipAddress = "";
+    private String ipAddress = "http://tru-sand-service-v200.trurating.com/api/servicemessage";
 
     
    /**
@@ -263,4 +266,8 @@ public class TruModuleProperties implements ITruModuleProperties {
     	socketTimeoutInMilliSeconds = value;
     }
 	private int socketTimeoutInMilliSeconds = 500;
- }
+
+    public File getPropertiesFilesLocation() {
+        return propertiesFilesLocation;
+    }
+}

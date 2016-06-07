@@ -19,7 +19,7 @@ public class TestProperties implements ITruModuleProperties {
     }
 
     public String getPartnerId() {
-        return "truRating";
+        return "1";
     }
 
     public String getMid() {
@@ -87,7 +87,7 @@ public class TestProperties implements ITruModuleProperties {
     }
 
     public int getTruServiceSocketTimeoutInMilliSeconds() {
-        return 500;
+        return 3000;
     }
 
     public int getTruServiceSocketPortNumber() {

@@ -21,6 +21,7 @@ package com.trurating;
 
 import com.trurating.device.IDevice;
 import com.trurating.service.v200.xml.RequestRating;
+import com.trurating.service.v200.xml.RequestTransaction;
 
 /**
  * Created by Paul on 01/03/2016.
@@ -29,17 +30,17 @@ public interface ITruModule {
 
     void setDevice(IDevice deviceRef);
 
-    RequestRating getCurrentRatingRecord();
+    RequestRating getCurrentRatingRecord(); // return the current ratings record
 
-    void doRating();
+    void doRating(); //display the question on the ped, and take a user keystroke
 
-    void doRatingInBackground();
+    void doRatingInBackground(); //display the question on the ped, and take a user keystroke - run in background thread
 
-    void cancelRating();
+    void cancelRating(); //can away all ped activity - used when a payment arrives and ped needs to be clear
 
-    boolean deliverRating();
+    boolean deliverRating(RequestTransaction transaction); //deliver the rating the the truService
 
-    String getReceiptMessage();
+    String getReceiptMessage(); // for use in receipt printing
 
     void close();
 
