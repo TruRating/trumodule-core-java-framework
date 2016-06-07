@@ -90,7 +90,7 @@ public class XSD2TestFactory {
         if (requestPeripheral.getFont() == Font.MONOSPACED) requestPeripheral.setUnit(Unit.LINE);
         else requestPeripheral.setUnit(Unit.PIXEL);
 
-        requestPeripheral.setWidth((short) properties.getDeviceCpl());
+        requestPeripheral.setWidth((short) properties.getDeviceCPL());
 
         RequestDevice requestDevice = new RequestDevice();
         requestDevice.setFirmware(properties.getPpaFirmware());

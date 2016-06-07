@@ -5,6 +5,7 @@ import static mockit.Deencapsulation.setField;
 import com.trurating.CachedTruModuleRatingObject;
 import com.trurating.network.xml.IXMLNetworkMessenger;
 import com.trurating.network.xml.TruRatingMessageFactory;
+import com.trurating.properties.ITruModuleProperties;
 import com.trurating.properties.UnitTestProperties;
 import com.trurating.service.v200.xml.Request;
 import com.trurating.service.v200.xml.RequestTransaction;
@@ -21,7 +22,6 @@ import org.junit.runner.RunWith;
 
 import com.trurating.TruModule;
 import com.trurating.device.IDevice;
-import com.trurating.properties.ITruModuleProperties;
 
 /**
  * Created by Paul on 10/03/2016.
@@ -66,7 +66,7 @@ public class TruModule_RecordResponse_JUnitTest {
             xmlNetworkMessenger.getResponseRatingFromRatingsDeliveryToService((Request) any);
             returns(testFactory.generateResponseForQuestion());
             times = 1;
-            truRatingMessageFactory.assembleRatingsDeliveryRequest((ITruModuleProperties)any, (String)any);
+            truRatingMessageFactory.assembleRatingsDeliveryRequest((ITruModuleProperties) any, (String)any);
             returns (testFactory.generateRequestForQuestion());
             times = 1;
         }};
@@ -81,7 +81,7 @@ public class TruModule_RecordResponse_JUnitTest {
             xmlNetworkMessenger.getResponseRatingFromRatingsDeliveryToService((Request) any);
             returns(null);
             times = 1;
-            truRatingMessageFactory.assembleRatingsDeliveryRequest((ITruModuleProperties)any, (String)any);
+            truRatingMessageFactory.assembleRatingsDeliveryRequest((ITruModuleProperties) any, (String)any);
             returns (testFactory.generateRequestForQuestion());
             times = 0;
         }};

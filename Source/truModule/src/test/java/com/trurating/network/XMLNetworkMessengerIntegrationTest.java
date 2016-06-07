@@ -1,5 +1,6 @@
 package com.trurating.network;
 
+import com.trurating.properties.ITruModuleProperties;
 import com.trurating.service.v200.xml.Request;
 import com.trurating.service.v200.xml.RequestRating;
 import com.trurating.service.v200.xml.Response;
@@ -12,7 +13,6 @@ import org.junit.runner.RunWith;
 
 import com.trurating.network.xml.TruRatingMessageFactory;
 import com.trurating.network.xml.XMLNetworkMessenger;
-import com.trurating.properties.ITruModuleProperties;
 import com.trurating.properties.UnitTestProperties;
 import com.trurating.util.IntegrationTestStartUp;
 

@@ -1,11 +1,11 @@
 package com.trurating.trumodule.testharness.configuration;
 
-import com.trurating.properties.ITruModuleProperties;
+import com.trurating.properties.TruModuleProperties;
 
 /**
  * Created by Paul on 2016. :)
  */
-public class TestProperties implements ITruModuleProperties {
+public class TestProperties extends TruModuleProperties {
 
     private static TestProperties INSTANCE=null;
 
@@ -34,11 +34,11 @@ public class TestProperties implements ITruModuleProperties {
         return "en-GB";
     }
 
-    public boolean getIncludeReceipt() {
+    public boolean isIncludeReceiptInQuestionRequest() {
         return true;
     }
 
-    public boolean getIncludeAcknowledgement() {
+    public boolean isIncludeAcknowledgement() {
         return true;
     }
 
@@ -50,7 +50,7 @@ public class TestProperties implements ITruModuleProperties {
         return 4;
     }
 
-    public int getDeviceCpl() {
+    public int getDeviceCPL() {
         return 16;
     }
 
@@ -78,7 +78,7 @@ public class TestProperties implements ITruModuleProperties {
         return "MCM4.2";
     }
 
-    public String getTruServiceIPAddress() {
+    public String getTruServiceURL() {
 ///        return "tru-sand-service-fis.cloudapp.net";
         return "http://localhost:47851/api/servicemessage";
 //        return "tru-sand-service-trurating.cloudapp.net";
@@ -86,11 +86,7 @@ public class TestProperties implements ITruModuleProperties {
 //        return "127.0.0.1";
     }
 
-    public int getTruServiceSocketTimeoutInMilliSeconds() {
+    public int getSocketTimeoutInMilliSeconds() {
         return 3000;
-    }
-
-    public int getTruServiceSocketPortNumber() {
-        return 9999;
     }
 }

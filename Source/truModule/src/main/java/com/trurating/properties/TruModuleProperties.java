@@ -21,253 +21,229 @@ package com.trurating.properties;
 
 import org.apache.log4j.Logger;
 
-import java.io.File;
-
 /**
- * A general loader of system properties.
- * This particular implementation uses java.util.Properties
- * but can we swapped out for any implementation
- * The ITruModuleProperties will vary across implementations and aims
- * to wrap to underlying properties implementation, so that only a set of getters
- * and setters are visible to partners.
- *
+    Creates a facade of getters and setters over an implementation of a general properties loader
+    -- feel to roll your own GeneralPropertiesLoader as appropriate
  */
 
-public class TruModuleProperties implements ITruModuleProperties {
+public class TruModuleProperties extends GeneralPropertiesLoader implements ITruModuleProperties {
+
+    private String mid = "";
+    private String partnerId = "";
+    private String tid = "";
+    private String languageCode = "";
+    boolean includeReceiptInQuestionRequest;
+    boolean includeAcknowledgement;
+    private String deviceType = "";
+    private int deviceCPL;
+    private String deviceFormat = "";
+    private int deviceLines;
+    private String deviceFontType = "";
+    private int questionTimeout;
+    private String ipAddress = "";
+    private int socketTimeoutInMilliSeconds;
+    private String serverId = "";
+    private String deviceFirmware = "";
+    private String ppaFirmware = "";
 
     private static Logger log = Logger.getLogger(TruModuleProperties.class);
-    private File propertiesFilesLocation;
+    private String truServiceURL;
 
     public TruModuleProperties() {
+        super(); //this call will load all properties loaded from all files as pointed by system "resources" JVM arg
+        setMid(getProperty("mid"));
+        setPartnerId(getProperty("partnerid"));
+        setTid(getProperty("tid"));
+        setLanguageCode("languageCode");
+        setIncludeReceiptInQuestionRequest(getPropertyAsBoolean("includeReceipt"));
+        setIncludeAcknowledgement(getPropertyAsBoolean("includeAcknowledgement"));
+        setDeviceType(getProperty("device_Type"));
+        setDeviceCPL(getPropertyAsInt("device_cpl"));
+        setDeviceFormat(getProperty("device_format"));
+        setDeviceFirmware(getProperty("device_firmware"));
+        setDeviceFontType(getProperty("device_font_type"));
+        setServerId(getProperty("123456789"));
+        setPpaFirmware(getProperty("ppaFirmware"));
+        setQuestionTimeout(getPropertyAsInt("timeoutFromQuestion"));
+        setSocketTimeoutInMilliSeconds(getPropertyAsInt("socket_timeout"));
+        setTruServiceURL(getProperty("service_URL"));
     }
 
-    public String getPartnerId() {
-        return partnerId;
-    }
-    private String partnerId="";
-
-    /**
-     * MID - returns a unique idenitifier for the Store 
-     */
     public String getMid() {
         return mid;
     }
 
-    public void setMid(String value) {
-        mid = value;
+    public void setMid(String mid) {
+        this.mid = mid;
     }
-    private String mid = "";
 
-    
-    /**
-     * TID - A unique identifer for the till / lane
-     */
+
+    public String getPartnerId() {
+        return partnerId;
+    }
+
+
+    public void setPartnerId(String partnerId) {
+        this.partnerId = partnerId;
+    }
+
+
     public String getTid() {
         return tid;
     }
 
-    public void setTid(String value) {
-        tid = value;
-    }
-    private String tid = "";
 
-    /**
-     * LanguageCode - the language the transaction is being conducted in
-     */
+    public void setTid(String tid) {
+        this.tid = tid;
+    }
+
+
     public String getLanguageCode() {
-        return languageCode ;
+        return languageCode;
     }
 
-    public void setLanguageCode(String value) {
-    	languageCode = value;
-    }
-    private String languageCode = "";
 
-    
-    /**
-     * A flag to indicate whether the receipt text should 
-     * be requested as part of the question questionRequest
-     * (It always is in the rating delivery)  
-     */
-    public boolean getIncludeReceipt() {
+    public void setLanguageCode(String languageCode) {
+        this.languageCode = languageCode;
+    }
+
+
+    public boolean isIncludeReceiptInQuestionRequest() {
         return includeReceiptInQuestionRequest;
     }
 
-    public void setIncludeReceipt(boolean value) {
-        includeReceiptInQuestionRequest = value;
+
+    public void setIncludeReceiptInQuestionRequest(boolean includeReceiptInQuestionRequest) {
+        this.includeReceiptInQuestionRequest = includeReceiptInQuestionRequest;
     }
-    boolean includeReceiptInQuestionRequest = true ;
-    
-    
-    /**
-     * A flag to indicate whether the acknowledgement text should 
-     * be requested as part of the question questionRequest
-     */
-    public boolean getIncludeAcknowledgement() {
+
+
+    public boolean isIncludeAcknowledgement() {
         return includeAcknowledgement;
     }
 
-    public void setIncludeAcknowledgement(boolean value) {
-        includeAcknowledgement = value;
+
+    public void setIncludeAcknowledgement(boolean includeAcknowledgement) {
+        this.includeAcknowledgement = includeAcknowledgement;
     }
-    boolean includeAcknowledgement = true ;
 
 
-    /** 
-     * The type of PED device in use  
-     */
     public String getDeviceType() {
         return deviceType;
     }
 
-    public void setDeviceType(String value) {
-    	deviceType = value;
-    }
-    private String deviceType = "";
 
-        
-    /**
-     * The number of display lines supported by the PED device
-     */
-    public int getDeviceLines() {
-        return deviceLines;
+    public void setDeviceType(String deviceType) {
+        this.deviceType = deviceType;
     }
 
-    public void setDeviceLines(int value) {
-        deviceLines = value;
-    }
-    int deviceLines = 0;
-    
-    /**
-     * The number of characters that may be printed on each line
-     */
-    public int getDeviceCpl() {
+
+    public int getDeviceCPL() {
         return deviceCPL;
     }
 
-    public void setDeviceCpl(int value) {
-    	deviceCPL = value;
+
+    public void setDeviceCPL(int deviceCPL) {
+        this.deviceCPL = deviceCPL;
     }
-    int deviceCPL = 0;
-    
-    /**
-     * 
-     */
+
+
     public String getDeviceFormat() {
         return deviceFormat;
     }
 
-    public void setDeviceFormat(String value) {
-    	deviceFormat = value;
-    }
-    private String deviceFormat = "";
 
-    
-    /**
-     * A name and version of the firmware running on the PED device
-     */
-    public String getDeviceFirmware() {
-        return deviceFirmware;
+    public void setDeviceFormat(String deviceFormat) {
+        this.deviceFormat = deviceFormat;
     }
 
-    public void setDeviceFirmware(String value) {
-    	deviceFirmware = value;
+
+    public int getDeviceLines() {
+        return deviceLines;
     }
-    private String deviceFirmware = "";
 
 
-    /** 
-     * The type of font supported by the PED display (proportional or fixed width)
-     */
+    public void setDeviceLines(int deviceLines) {
+        this.deviceLines = deviceLines;
+    }
+
+
     public String getDeviceFontType() {
         return deviceFontType;
     }
 
-    public void setDeviceFontType(String value) {
-    	deviceFontType = value;
-    }
-    private String deviceFontType = "";
 
-
-    /**
-     * The question timeout in milliseconds
-     */
-	public int getQuestionTimeout() {
-		return questionTimeout;
-	}
-
-	public void setQuestionTimeout(int questionTimeout) {
-		this.questionTimeout = questionTimeout;
-	}
-	private int questionTimeout = 60000 ;
-    
-
-    /**
-     * 
-     */
-    public String getServerId() {
-        return serverId;
+    public void setDeviceFontType(String deviceFontType) {
+        this.deviceFontType = deviceFontType;
     }
 
-    public void setServerId(String value) {
-    	serverId = value;
-    }
-    private String serverId = "";
 
-     
-    /**
-     * The name and version of the payment application
-     */
-    public String getPpaFirmware() {
-        return ppaFirmware;
+    public int getQuestionTimeout() {
+        return questionTimeout;
     }
 
-    public void setPpaFirmware(String value) {
-    	ppaFirmware = value;
-    }
-    private String ppaFirmware = "";
 
-    /**
-     *  The IP address of the server running the truService application
-     */
-    public String getTruServiceIPAddress() {
+    public void setQuestionTimeout(int questionTimeout) {
+        this.questionTimeout = questionTimeout;
+    }
+
+
+    public String getIpAddress() {
         return ipAddress;
     }
 
 
-    public void setTruServiceIPAddress(String value) {
-    	ipAddress = value;
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
     }
-    private String ipAddress = "http://tru-sand-service-v200.trurating.com/api/servicemessage";
 
-    
-   /**
-     *  The port on the truService server that the truService application is listening on
-    */
-   public int getTruServiceSocketPortNumber() {
-       return socketPortNumber;
-   }
 
-   public void setTruServiceSocketPortNumber(int value) {
-   	socketPortNumber = value;
-   }
-   private int socketPortNumber = 0;
-
-    
-    /**
-     * The timeout to use for socket connections to the truService application
-     */
-    public int getTruServiceSocketTimeoutInMilliSeconds() {
+    public int getSocketTimeoutInMilliSeconds() {
         return socketTimeoutInMilliSeconds;
     }
 
 
-    public void setTruServiceSocketTimeoutInMilliSeconds(int value) {
-    	socketTimeoutInMilliSeconds = value;
+    public void setSocketTimeoutInMilliSeconds(int socketTimeoutInMilliSeconds) {
+        this.socketTimeoutInMilliSeconds = socketTimeoutInMilliSeconds;
     }
-	private int socketTimeoutInMilliSeconds = 500;
 
-    public File getPropertiesFilesLocation() {
-        return propertiesFilesLocation;
+
+    public String getServerId() {
+        return serverId;
+    }
+
+
+    public void setServerId(String serverId) {
+        this.serverId = serverId;
+    }
+
+
+    public String getDeviceFirmware() {
+        return deviceFirmware;
+    }
+
+
+    public void setDeviceFirmware(String deviceFirmware) {
+        this.deviceFirmware = deviceFirmware;
+    }
+
+
+    public String getPpaFirmware() {
+        return ppaFirmware;
+    }
+
+
+    public void setPpaFirmware(String ppaFirmware) {
+        this.ppaFirmware = ppaFirmware;
+    }
+
+
+    public String getTruServiceURL() {
+        return truServiceURL;
+    }
+
+
+    public void setTruServiceURL(String truServiceURL) {
+        this.truServiceURL = truServiceURL;
     }
 }

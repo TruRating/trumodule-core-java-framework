@@ -21,11 +21,9 @@ package com.trurating.network.xml;
 
 import java.util.Date;
 
+import com.trurating.properties.ITruModuleProperties;
 import com.trurating.service.v200.xml.*;
 import org.apache.log4j.Logger;
-
-import com.trurating.properties.ITruModuleProperties;
-import com.trurating.properties.TruModuleProperties;
 
 /**
  * Created by Paul on 09/03/2016.
@@ -34,9 +32,7 @@ public class TruRatingMessageFactory {
 
     Logger log = Logger.getLogger(TruRatingMessageFactory.class);
 
-    public Request assembleQuestionRequest(ITruModuleProperties propertiesProvided, String sessionID) {
-
-        ITruModuleProperties properties = checkProperties(propertiesProvided);
+    public Request assembleQuestionRequest(ITruModuleProperties properties, String sessionID) {
 
         Request request = new Request();
         request.setMerchantId(properties.getMid());
@@ -56,7 +52,7 @@ public class TruRatingMessageFactory {
             if (requestPeripheral.getFont() == Font.MONOSPACED) requestPeripheral.setUnit(Unit.LINE);
             else requestPeripheral.setUnit(Unit.PIXEL);
 
-            requestPeripheral.setWidth((short) properties.getDeviceCpl());
+            requestPeripheral.setWidth((short) properties.getDeviceCPL());
 
             RequestDevice requestDevice = new RequestDevice();
             requestDevice.setFirmware(properties.getPpaFirmware());
@@ -79,9 +75,7 @@ public class TruRatingMessageFactory {
 
         return request;
     }
-    public Request assembleRatingsDeliveryRequest(ITruModuleProperties propertiesProvided, String sessionID) {
-
-        ITruModuleProperties properties = checkProperties(propertiesProvided);
+    public Request assembleRatingsDeliveryRequest(ITruModuleProperties properties, String sessionID) {
 
         Request request = new Request();
         request.setMerchantId(properties.getMid());
@@ -94,12 +88,5 @@ public class TruRatingMessageFactory {
         requestRating.setDateTime(Long.toString(new Date().getTime()));
 
         return request;
-    }
-
-    private ITruModuleProperties checkProperties(ITruModuleProperties properties) {
-        if (properties != null)
-            return properties;
-        log.error("Null properties given to TruRatingMessageFactory");
-        return new TruModuleProperties();
     }
 }

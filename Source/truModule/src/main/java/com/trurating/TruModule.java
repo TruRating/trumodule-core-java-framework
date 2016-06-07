@@ -20,13 +20,13 @@
 package com.trurating;
 
 import com.trurating.network.xml.IXMLNetworkMessenger;
+import com.trurating.properties.ITruModuleProperties;
 import com.trurating.service.v200.xml.*;
 import org.apache.log4j.Logger;
 
 import com.trurating.device.IDevice;
 import com.trurating.network.xml.TruRatingMessageFactory;
 import com.trurating.network.xml.XMLNetworkMessenger;
-import com.trurating.properties.ITruModuleProperties;
 import com.trurating.util.StringUtilities;
 
 import java.text.SimpleDateFormat;
@@ -46,22 +46,22 @@ import java.util.Date;
 public class TruModule implements ITruModule {
 
     private final Logger log = Logger.getLogger(TruModule.class);
-    private final ITruModuleProperties truModuleProperties;
+    private final ITruModuleProperties ITruModuleProperties;
     private IDevice iDevice = null;
     private IXMLNetworkMessenger xmlNetworkMessenger = null;
     private TruRatingMessageFactory truRatingMessageFactory = null;
     private static volatile CachedTruModuleRatingObject cachedTruModuleRatingObject;
 
-    public TruModule(ITruModuleProperties truModuleProperties) {
-        this.truModuleProperties = truModuleProperties;
+    public TruModule(ITruModuleProperties ITruModuleProperties) {
+        this.ITruModuleProperties = ITruModuleProperties;
         truRatingMessageFactory = new TruRatingMessageFactory();
-        xmlNetworkMessenger = new XMLNetworkMessenger(truModuleProperties);
+        xmlNetworkMessenger = new XMLNetworkMessenger(ITruModuleProperties);
     }
 
     public void doRating() {
         clearCachedRatingInformation();
         cachedTruModuleRatingObject = new CachedTruModuleRatingObject();
-        Request request = truRatingMessageFactory.assembleQuestionRequest(truModuleProperties, cachedTruModuleRatingObject.sessionID);
+        Request request = truRatingMessageFactory.assembleQuestionRequest(ITruModuleProperties, cachedTruModuleRatingObject.sessionID);
         cachedTruModuleRatingObject = requestQuestionFromServerAndCacheResult(request);
         runQuestion();
     }
@@ -69,7 +69,7 @@ public class TruModule implements ITruModule {
     public void doRatingInBackground() {
         clearCachedRatingInformation();
         cachedTruModuleRatingObject = new CachedTruModuleRatingObject();
-        Request request = truRatingMessageFactory.assembleQuestionRequest(truModuleProperties, cachedTruModuleRatingObject.sessionID);
+        Request request = truRatingMessageFactory.assembleQuestionRequest(ITruModuleProperties, cachedTruModuleRatingObject.sessionID);
         cachedTruModuleRatingObject = requestQuestionFromServerAndCacheResult(request);
         new Thread(new Runnable() {
             public void run() {
@@ -81,11 +81,11 @@ public class TruModule implements ITruModule {
     public boolean deliverRating(RequestTransaction transaction) {
         final Response response;
         try {
-            Request request = truRatingMessageFactory.assembleRatingsDeliveryRequest(truModuleProperties, cachedTruModuleRatingObject.sessionID);
+            Request request = truRatingMessageFactory.assembleRatingsDeliveryRequest(ITruModuleProperties, cachedTruModuleRatingObject.sessionID);
             request.setTransaction(transaction);
             response = xmlNetworkMessenger.getResponseRatingFromRatingsDeliveryToService(request);
             if (response==null) return false;
-            truRatingMessageFactory.assembleRatingsDeliveryRequest(truModuleProperties, cachedTruModuleRatingObject.sessionID);
+            truRatingMessageFactory.assembleRatingsDeliveryRequest(ITruModuleProperties, cachedTruModuleRatingObject.sessionID);
         } catch (Exception e) {
             log.error("", e);
             return false;
@@ -100,7 +100,7 @@ public class TruModule implements ITruModule {
         cachedTruModuleRatingObject.response = xmlNetworkMessenger.getResponseQuestionFromService(request);
         Response response = cachedTruModuleRatingObject.response;
         try {
-            String desiredLanguage = truModuleProperties.getLanguageCode();
+            String desiredLanguage = ITruModuleProperties.getLanguageCode();
             if (response.getDisplay()==null || response.getDisplay().getLanguage()==null) {
                 log.warn("Response getDisplay or getLanguage were null");
                 return cachedTruModuleRatingObject;
@@ -133,7 +133,7 @@ public class TruModule implements ITruModule {
                 return;
             }
 
-            final int displayWidth = truModuleProperties.getDeviceCpl();
+            final int displayWidth = ITruModuleProperties.getDeviceCPL();
             String qText = cachedTruModuleRatingObject.question;
             if (qText==null) return;
 
@@ -141,7 +141,7 @@ public class TruModule implements ITruModule {
             if ((qTextWraps.length == 1) && (qTextWraps[0].length() > displayWidth))
                 qTextWraps = StringUtilities.wordWrap(qText, displayWidth);
 
-            int timeout = truModuleProperties.getQuestionTimeout();
+            int timeout = ITruModuleProperties.getQuestionTimeout();
             if (timeout < 1000)
                 timeout = 60000;
 

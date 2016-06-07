@@ -2,6 +2,7 @@ package com.trurating.truModule;
 
 import static mockit.Deencapsulation.setField;
 
+import com.trurating.properties.ITruModuleProperties;
 import com.trurating.properties.UnitTestProperties;
 import com.trurating.service.v200.xml.*;
 import mockit.Expectations;
@@ -20,7 +21,6 @@ import com.trurating.TruModule;
 import com.trurating.device.IDevice;
 import com.trurating.network.xml.IXMLNetworkMessenger;
 import com.trurating.network.xml.TruRatingMessageFactory;
-import com.trurating.properties.ITruModuleProperties;
 
 /**
  * Created by Paul on 10/03/2016.
@@ -65,7 +65,7 @@ public class TruModule_DoRating_JUnitTest {
             iDevice.displayTruratingQuestionGetKeystroke((String[])any, (String)any, anyInt);
             returns ("8");
             times = 1;
-            truRatingMessageFactory.assembleQuestionRequest((ITruModuleProperties)any, (String)any);
+            truRatingMessageFactory.assembleQuestionRequest((ITruModuleProperties) any, (String)any);
             returns (testFactory.generateRequestForQuestion());
             times = 1;
         }};
@@ -83,7 +83,7 @@ public class TruModule_DoRating_JUnitTest {
             xmlNetworkMessenger.getResponseQuestionFromService((Request)any);
             returns(null);
             times = 1;
-            truRatingMessageFactory.assembleQuestionRequest((ITruModuleProperties)any, (String)any);
+            truRatingMessageFactory.assembleQuestionRequest((ITruModuleProperties) any, (String)any);
             returns (testFactory.generateRequestForQuestion());
             times = 1;
         }};

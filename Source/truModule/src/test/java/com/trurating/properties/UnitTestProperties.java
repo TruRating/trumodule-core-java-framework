@@ -3,7 +3,7 @@ package com.trurating.properties;
 /**
  * Created by Paul on 2016. :)
  */
-public class UnitTestProperties implements ITruModuleProperties {
+public class UnitTestProperties extends TruModuleProperties {
 
     private static UnitTestProperties INSTANCE=null;
 
@@ -16,7 +16,6 @@ public class UnitTestProperties implements ITruModuleProperties {
         return INSTANCE;
     }
 
-    @Override
     public String getPartnerId() {
         return "1";
     }
@@ -33,14 +32,6 @@ public class UnitTestProperties implements ITruModuleProperties {
         return "en-GB";
     }
 
-    public boolean getIncludeReceipt() {
-        return true;
-    }
-
-    public boolean getIncludeAcknowledgement() {
-        return true;
-    }
-
     public String getDeviceType() {
         return "IPP350";
     }
@@ -49,7 +40,7 @@ public class UnitTestProperties implements ITruModuleProperties {
         return 4;
     }
 
-    public int getDeviceCpl() {
+    public int getDeviceCPL() {
         return 16;
     }
 
@@ -77,16 +68,8 @@ public class UnitTestProperties implements ITruModuleProperties {
         return "MCM4.2";
     }
 
-    public String getTruServiceIPAddress() {
+    public String getTruServiceURL() {
         //return "http://localhost:47851/api/servicemessage";
         return "http://tru-sand-service-v200.trurating.com/api/servicemessage";
-    }
-
-    public int getTruServiceSocketTimeoutInMilliSeconds() {
-        return 500;
-    }
-
-    public int getTruServiceSocketPortNumber() {
-        return 9999;
     }
 }

@@ -1,8 +1,7 @@
 package com.trurating.trumodule.testharness;
 
 
-import com.trurating.network.xml.TruRatingMessageFactory;
-import com.trurating.service.v121.xml.ratingDelivery.RatingDeliveryJAXB;
+import com.trurating.properties.ITruModuleProperties;
 import com.trurating.service.v200.xml.*;
 import com.trurating.trumodule.testharness.configuration.TestProperties;
 import org.apache.log4j.Logger;
@@ -11,7 +10,6 @@ import com.trurating.ITruModule;
 import com.trurating.TruModule;
 import com.trurating.device.IDevice;
 import com.trurating.payment.TenderType;
-import com.trurating.properties.ITruModuleProperties;
 import com.trurating.trumodule.testharness.device.TruRatingConsoleDemoDevice;
 
 import java.text.SimpleDateFormat;
@@ -25,11 +23,11 @@ public class PaymentApplicationSimulator  {
     private final ITruModule truModule;
     private final Logger log = Logger.getLogger(PaymentApplicationSimulator.class);
     private IDevice iDevice;
-    private ITruModuleProperties truModuleProperties;
+    private ITruModuleProperties ITruModuleProperties;
 
     public PaymentApplicationSimulator() {
-        truModuleProperties = new TestProperties(); // Set of test properties
-        this.truModule = new TruModule(truModuleProperties);
+        ITruModuleProperties = new TestProperties(); // Set of test properties
+        this.truModule = new TruModule(ITruModuleProperties);
         this.truModule.setDevice(getDevice());
     }
 
@@ -47,6 +45,7 @@ public class PaymentApplicationSimulator  {
        	transaction.setCurrency((short)826);
         transaction.setAmount(550);
    		transaction.setResult(TransactionResult.APPROVED);
+
         RequestTender requestTender = new RequestTender();
         requestTender.setAmount(550);
         RequestCardHash requestCardHash = new RequestCardHash();

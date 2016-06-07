@@ -32,10 +32,9 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import com.trurating.properties.ITruModuleProperties;
 import com.trurating.service.v200.xml.*;
 import org.apache.log4j.Logger;
-
-import com.trurating.properties.ITruModuleProperties;
 
 /**
  * Created by Paul on 08/03/2016.
@@ -62,11 +61,11 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
         return connection;
     }
 
-    public XMLNetworkMessenger(ITruModuleProperties truModuleProperties) {
+    public XMLNetworkMessenger(ITruModuleProperties ITruModuleProperties) {
 
         try {
-            url = new URL(truModuleProperties.getTruServiceIPAddress());
-            httpTimeout = truModuleProperties.getTruServiceSocketTimeoutInMilliSeconds();
+            url = new URL(ITruModuleProperties.getTruServiceURL());
+            httpTimeout = ITruModuleProperties.getSocketTimeoutInMilliSeconds();
 
             xmlOutputFactory = XMLOutputFactory.newInstance();
 
