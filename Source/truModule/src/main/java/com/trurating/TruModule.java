@@ -84,7 +84,7 @@ public class TruModule implements ITruModule {
             Request request = truRatingMessageFactory.assembleRatingsDeliveryRequest(ITruModuleProperties, cachedTruModuleRatingObject.sessionID);
             request.setTransaction(transaction);
             response = xmlNetworkMessenger.getResponseRatingFromRatingsDeliveryToService(request);
-            if (response==null) return false;
+            if (response == null) return false;
             truRatingMessageFactory.assembleRatingsDeliveryRequest(ITruModuleProperties, cachedTruModuleRatingObject.sessionID);
         } catch (Exception e) {
             log.error("", e);
@@ -101,18 +101,18 @@ public class TruModule implements ITruModule {
         Response response = cachedTruModuleRatingObject.response;
         try {
             String desiredLanguage = ITruModuleProperties.getLanguageCode();
-            if (response.getDisplay()==null || response.getDisplay().getLanguage()==null) {
+            if (response.getDisplay() == null || response.getDisplay().getLanguage() == null) {
                 log.warn("Response getDisplay or getLanguage were null");
                 return cachedTruModuleRatingObject;
             }
 
-            for (int i=0; i<response.getDisplay().getLanguage().size(); i++) { //loop through all the possible languages until we get one that matches
+            for (int i = 0; i < response.getDisplay().getLanguage().size(); i++) { //loop through all the possible languages until we get one that matches
                 if (response.getDisplay().getLanguage().get(i).getRfc1766().equals(desiredLanguage)) {
                     cachedTruModuleRatingObject.question = response.getDisplay().getLanguage().get(i).getQuestion().getValue();
-                    cachedTruModuleRatingObject.receiptNoRating = response.getDisplay().getLanguage().get(i).getReceipt().get(0).getValue();
-                    cachedTruModuleRatingObject.receiptWithRating = response.getDisplay().getLanguage().get(i).getReceipt().get(1).getValue();
-                    cachedTruModuleRatingObject.responseNoRating = response.getDisplay().getLanguage().get(i).getScreen().get(0).getValue();
-                    cachedTruModuleRatingObject.responseWithRating = response.getDisplay().getLanguage().get(i).getScreen().get(1).getValue();
+                    cachedTruModuleRatingObject.receiptWithRating = response.getDisplay().getLanguage().get(i).getReceipt().get(0).getValue();
+                    cachedTruModuleRatingObject.receiptNoRating = response.getDisplay().getLanguage().get(i).getReceipt().get(1).getValue();
+                    cachedTruModuleRatingObject.responseWithRating = response.getDisplay().getLanguage().get(i).getScreen().get(0).getValue();
+                    cachedTruModuleRatingObject.responseNoRating = response.getDisplay().getLanguage().get(i).getScreen().get(1).getValue();
                     return cachedTruModuleRatingObject;
                 }
             }
@@ -135,7 +135,7 @@ public class TruModule implements ITruModule {
 
             final int displayWidth = ITruModuleProperties.getDeviceCPL();
             String qText = cachedTruModuleRatingObject.question;
-            if (qText==null) return;
+            if (qText == null) return;
 
             String[] qTextWraps = qText.split("\\\\n");
             if ((qTextWraps.length == 1) && (qTextWraps[0].length() > displayWidth))
@@ -167,7 +167,7 @@ public class TruModule implements ITruModule {
                 } else {
                     iDevice.displayMessage(cachedTruModuleRatingObject.responseNoRating);
                 }
-                cachedTruModuleRatingObject.rating=rating;
+                cachedTruModuleRatingObject.rating = rating;
             }
         } catch (Exception e) {
             log.error("truModule error", e);
@@ -175,7 +175,9 @@ public class TruModule implements ITruModule {
     }
 
     public String getReceiptMessage() {
-        if (getCurrentRatingRecord().getValue()>-99) {
+        if (cachedTruModuleRatingObject == null || cachedTruModuleRatingObject.receiptWithRating == null || cachedTruModuleRatingObject.receiptNoRating == null)
+            return "";
+        if (getCurrentRatingRecord().getValue() > -99) {
             return cachedTruModuleRatingObject.receiptWithRating;
         } else {
             return cachedTruModuleRatingObject.receiptNoRating;
@@ -188,6 +190,21 @@ public class TruModule implements ITruModule {
 
     public void clearCachedRatingInformation() {
         cachedTruModuleRatingObject = null;
+    }
+
+    @Override
+    public void createNewTransaction() {
+        cachedTruModuleRatingObject.transaction = new RequestTransaction();
+    }
+
+    @Override
+    public void updateTransaction(RequestTransaction requestTransaction) {
+        cachedTruModuleRatingObject.transaction = requestTransaction;
+    }
+
+    @Override
+    public RequestTransaction getCurrentTransaction() {
+        return cachedTruModuleRatingObject.transaction;
     }
 
     public void setDevice(IDevice deviceRef) {

@@ -25,10 +25,7 @@ public class TestHarness {
 
         // start up the payment App and send a payment questionRequest
         PaymentApplicationSimulator paymentApplication = new PaymentApplicationSimulator();
-
-        paymentApplication.paymentTrigger("Operator_Tony",
-                TenderType.SMARTCARD, "A Product", 199);
-
+        paymentApplication.paymentTrigger();
         paymentApplication.completePayment();
     }
 

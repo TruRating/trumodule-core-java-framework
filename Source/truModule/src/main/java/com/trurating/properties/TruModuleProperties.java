@@ -54,7 +54,7 @@ public class TruModuleProperties extends GeneralPropertiesLoader implements ITru
         setMid(getProperty("mid"));
         setPartnerId(getProperty("partnerid"));
         setTid(getProperty("tid"));
-        setLanguageCode("languageCode");
+        setLanguageCode(getProperty("languageCode"));
         setIncludeReceiptInQuestionRequest(getPropertyAsBoolean("includeReceipt"));
         setIncludeAcknowledgement(getPropertyAsBoolean("includeAcknowledgement"));
         setDeviceType(getProperty("device_Type"));

@@ -45,4 +45,10 @@ public interface ITruModule {
     void close();
 
     void clearCachedRatingInformation();
+
+    void createNewTransaction();
+
+    void updateTransaction(RequestTransaction requestTransaction);
+
+    RequestTransaction getCurrentTransaction();
 }

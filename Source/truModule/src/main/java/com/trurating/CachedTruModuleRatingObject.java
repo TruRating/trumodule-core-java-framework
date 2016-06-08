@@ -20,8 +20,10 @@ public class CachedTruModuleRatingObject {
     }
 
     public RequestRating rating;
-    public String sessionID;
-    public String question;
+
+    public RequestTransaction transaction; //holds the transaction that is started on a call to doRating()
+    public String sessionID; //an id that will persist throughout a single cycle of getQuestion, rate and deliver
+    public String question; //the question text: isolated here, like the following four fields, for ease of access
     public String responseNoRating;
     public String responseWithRating;
     public String receiptNoRating;

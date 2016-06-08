@@ -26,18 +26,17 @@ public class GeneralPropertiesLoader {
 
     private static Logger log = Logger.getLogger(GeneralPropertiesLoader.class);
     private Properties properties = null;
-    private File propertiesFile;
 
     public String getProperty(String o) {
         return (String) properties.get(o);
     }
 
     public int getPropertyAsInt(String o) {
-        return (Integer)properties.get(o);
+        return Integer.parseInt((String)properties.get(o));
     }
 
     public boolean getPropertyAsBoolean(String b) {
-        return (Boolean)properties.get(b);
+        return Boolean.parseBoolean((String)properties.get(b));
     }
 
     public GeneralPropertiesLoader() {
@@ -61,7 +60,6 @@ public class GeneralPropertiesLoader {
     }
 
     public void load(File propertiesFile) {
-        this.propertiesFile = propertiesFile;
         try {
             FileInputStream fs = new FileInputStream(propertiesFile);
             if (properties==null) properties = new Properties();

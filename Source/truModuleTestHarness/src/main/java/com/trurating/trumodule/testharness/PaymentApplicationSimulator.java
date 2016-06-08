@@ -31,36 +31,47 @@ public class PaymentApplicationSimulator  {
         this.truModule.setDevice(getDevice());
     }
 
-    //this is a take payment questionRequest - payment will not yet be taken
-	void paymentTrigger(String operator, TenderType tenderType, String product, long cost){
+	void paymentTrigger(){
         log.info("Payment application is requesting payment - passing this on to the module");
         truModule.doRating();
     }
 
     public void completePayment() {
 
-        truModule.getCurrentRatingRecord().getTransaction();
-        RequestTransaction transaction = new RequestTransaction();
-       	transaction.setId("9999999");
-       	transaction.setCurrency((short)826);
-        transaction.setAmount(550);
-   		transaction.setResult(TransactionResult.APPROVED);
+        try {
+            truModule.getCurrentRatingRecord().getTransaction();
+            RequestTransaction transaction = new RequestTransaction();
+            transaction.setId("9999999");
+            transaction.setCurrency((short)826);
+            transaction.setAmount(550);
+            transaction.setResult(TransactionResult.APPROVED);
 
-        RequestTender requestTender = new RequestTender();
-        requestTender.setAmount(550);
-        RequestCardHash requestCardHash = new RequestCardHash();
-        requestCardHash.setType(CardHashType.CDH_1);
-        requestCardHash.setValue("67687546785643876587436");
-        requestTender.setCardHash(requestCardHash);
-        requestTender.setTenderType(com.trurating.service.v200.xml.TenderType.CREDIT);
-        transaction.getTender().add(requestTender);
+            RequestTender requestTender = new RequestTender();
+            requestTender.setAmount(550);
+            RequestCardHash requestCardHash = new RequestCardHash();
+            requestCardHash.setType(CardHashType.CDH_1);
+            requestCardHash.setValue("67687546785643876587436");
+            requestTender.setCardHash(requestCardHash);
+            requestTender.setTenderType(com.trurating.service.v200.xml.TenderType.CREDIT);
+            transaction.getTender().add(requestTender);
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        transaction.setDateTime(sdf.format(new Date()));
-        if (truModule.deliverRating(transaction))
-        	getDevice().displayMessage("Rating delivery succeeded");
-        else
-        	getDevice().displayMessage("Rating delivery failed");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            transaction.setDateTime(sdf.format(new Date()));
+            if (truModule.deliverRating(transaction))
+                getDevice().displayMessage("Rating delivery succeeded");
+            else
+                getDevice().displayMessage("Rating delivery failed");
+        } catch (Exception e) {
+            log.error(e);
+        }
+
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        truModule.cancelRating();
     }
 
     public IDevice getDevice() {
