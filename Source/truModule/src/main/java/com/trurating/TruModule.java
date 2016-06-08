@@ -59,7 +59,7 @@ public class TruModule implements ITruModule {
     }
 
     public void doRating() {
-        clearCachedRatingInformation();
+        clearAllCachedModuleData();
         cachedTruModuleRatingObject = new CachedTruModuleRatingObject();
         Request request = truRatingMessageFactory.assembleQuestionRequest(ITruModuleProperties, cachedTruModuleRatingObject.sessionID);
         cachedTruModuleRatingObject = requestQuestionFromServerAndCacheResult(request);
@@ -67,7 +67,7 @@ public class TruModule implements ITruModule {
     }
 
     public void doRatingInBackground() {
-        clearCachedRatingInformation();
+        clearAllCachedModuleData();
         cachedTruModuleRatingObject = new CachedTruModuleRatingObject();
         Request request = truRatingMessageFactory.assembleQuestionRequest(ITruModuleProperties, cachedTruModuleRatingObject.sessionID);
         cachedTruModuleRatingObject = requestQuestionFromServerAndCacheResult(request);
@@ -90,7 +90,7 @@ public class TruModule implements ITruModule {
             log.error("", e);
             return false;
         } finally {
-            clearCachedRatingInformation();
+            clearAllCachedModuleData();
         }
         log.info("Everything is finished in truModule!");
         return true;
@@ -184,26 +184,22 @@ public class TruModule implements ITruModule {
         }
     }
 
-    public void close() {
-        clearCachedRatingInformation();
-    }
-
-    public void clearCachedRatingInformation() {
+    public void clearAllCachedModuleData() {
         cachedTruModuleRatingObject = null;
     }
 
     @Override
-    public void createNewTransaction() {
+    public void createNewCachedTransaction() {
         cachedTruModuleRatingObject.transaction = new RequestTransaction();
     }
 
     @Override
-    public void updateTransaction(RequestTransaction requestTransaction) {
+    public void updateCachedTransaction(RequestTransaction requestTransaction) {
         cachedTruModuleRatingObject.transaction = requestTransaction;
     }
 
     @Override
-    public RequestTransaction getCurrentTransaction() {
+    public RequestTransaction getCurrentCachedTransaction() {
         return cachedTruModuleRatingObject.transaction;
     }
 

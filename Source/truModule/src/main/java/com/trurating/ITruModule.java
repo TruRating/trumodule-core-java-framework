@@ -28,7 +28,7 @@ import com.trurating.service.v200.xml.RequestTransaction;
  */
 public interface ITruModule {
 
-    void setDevice(IDevice deviceRef);
+    void setDevice(IDevice deviceRef); //this is the device that will be used to request and collect the truRating keystroke
 
     RequestRating getCurrentRatingRecord(); // return the current ratings record
 
@@ -36,19 +36,17 @@ public interface ITruModule {
 
     void doRatingInBackground(); //display the question on the ped, and take a user keystroke - run in background thread
 
-    void cancelRating(); //can away all ped activity - used when a payment arrives and ped needs to be clear
+    void cancelRating(); //clear away all ped activity - used when a payment arrives and ped needs to be clear
 
     boolean deliverRating(RequestTransaction transaction); //deliver the rating the the truService
 
     String getReceiptMessage(); // for use in receipt printing
 
-    void close();
+    void createNewCachedTransaction(); // this contains transaction data: cardtype, amount - eventually POS data
 
-    void clearCachedRatingInformation();
+    void updateCachedTransaction(RequestTransaction requestTransaction); // updates the transaction data with the supplied transaction
 
-    void createNewTransaction();
+    RequestTransaction getCurrentCachedTransaction(); // returns the current cached transaction data
 
-    void updateTransaction(RequestTransaction requestTransaction);
-
-    RequestTransaction getCurrentTransaction();
+    void clearAllCachedModuleData();  // this will clear out all data - response/request messaging for ratings, and transaction data
 }
