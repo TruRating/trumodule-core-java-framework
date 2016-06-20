@@ -67,6 +67,8 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
             url = new URL(ITruModuleProperties.getTruServiceURL());
             httpTimeout = ITruModuleProperties.getSocketTimeoutInMilliSeconds();
 
+            log.info("**** TRUXMLNETWORKMESSENGER SETUP ****");
+
             xmlOutputFactory = XMLOutputFactory.newInstance();
 
             JAXBContext contextRequest = JAXBContext.newInstance(Request.class);

@@ -19,7 +19,7 @@
     <modules>
         <module>../truModule</module>
         <module>../truModuleTestHarness</module>
-        <module>../../../trushared-core-java-library/truShared</module>
+        <!--<module>../../../trushared-core-java-library/truShared</module>-->
         <module>../truModuleMockPaymentApp</module>
     </modules>
 </project>
