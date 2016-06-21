@@ -45,7 +45,7 @@ public class XMLNetworkMessengerIntegrationTest {
 
         Response questionResponseFromService = xmlNetworkMessenger.getResponseQuestionFromService(request);
         Assert.assertNotNull(questionResponseFromService);
-        
+        	
         Request deliveryRequest = new TruRatingMessageFactory().assembleRatingsDeliveryRequest(properties, sessionId);
         RequestRating requestRating = new RequestRating();
         requestRating.setResponseTimeMs(5000);

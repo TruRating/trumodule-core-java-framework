@@ -22,13 +22,18 @@ package com.trurating;
 import com.trurating.network.xml.IXMLNetworkMessenger;
 import com.trurating.properties.ITruModuleProperties;
 import com.trurating.service.v200.xml.*;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.trurating.device.IDevice;
 import com.trurating.network.xml.TruRatingMessageFactory;
 import com.trurating.network.xml.XMLNetworkMessenger;
 import com.trurating.util.StringUtilities;
+import org.apache.log4j.PatternLayout;
 
+import java.io.FileWriter;
+import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -53,6 +58,9 @@ public class TruModule implements ITruModule {
     private static volatile CachedTruModuleRatingObject cachedTruModuleRatingObject;
 
     public TruModule(ITruModuleProperties ITruModuleProperties) {
+
+        log.info("**** TRUMODULE SETUP ****");
+
         this.ITruModuleProperties = ITruModuleProperties;
         truRatingMessageFactory = new TruRatingMessageFactory();
         xmlNetworkMessenger = new XMLNetworkMessenger(ITruModuleProperties);
@@ -63,7 +71,7 @@ public class TruModule implements ITruModule {
         cachedTruModuleRatingObject = new CachedTruModuleRatingObject();
         Request request = truRatingMessageFactory.assembleQuestionRequest(ITruModuleProperties, cachedTruModuleRatingObject.sessionID);
         cachedTruModuleRatingObject = requestQuestionFromServerAndCacheResult(request);
-        runQuestion();
+        if (cachedTruModuleRatingObject!=null) runQuestion();
     }
 
     public void doRatingInBackground() {
@@ -71,7 +79,7 @@ public class TruModule implements ITruModule {
         cachedTruModuleRatingObject = new CachedTruModuleRatingObject();
         Request request = truRatingMessageFactory.assembleQuestionRequest(ITruModuleProperties, cachedTruModuleRatingObject.sessionID);
         cachedTruModuleRatingObject = requestQuestionFromServerAndCacheResult(request);
-        new Thread(new Runnable() {
+        if (cachedTruModuleRatingObject!=null) new Thread(new Runnable() {
             public void run() {
                 runQuestion();
             }
@@ -99,6 +107,11 @@ public class TruModule implements ITruModule {
     private CachedTruModuleRatingObject requestQuestionFromServerAndCacheResult(Request request) {
         cachedTruModuleRatingObject.response = xmlNetworkMessenger.getResponseQuestionFromService(request);
         Response response = cachedTruModuleRatingObject.response;
+        if (response==null) {
+            log.error("UNable to contact the the truRating service for the next question");
+            return null;
+        }
+
         try {
             String desiredLanguage = ITruModuleProperties.getLanguageCode();
             if (response.getDisplay() == null || response.getDisplay().getLanguage() == null) {
@@ -147,6 +160,8 @@ public class TruModule implements ITruModule {
 
             final long startTime = System.currentTimeMillis();
             keyStroke = iDevice.displayTruratingQuestionGetKeystroke(qTextWraps, qText, timeout);
+
+            log.info("KEYSTROKE CAME BACK AS !!!!!!!!" + keyStroke);
             final long endTime = System.currentTimeMillis();
             totalTimeTaken = endTime - startTime;
 
@@ -200,6 +215,8 @@ public class TruModule implements ITruModule {
 
     @Override
     public RequestTransaction getCurrentCachedTransaction() {
+        if (cachedTruModuleRatingObject == null) 
+        	return null;
         return cachedTruModuleRatingObject.transaction;
     }
 
@@ -208,7 +225,7 @@ public class TruModule implements ITruModule {
     }
 
     public void cancelRating() {
-        getDevice().cancelInput();
+        if (iDevice!=null) getDevice().cancelInput();
     }
 
     public RequestRating getCurrentRatingRecord() {

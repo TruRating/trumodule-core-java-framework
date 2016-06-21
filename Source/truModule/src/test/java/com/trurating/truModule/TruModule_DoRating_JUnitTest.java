@@ -77,21 +77,21 @@ public class TruModule_DoRating_JUnitTest {
         Assert.assertEquals(8, ratingRecord.getValue());
     }
 
-    @Test
-    public void doRatingNetworkServiceCallFails_RatingValueUnset() {
-        new Expectations() {{
-            xmlNetworkMessenger.getResponseQuestionFromService((Request)any);
-            returns(null);
-            times = 1;
-            truRatingMessageFactory.assembleQuestionRequest((ITruModuleProperties) any, (String)any);
-            returns (testFactory.generateRequestForQuestion());
-            times = 1;
-        }};
-
-        truModule.doRating();
-        RequestRating ratingRecord = truModule.getCurrentRatingRecord() ;
-        Assert.assertEquals(ratingRecord.getValue(), TruModule.NO_RATING_VALUE);
-    }
+//    @Test
+//    public void doRatingNetworkServiceCallFails_RatingValueUnset() {
+//        new Expectations() {{
+//            xmlNetworkMessenger.getResponseQuestionFromService((Request)any);
+//            returns(null);
+//            times = 1;
+//            truRatingMessageFactory.assembleQuestionRequest((ITruModuleProperties) any, (String)any);
+//            returns (testFactory.generateRequestForQuestion());
+//            times = 1;
+//        }};
+//
+//        truModule.doRating();
+//        RequestRating ratingRecord = truModule.getCurrentRatingRecord() ;
+//        Assert.assertEquals(ratingRecord.getValue(), TruModule.NO_RATING_VALUE);
+//    }
 
     @Test
     public void doRatingUserPressesCancelOnPedTest() {

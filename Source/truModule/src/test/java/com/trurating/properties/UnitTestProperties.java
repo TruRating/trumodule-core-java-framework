@@ -69,7 +69,7 @@ public class UnitTestProperties extends TruModuleProperties {
     }
 
     public String getTruServiceURL() {
-        //return "http://localhost:47851/api/servicemessage";
+//        return "http://localhost:31415/api/servicemessage";
         return "http://tru-sand-service-v200.trurating.com/api/servicemessage";
     }
 }
