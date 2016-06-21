@@ -47,7 +47,7 @@ public class GeneralPropertiesLoader {
         String resources = System.getProperty("resources");                                                             //static pre Spring config
 
         if (resources == null || resources.equals("")) 
-        	resources = "C:\\trurating\\";        
+        	resources = "C:\\TruRating\\";
         
         if (resources == null || resources.equals("")) 
         {
