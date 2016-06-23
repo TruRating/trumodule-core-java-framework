@@ -77,7 +77,12 @@ public class TruRatingMessageFactory {
     }
     public Request assembleRatingsDeliveryRequest(ITruModuleProperties properties, String sessionID) {
 
-        Request request = new Request();
+        Request request = null;
+        try {
+            request = new Request();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         request.setMerchantId(properties.getMid());
         request.setPartnerId(properties.getPartnerId());
         request.setTerminalId(properties.getTid());

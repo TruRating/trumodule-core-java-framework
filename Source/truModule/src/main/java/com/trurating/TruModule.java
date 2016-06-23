@@ -93,7 +93,6 @@ public class TruModule implements ITruModule {
             request.setTransaction(transaction);
             response = xmlNetworkMessenger.getResponseRatingFromRatingsDeliveryToService(request);
             if (response == null) return false;
-            truRatingMessageFactory.assembleRatingsDeliveryRequest(ITruModuleProperties, cachedTruModuleRatingObject.sessionID);
         } catch (Exception e) {
             log.error("", e);
             return false;
@@ -108,7 +107,7 @@ public class TruModule implements ITruModule {
         cachedTruModuleRatingObject.response = xmlNetworkMessenger.getResponseQuestionFromService(request);
         Response response = cachedTruModuleRatingObject.response;
         if (response==null) {
-            log.error("UNable to contact the the truRating service for the next question");
+            log.error("Unable to contact the the truRating service for the next question");
             return null;
         }
 
@@ -229,7 +228,11 @@ public class TruModule implements ITruModule {
     }
 
     public RequestRating getCurrentRatingRecord() {
-        return cachedTruModuleRatingObject.rating;
+        if (cachedTruModuleRatingObject==null) {
+            RequestRating requestRating = new RequestRating();
+            requestRating.setValue(TruModule.NO_RATING_VALUE);
+            return requestRating;
+        } else return cachedTruModuleRatingObject.rating;
     }
 
     private IDevice getDevice() {

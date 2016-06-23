@@ -12,7 +12,6 @@ import java.util.Date;
  */
 public class CachedTruModuleRatingObject {
 
-
     public CachedTruModuleRatingObject() {
         sessionID = Long.toString(new Date().getTime());
         rating = new RequestRating();

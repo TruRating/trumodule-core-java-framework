@@ -62,7 +62,6 @@ public class TruModule_RecordResponse_JUnitTest {
 
     @Test
     public void deliverySucceedsTest() {
-    	/*
         new Expectations() {{
             xmlNetworkMessenger.getResponseRatingFromRatingsDeliveryToService((Request) any);
             returns(testFactory.generateResponseForQuestion());
@@ -74,26 +73,23 @@ public class TruModule_RecordResponse_JUnitTest {
 
         RequestTransaction transaction = new RequestTransaction();
         boolean truModuleOutcome =truModule.deliverRating(transaction);
-        Assert.assertFalse(truModuleOutcome);
-        */
+        Assert.assertTrue(truModuleOutcome);
     }
 
     @Test
     public void recordResponseDeliveryFailsTest() {
-    	/*
         new Expectations() {{
             xmlNetworkMessenger.getResponseRatingFromRatingsDeliveryToService((Request) any);
             returns(null);
             times = 1;
             truRatingMessageFactory.assembleRatingsDeliveryRequest((ITruModuleProperties) any, (String)any);
             returns (testFactory.generateRequestForQuestion());
-            times = 0;
+            times = 1;
         }};
 
         RequestTransaction transaction = new RequestTransaction();
         boolean truModuleOutcome =truModule.deliverRating(transaction);
         Assert.assertFalse(truModuleOutcome);
-        */
     }
 }
 
