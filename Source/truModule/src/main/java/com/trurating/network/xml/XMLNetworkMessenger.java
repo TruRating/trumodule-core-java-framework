@@ -24,10 +24,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.*;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -130,6 +127,7 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
             log.info("[IN][RAW]: " + raw);
 
             inputStream = new ByteArrayInputStream(raw.getBytes());
+
             response = (Response) responseUnmarshaller.unmarshal(inputStream);
 
             if (httpURLConnection.getResponseCode() > 200) {
@@ -139,6 +137,8 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
 
             writeResponseToLog(response);
 
+        } catch (UnmarshalException e) {
+            log.error("There was an error unmarshalling the incoming message  - please see the raw stream for more details.");
         } catch (XMLStreamException e) {
             log.error("", e);
         } catch (JAXBException e) {
