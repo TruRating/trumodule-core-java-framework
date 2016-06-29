@@ -38,7 +38,7 @@ public interface ITruModule {
 
     void cancelRating(); //clear away all ped activity - used when a payment arrives and ped needs to be clear
 
-    boolean deliverRating(RequestTransaction transaction); //deliver the rating the the truService
+    int deliverRating(); //deliver the rating the the truService
 
     String getReceiptMessage(); // for use in receipt printing
 
@@ -49,4 +49,7 @@ public interface ITruModule {
     RequestTransaction getCurrentCachedTransaction(); // returns the current cached transaction data
 
     void clearAllCachedModuleData();  // this will clear out all data - response/request messaging for ratings, and transaction data
+
+    CachedTruModuleRatingObject getCachedTruModuleRatingObject(); //used in testing only currently
+
 }

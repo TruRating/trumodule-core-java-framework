@@ -35,3 +35,10 @@ The payment application supplied is only a mock up, and is in no way intended to
 application. However, it should help developers to see easily where truModule fits into their organisation's stack.
  
 The interface of interest to developers, will be the ITruModule interface.
+
+POSTILION STARTUP
+========================
+
+From inside Postilion\eSocket.POS\
+
+jre\bin\java -Xrs -Dpostilion.postal.start_wait_hint=120000 -Djava.library.path="C:\Postilion\eSocket.POS\bin\presalesWin32" -Xrunjdwp:transport=dt_socket,address=32000,suspend=n,server=y -cp "C:\presales\eSocket.POS\lib\postilion_ingenicoemv_v2.22_2015-11-16.jar;C:\TruRating\truRating4ACI-v1.jar;C:\Postilion\eSocket.POS\bin\classes;C:\postilion\eSocket.POS\bin\postespos-sdk.jar;C:\postilion\eSocket.POS\bin\esocket-tools.jar;C:\Postilion\eSocket.POS\bin\hsqldb.jar;C:\postilion\eSocket.POS\bin\bcprov-jdk16-143.jar;C:\postilion\esocket.pos\bin\comm.jar;c:\postilion\esocket.pos\bin\log4j.jar;" postilion.espuk.posinterface.util.EspRun -p "C:\Postilion\eSocket.POS\properties.txt" -xml -ca -cust postilion.esocketpos.util.HsqldbRun

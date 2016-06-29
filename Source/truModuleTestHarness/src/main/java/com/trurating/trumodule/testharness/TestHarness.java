@@ -22,7 +22,4 @@ public class TestHarness {
         paymentApplication.paymentTrigger();
         paymentApplication.completePayment();
     }
-
-
-
 }

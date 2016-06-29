@@ -72,4 +72,8 @@ public class UnitTestProperties extends TruModuleProperties {
 //        return "http://localhost:31415/api/servicemessage";
         return "http://tru-sand-service-v200.trurating.com/api/servicemessage";
     }
+
+    public int getDwellTimeExtend() {
+        return 0;
+    }
 }

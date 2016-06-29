@@ -94,6 +94,11 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
         return exchangeMessageWithServer(request);
     }
 
+    private String convertStreamToString(java.io.InputStream is) {
+        java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
+        return s.hasNext() ? s.next() : "";
+    }
+
     private Response exchangeMessageWithServer(Request request) {
         Response response = null;
 
@@ -103,7 +108,14 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
 
             httpURLConnection = getConnection(url);
             URLConnection urlConnection = httpURLConnection;
-            XMLStreamWriter requestWriter = xmlOutputFactory.createXMLStreamWriter(urlConnection.getOutputStream(),
+            OutputStream outputStream = null;
+            try {
+                outputStream = urlConnection.getOutputStream();
+            } catch (java.net.ConnectException e) {
+                log.error("Unable to contact the service!");
+                return null;
+            }
+            XMLStreamWriter requestWriter = xmlOutputFactory.createXMLStreamWriter(outputStream,
                     (String) requestMarshaller.getProperty(Marshaller.JAXB_ENCODING));
 
             requestWriter.writeStartDocument((String) requestMarshaller.getProperty(Marshaller.JAXB_ENCODING), "1.0");
@@ -114,6 +126,10 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
             writeRequestToLog(request);
 
             InputStream inputStream = urlConnection.getInputStream();
+            String raw = convertStreamToString(inputStream);
+            log.info("[IN][RAW]: " + raw);
+
+            inputStream = new ByteArrayInputStream(raw.getBytes());
             response = (Response) responseUnmarshaller.unmarshal(inputStream);
 
             if (httpURLConnection.getResponseCode() > 200) {
@@ -128,7 +144,7 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
         } catch (JAXBException e) {
             log.error("", e);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("", e);
         }
 
         return response;
@@ -137,12 +153,12 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
     private void writeResponseToLog(Response response) throws JAXBException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         responseMarshaller.marshal(response, baos);
-        log.info("truModule [IN]bound message:\n " + new String(baos.toByteArray()));
+        log.info("truModule [IN]bound [POST]marshalling message:\n " + new String(baos.toByteArray()));
     }
 
     private void writeRequestToLog(Request request) throws JAXBException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         requestMarshaller.marshal(request, baos);
-        log.info("truModule [OUT]bound message:\n " + new String(baos.toByteArray()));
+        log.info("truModule [OUT]bound [POST}marshalling message:\n " + new String(baos.toByteArray()));
     }
 }

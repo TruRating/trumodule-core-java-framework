@@ -79,14 +79,15 @@ public class TestProperties extends TruModuleProperties {
     }
 
     public String getTruServiceURL() {
-///        return "tru-sand-service-fis.cloudapp.net";
-        return "http://localhost:47851/api/servicemessage";
-//        return "tru-sand-service-trurating.cloudapp.net";
-//        return "13.95.156.19";
-//        return "127.0.0.1";
+        return "http://localhost:31415/api/servicemessage";
+//        return "http://tru-sand-service-v200.trurating.com/api/servicemessage";
     }
 
     public int getSocketTimeoutInMilliSeconds() {
         return 3000;
+    }
+
+    public int getDwellTimeExtend() {
+        return 0;
     }
 }

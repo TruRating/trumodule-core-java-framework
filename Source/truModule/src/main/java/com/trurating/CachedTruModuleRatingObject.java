@@ -19,7 +19,7 @@ public class CachedTruModuleRatingObject {
     }
 
     public RequestRating rating;
-
+    public boolean cancelled = false; //this is used to flag that a cancellation has come in - i.e. something else wants to use the ped. In this case all further actions are skipped in the module.
     public RequestTransaction transaction; //holds the transaction that is started on a call to doRating()
     public String sessionID; //an id that will persist throughout a single cycle of getQuestion, rate and deliver
     public String question; //the question text: isolated here, like the following four fields, for ease of access

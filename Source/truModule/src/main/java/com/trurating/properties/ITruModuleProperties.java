@@ -40,4 +40,5 @@ public interface ITruModuleProperties {
     String getPpaFirmware();
 
     String getTruServiceURL();
+
 }
