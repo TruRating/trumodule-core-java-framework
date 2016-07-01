@@ -41,4 +41,7 @@ public interface ITruModuleProperties {
 
     String getTruServiceURL();
 
+    int getDwellTimeExtend();
+
+    void setDwellTimeExtend(int dwellTimeExtend);
 }

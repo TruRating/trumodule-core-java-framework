@@ -24,10 +24,12 @@ public class TruRatingConsoleDemoDevice implements TestIDevice {
     private JComboBox ratingsBox;
     private JButton cancelButton;
     private JButton proceedButton;
-    private volatile int ratingVal = 0;
+    private volatile int ratingVal = TruModule.MODULE_ERROR;
     private boolean cardIsIn = false;
-    private String welcomeText = "Welcome to Trurating PED";
+    private String welcomeText = "Welcome to Trurating PED simulator!";
     private volatile boolean paymentWentThroughOkay = false;
+    private Future futurePayment;
+    private Future futureRating;
 
     public static void main(String[] args) {
         new TruRatingConsoleDemoDevice();
@@ -58,6 +60,7 @@ public class TruRatingConsoleDemoDevice implements TestIDevice {
         proceedButton = new JButton("Proceed");
         interiorPanel.add(cancelButton);
         proceedButton.setVisible(false);
+        cancelButton.setVisible(false);
         interiorPanel.add(proceedButton);
         jFrame.add(interiorPanel);
         jFrame.requestFocus();
@@ -131,10 +134,13 @@ public class TruRatingConsoleDemoDevice implements TestIDevice {
         displayTextLabel.setText(promptText);
         final CountDownLatch countDownLatch = new CountDownLatch(1);
 
+        cancelButton.setVisible(true);
+        ratingsBox.setVisible(true);
+
         cancelButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ratingVal = TruModule.NO_RATING_VALUE;
+                ratingVal = TruModule.USER_CANCELLED;
                 log.info("User cancelled rating: " + ratingVal);
                 ratingsBox.setVisible(false);
                 cancelButton.setVisible(false);
@@ -154,18 +160,25 @@ public class TruRatingConsoleDemoDevice implements TestIDevice {
         });
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
-        Future future = executorService.submit(new Runnable() {
+        futureRating = executorService.submit(new Runnable() {
             @Override
             public void run() {
                 try {
-                    countDownLatch.await(timeout, TimeUnit.MILLISECONDS);
+//                    long t1 = System.currentTimeMillis();
+                    countDownLatch.await(timeout, TimeUnit.MILLISECONDS); //problem is, if end tilling is coming in, this is still waiting, no matter what
+                    //needs cancelling when tilling ends - or question is represented
+//                    long t2 = System.currentTimeMillis();
+//                    if (t2-t1> timeout) {
+//                        ratingVal= TruModule.QUESTION_TIMEOUT_OR_NO_RATED_VALUE;
+//                    }
+
                 } catch (InterruptedException e) {
                 }
             }
         });
 
         try {
-            while (!future.isDone()) Thread.sleep(10);
+            while (!futureRating.isDone()) Thread.sleep(10);
         } catch (InterruptedException e) {
         }
         executorService.shutdown();
@@ -174,18 +187,21 @@ public class TruRatingConsoleDemoDevice implements TestIDevice {
         al = ratingsBox.getListeners(ActionListener.class);
         ratingsBox.removeActionListener(al[0]);
 
-
         return new Integer(ratingVal).toString();
     }
 
     public void cancelInput() {
-        displayTextLabel.setText("Input cancelled");
+        if (futurePayment!=null) futurePayment.cancel(true);
+        if (futureRating!=null) futureRating.cancel(true);
+        cancelButton.setEnabled(false);
+        proceedButton.setEnabled(false);
+        ratingsBox.setEnabled(false);
         return;
     }
 
     //this is a one off method not in other Idevice to enable us to fake out a take payment on the simulator
     public boolean doPayment(String amount_transaction) {
-        displayTextLabel.setText("Taking payment for £"+ amount_transaction);
+        displayTextLabel.setText("Please insert your card. £"+ amount_transaction);
         cancelButton.setVisible(true);
         proceedButton.setVisible(true);
 
@@ -213,7 +229,7 @@ public class TruRatingConsoleDemoDevice implements TestIDevice {
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-        Future future = executorService.submit(new Runnable() {
+        futurePayment = executorService.submit(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -224,16 +240,17 @@ public class TruRatingConsoleDemoDevice implements TestIDevice {
         });
 
         try {
-            while (!future.isDone()) Thread.sleep(10);
+            while (!futurePayment.isDone()) Thread.sleep(10);
         } catch (InterruptedException e) {
         }
 
         executorService.shutdown();
         ActionListener[] al = cancelButton.getListeners(ActionListener.class);
         cancelButton.removeActionListener(al[0]);
+        cancelButton.setVisible(false);
         al = proceedButton.getListeners(ActionListener.class);
         proceedButton.removeActionListener(al[0]);
-
+        proceedButton.setVisible(false);
         return paymentWentThroughOkay;
     }
 }

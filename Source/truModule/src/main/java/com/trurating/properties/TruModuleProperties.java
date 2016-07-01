@@ -48,6 +48,7 @@ public class TruModuleProperties extends GeneralPropertiesLoader implements ITru
 
     private static Logger log = Logger.getLogger(TruModuleProperties.class);
     private String truServiceURL;
+    private int dwellTimeExtend =0;
 
     public TruModuleProperties() {
         super(); //this call will load all properties loaded from all files as pointed by system "resources" JVM arg
@@ -67,6 +68,8 @@ public class TruModuleProperties extends GeneralPropertiesLoader implements ITru
         setQuestionTimeout(getPropertyAsInt("timeoutFromQuestion"));
         setSocketTimeoutInMilliSeconds(getPropertyAsInt("socket_timeout"));
         setTruServiceURL(getProperty("service_URL"));
+        setDwellTimeExtend(getPropertyAsInt("dwellTimeExtend"));
+
     }
 
     public String getMid() {
@@ -240,6 +243,16 @@ public class TruModuleProperties extends GeneralPropertiesLoader implements ITru
 
     public String getTruServiceURL() {
         return truServiceURL;
+    }
+
+    @Override
+    public int getDwellTimeExtend() {
+        return dwellTimeExtend;
+    }
+
+    @Override
+    public void setDwellTimeExtend(int dwellTimeExtend) {
+        this.dwellTimeExtend=dwellTimeExtend;
     }
 
 

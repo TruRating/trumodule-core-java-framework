@@ -109,9 +109,13 @@ public class XMLNetworkMessenger implements IXMLNetworkMessenger {
             try {
                 outputStream = urlConnection.getOutputStream();
             } catch (java.net.ConnectException e) {
-                log.error("Unable to contact the service!");
+                log.error("Unable to contact the service!!!");
+                return null;
+            } catch (java.net.SocketTimeoutException e) {
+                log.error("Connection to the service timed out!!!");
                 return null;
             }
+
             XMLStreamWriter requestWriter = xmlOutputFactory.createXMLStreamWriter(outputStream,
                     (String) requestMarshaller.getProperty(Marshaller.JAXB_ENCODING));
 

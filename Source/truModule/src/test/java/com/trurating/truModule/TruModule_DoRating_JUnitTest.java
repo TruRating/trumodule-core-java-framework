@@ -90,7 +90,7 @@ public class TruModule_DoRating_JUnitTest {
 
         truModule.doRating();
         RequestRating ratingRecord = truModule.getCurrentRatingRecord() ;
-        Assert.assertEquals(ratingRecord.getValue(), TruModule.NO_RATING_VALUE);
+        Assert.assertEquals(ratingRecord.getValue(), TruModule.MODULE_ERROR);
     }
 
     @Test

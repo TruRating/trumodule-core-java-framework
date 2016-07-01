@@ -32,7 +32,13 @@ public class GeneralPropertiesLoader {
     }
 
     public int getPropertyAsInt(String o) {
-        return Integer.parseInt((String)properties.get(o));
+        int i=-99;
+        try {
+            i = Integer.parseInt((String)properties.get(o));
+        } catch (NumberFormatException e) {
+            log.error("Error attempting to parse String " + o + ", into an integer");
+        }
+        return i;
     }
 
     public boolean getPropertyAsBoolean(String b) {
@@ -47,7 +53,7 @@ public class GeneralPropertiesLoader {
         String resources = System.getProperty("resources");                                                             //static pre Spring config
 
         if (resources == null || resources.equals("")) 
-        	resources = "C:\\TruRating\\";
+        	resources = "C:\\TruRating\\TruModule\\";
         
         if (resources == null || resources.equals("")) 
         {

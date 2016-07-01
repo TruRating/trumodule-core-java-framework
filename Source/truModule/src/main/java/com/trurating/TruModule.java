@@ -22,18 +22,13 @@ package com.trurating;
 import com.trurating.network.xml.IXMLNetworkMessenger;
 import com.trurating.properties.ITruModuleProperties;
 import com.trurating.service.v200.xml.*;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.trurating.device.IDevice;
 import com.trurating.network.xml.TruRatingMessageFactory;
 import com.trurating.network.xml.XMLNetworkMessenger;
 import com.trurating.util.StringUtilities;
-import org.apache.log4j.PatternLayout;
 
-import java.io.FileWriter;
-import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -58,10 +53,12 @@ public class TruModule implements ITruModule {
     private static volatile CachedTruModuleRatingObject cachedTruModuleRatingObject;
     private volatile int ratingDeliveryOutcome;
 
-    public static final short NO_RATING_VALUE = -1;
     public static final short USER_CANCELLED = -1;
     public static final short QUESTION_TIMEOUT = -2;
     public static final short NO_QUESTION_ASKED = -3;
+    public static final short MODULE_ERROR = -4;
+    public static final short NO_VALUE = -99;
+
     public static final int RATING_DELIVERY_OUTCOME_FAILED = -1;
     public static final int RATING_DELIVERY_OUTCOME_SUCCEEDED = 1;
 
@@ -107,7 +104,7 @@ public class TruModule implements ITruModule {
         try {
 
             Request request = truRatingMessageFactory.assembleRatingsDeliveryRequest(ITruModuleProperties, cachedTruModuleRatingObject.sessionID);
-            if (cachedTruModuleRatingObject.rating.getValue()==-3) {
+            if (cachedTruModuleRatingObject.rating.getValue()==TruModule.NO_QUESTION_ASKED) {
                 log.info("Sending only transaction as there was NO question to rate against");
                 request.setTransaction(cachedTruModuleRatingObject.transaction);
             } else {
@@ -233,18 +230,24 @@ public class TruModule implements ITruModule {
 
     @Override
     public void createNewCachedTransaction() {
-        if (cachedTruModuleRatingObject != null) cachedTruModuleRatingObject.transaction = new RequestTransaction();
+        if (cachedTruModuleRatingObject == null) {
+            log.error("Unable to create a new cached transaction object, as the rating object doesn't exist");
+        } else
+            cachedTruModuleRatingObject.transaction = new RequestTransaction();
     }
 
     @Override
     public void updateCachedTransaction(RequestTransaction requestTransaction) {
-        if (cachedTruModuleRatingObject != null) cachedTruModuleRatingObject.transaction = requestTransaction;
+        if (cachedTruModuleRatingObject == null) {
+            log.error("Unable to update the cached transaction object, as one doesn't exist");
+        } else
+            cachedTruModuleRatingObject.transaction = requestTransaction;
     }
 
     @Override
     public RequestTransaction getCurrentCachedTransaction() {
         if (cachedTruModuleRatingObject == null) {
-            log.info("An attempt was made to gain the cached current transaction, but the cachedTruModuleRatingObject was null");
+            log.warn("An attempt was made to gain the cached current transaction, but the cachedTruModuleRatingObject was null");
             return null;
         }
         return cachedTruModuleRatingObject.transaction;
@@ -262,7 +265,9 @@ public class TruModule implements ITruModule {
     public RequestRating getCurrentRatingRecord() {
         if (cachedTruModuleRatingObject == null) {
             RequestRating requestRating = new RequestRating();
-            requestRating.setValue(TruModule.NO_RATING_VALUE);
+            requestRating.setValue(TruModule.MODULE_ERROR);
+            log.warn("An attempt was made to gain the cached current rating record, but the cachedTruModuleRatingObject was null");
+
             return requestRating;
         } else return cachedTruModuleRatingObject.rating;
     }

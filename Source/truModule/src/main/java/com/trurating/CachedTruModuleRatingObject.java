@@ -15,7 +15,7 @@ public class CachedTruModuleRatingObject {
     public CachedTruModuleRatingObject() {
         sessionID = Long.toString(new Date().getTime());
         rating = new RequestRating();
-        rating.setValue(TruModule.NO_RATING_VALUE);
+        rating.setValue(TruModule.NO_VALUE);
     }
 
     public RequestRating rating;
