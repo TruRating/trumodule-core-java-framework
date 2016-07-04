@@ -116,6 +116,45 @@ public class TruModule_RecordResponse_JUnitTest {
         cachedTruModuleRatingObject = truModule.getCachedTruModuleRatingObject();
         Assert.assertTrue(cachedTruModuleRatingObject.cancelled);
     }
+
+    @Test
+    public void requestQuestionFromServerAndCacheResultTest() {
+
+        final Response response = testFactory.generateResponseForQuestion();
+
+        new Expectations() {{
+            xmlNetworkMessenger.getResponseQuestionFromService((Request) any);
+            returns (response);
+            times = 1;
+        }};
+
+        CachedTruModuleRatingObject cachedTruModuleRatingObject = truModule.requestQuestionFromServerAndCacheResult(testFactory.generateRequestForQuestion());
+
+        Assert.assertEquals("Sorry you didn't rate", cachedTruModuleRatingObject.responseNoRating);
+        Assert.assertEquals("Thanks for rating", cachedTruModuleRatingObject.receiptWithRating);
+        Assert.assertEquals("Sorry you didn't rate", cachedTruModuleRatingObject.responseNoRating);
+        Assert.assertEquals("Thanks for rating", cachedTruModuleRatingObject.responseWithRating);
+    }
+
+    @Test
+    public void requestQuestionFromServerAndCacheResultSpanishLanguageTest() {
+
+        final Response response = testFactory.generateResponseForQuestion();
+
+        new Expectations() {{
+            xmlNetworkMessenger.getResponseQuestionFromService((Request) any);
+            returns (response);
+            times = 1;
+        }};
+
+        truModule.setCurrentTransactionLanguageCode("es-mx");
+        CachedTruModuleRatingObject cachedTruModuleRatingObject = truModule.requestQuestionFromServerAndCacheResult(testFactory.generateRequestForQuestion());
+
+        Assert.assertEquals("Lo siento no rate!", cachedTruModuleRatingObject.responseNoRating);
+        Assert.assertEquals("Gracias para rating", cachedTruModuleRatingObject.receiptWithRating);
+        Assert.assertEquals("Lo siento no rate!", cachedTruModuleRatingObject.responseNoRating);
+        Assert.assertEquals("Gracias para rating", cachedTruModuleRatingObject.responseWithRating);
+    }
 }
 
 

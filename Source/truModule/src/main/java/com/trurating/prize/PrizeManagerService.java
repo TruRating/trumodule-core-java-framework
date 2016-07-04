@@ -30,7 +30,7 @@ import com.trurating.xml.LanguageManager;
  */
 public class PrizeManagerService {
 
-    public String checkForAPrize(IDevice iDevice, Response response, String languageCode) {
+    public static String checkForAPrize(IDevice iDevice, Response response, String languageCode) {
     	String prizeCode = "";
     	ResponseLanguage language = new LanguageManager().getLanguage(response, languageCode) ;
     	ResponseScreen responseScreen = language.getScreen().get(0);

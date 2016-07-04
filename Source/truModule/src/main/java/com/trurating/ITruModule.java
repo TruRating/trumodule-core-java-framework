@@ -52,4 +52,7 @@ public interface ITruModule {
 
     CachedTruModuleRatingObject getCachedTruModuleRatingObject(); //used in testing only currently
 
+    String getCurrentTransactionLanguageCode();
+
+    void setCurrentTransactionLanguageCode(String currentTransactionlLanguageCode);
 }

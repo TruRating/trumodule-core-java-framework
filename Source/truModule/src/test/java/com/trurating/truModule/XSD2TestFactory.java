@@ -67,6 +67,42 @@ public class XSD2TestFactory {
         responseLanguage.getReceipt().add(responseReceiptNotRated);
 
         responseDisplay.getLanguage().add(responseLanguage);
+
+        /*second language*/
+
+        ResponseLanguage responseLanguage2 = new ResponseLanguage();
+        responseLanguage2.setRfc1766("es-mx");
+        ResponseQuestion responseQuestion2 = new ResponseQuestion();
+        responseQuestion2.setMax((short)1);
+        responseQuestion2.setMin((short)20);
+        responseQuestion2.setTimeoutMs(5000);
+        responseQuestion2.setValue("Por favor, valora 0-9");
+
+        ResponseScreen responseScreenNoRated2 = new ResponseScreen();
+        responseScreenNoRated2.setTimeoutMs(5000);
+        responseScreenNoRated2.setValue("Lo siento no rate!");
+        responseScreenNoRated2.setWhen(When.NOTRATED);
+        responseLanguage2.getScreen().add(responseScreenNoRated2);
+
+        ResponseScreen responseScreenRated2 = new ResponseScreen();
+        responseScreenRated2.setTimeoutMs(5000);
+        responseScreenRated2.setValue("Gracias para rating");
+        responseScreenRated2.setWhen(When.RATED);
+        responseLanguage2.getScreen().add(responseScreenRated2);
+
+        responseLanguage2.setQuestion(responseQuestion2);
+
+        ResponseReceipt responseReceiptRated2 = new ResponseReceipt();
+        responseReceiptRated2.setWhen(When.NOTRATED);
+        responseReceiptRated2.setValue("Lo siento no rate");
+        ResponseReceipt responseReceiptNotRated2 = new ResponseReceipt();
+        responseReceiptNotRated2.setWhen(When.RATED);
+        responseReceiptNotRated2.setValue("Gracias para rating");
+
+        responseLanguage2.getReceipt().add(responseReceiptRated2);
+        responseLanguage2.getReceipt().add(responseReceiptNotRated2);
+
+        responseDisplay.getLanguage().add(responseLanguage2);
         response.setDisplay(responseDisplay);
 
         return response;
