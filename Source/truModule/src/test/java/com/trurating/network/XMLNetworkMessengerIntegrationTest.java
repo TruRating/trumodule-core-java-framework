@@ -25,6 +25,10 @@ import java.util.Date;
 @RunWith(JMockit.class)
 public class XMLNetworkMessengerIntegrationTest {
 
+    /*
+    By using the properties, which are hardcoded in the UnitTestProperties class, fire a message down to the service specified.
+    If the properties are configured correctly, this will pass an assertion against null.
+     */
     private ITruModuleProperties properties;
 
     @Before

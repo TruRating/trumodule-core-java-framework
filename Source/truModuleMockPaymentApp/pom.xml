@@ -15,7 +15,4 @@
         <relativePath>../truModuleParent</relativePath>
     </parent>
 
-    <dependencies>
-
-    </dependencies>
 </project>

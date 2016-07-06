@@ -60,6 +60,11 @@ public class TruModule_RecordResponse_JUnitTest {
         setField(truModule, "cachedTruModuleRatingObject", cachedTruModuleRatingObject);
     }
 
+    /*
+    This test will mock the behaviour of a succesful ratings delivery
+    The expected behaviour when conditions are correct it that the delivery
+    should return RATING_DELIVERY_OUTCOME_SUCCEEDED
+     */
     @Test
     public void deliverySucceedsTest() {
         new Expectations() {{
@@ -117,6 +122,10 @@ public class TruModule_RecordResponse_JUnitTest {
         Assert.assertTrue(cachedTruModuleRatingObject.cancelled);
     }
 
+    /*
+    This test should cache the correct screen and receipt responses to an incoming question based
+    off the setCurrentTransactionLanguageCode
+     */
     @Test
     public void requestQuestionFromServerAndCacheResultTest() {
 
@@ -136,6 +145,11 @@ public class TruModule_RecordResponse_JUnitTest {
         Assert.assertEquals("Thanks for rating", cachedTruModuleRatingObject.responseWithRating);
     }
 
+
+    /*
+    This test should cache the correct screen and receipt responses to an incoming question based
+    off the setCurrentTransactionLanguageCode
+     */
     @Test
     public void requestQuestionFromServerAndCacheResultSpanishLanguageTest() {
 

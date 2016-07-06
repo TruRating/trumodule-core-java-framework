@@ -216,43 +216,34 @@ public class TruModule implements ITruModule {
                 timeout = 60000;
 
             final long startTime = System.currentTimeMillis(); //used to ascertain the length of time that a rating takes
-            keyStroke = iDevice.displayTruratingQuestionGetKeystroke(qTextWraps, qText, timeout);
+            keyStroke = iDevice.displayTruratingQuestionGetKeystroke(qTextWraps, qText, timeout); //call to the aci ped device driver
 
             log.debug("Keystroke came back as : " + keyStroke);
             final long endTime = System.currentTimeMillis();
             totalTimeTaken = endTime - startTime;
 
+            //cache the rating value and data
             cachedTruModuleRatingObject.rating.setValue(new Short(keyStroke));
             cachedTruModuleRatingObject.rating.setResponseTimeMs(new Long(totalTimeTaken).intValue());
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             cachedTruModuleRatingObject.rating.setDateTime(sdf.format(new Date()));
 
+            //check for prize
             String prizeCode =PrizeManagerService.checkForAPrize(iDevice, cachedTruModuleRatingObject.response, currentTransactionlLanguageCode);
             if (prizeCode!=null) {
-                iDevice.displayMessage("You've won a prize! Please note this code: " + prizeCode + ", and contact your operator/cashier to claim your prize.");
-                Thread.sleep(5000);
+                iDevice.displayMessageWaitForKey("You've won a prize! | Winning code is:" + prizeCode, 5000);
             }
 
+            //if rating wasn't cancelled, then display the appropriate screen response on the ped
             if (!cachedTruModuleRatingObject.cancelled) {
                 if ( cachedTruModuleRatingObject.rating.getValue() > -1)
                     iDevice.displayMessage(cachedTruModuleRatingObject.responseWithRating);
-
                 else
                     iDevice.displayMessage(cachedTruModuleRatingObject.responseNoRating);
             }
 
         } catch (Exception e) {
             log.error("truModule error", e);
-        }
-    }
-
-    public String getReceiptMessage() {
-        if (cachedTruModuleRatingObject == null || cachedTruModuleRatingObject.receiptWithRating == null || cachedTruModuleRatingObject.receiptNoRating == null)
-            return "";
-        if (getCurrentRatingRecord().getValue() > -1) { //I've adjusted this as -99 is illegal according to current spec
-            return cachedTruModuleRatingObject.receiptWithRating;
-        } else {
-            return cachedTruModuleRatingObject.receiptNoRating;
         }
     }
 
@@ -318,6 +309,16 @@ public class TruModule implements ITruModule {
 
     public void setCurrentTransactionLanguageCode(String currentTransactionlLanguageCode) {
         this.currentTransactionlLanguageCode = currentTransactionlLanguageCode;
+    }
+
+    public String getReceiptMessage() {
+        if (cachedTruModuleRatingObject == null || cachedTruModuleRatingObject.receiptWithRating == null || cachedTruModuleRatingObject.receiptNoRating == null)
+            return "";
+        if (getCurrentRatingRecord().getValue() > -1) { //I've adjusted this as -99 is illegal according to current spec
+            return cachedTruModuleRatingObject.receiptWithRating;
+        } else {
+            return cachedTruModuleRatingObject.receiptNoRating;
+        }
     }
 
 }

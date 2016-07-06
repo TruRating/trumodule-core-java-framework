@@ -56,6 +56,10 @@ public class TruModule_DoRating_JUnitTest {
         setField(truModule, "truRatingMessageFactory", truRatingMessageFactory);
     }
 
+    /*
+    this test is our sunny day scenario, a rating is made, and we then tests that the current rating record passes
+    contains a datatime, and the correct rating value
+     */
     @Test
     public void doRatingTest() {
         new Expectations() {{
@@ -77,6 +81,10 @@ public class TruModule_DoRating_JUnitTest {
         Assert.assertEquals(8, ratingRecord.getValue());
     }
 
+    /*
+    By returning null from the service, we are simulating an error condition
+    The expected behaviour is that the module shows and error condition
+     */
     @Test
     public void doRatingNetworkServiceCallFails_RatingValueUnset() {
         new Expectations() {{
@@ -111,7 +119,10 @@ public class TruModule_DoRating_JUnitTest {
     }
 
 
-    @Ignore //this needs thinking about, i.e. a way to delay rating until cancel request comes in
+    /*
+    todo This test should be to simulate the showing of a question, and then the ssimluation of a cancel
+     */
+    @Ignore
     public void doRatingUserPressesCancelOnPedTestBackgroundThread() {
 
         new Expectations() {{

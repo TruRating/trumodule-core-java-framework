@@ -79,8 +79,8 @@ public class TestProperties extends TruModuleProperties {
     }
 
     public String getTruServiceURL() {
-        return "http://localhost:31415/api/servicemessage";
-//        return "http://tru-sand-service-v200.trurating.com/api/servicemessage";
+//        return "http://localhost:31415/api/servicemessage";
+        return "http://tru-sand-service-v200.trurating.com/api/servicemessage";
     }
 
     public int getSocketTimeoutInMilliSeconds() {

@@ -14,12 +14,44 @@
         <javaVersion>1.6</javaVersion>
         <maven.compiler.source>1.6</maven.compiler.source>
         <maven.compiler.target>1.6</maven.compiler.target>
+        <baseInstallDirectory>c:\TruRating\TruModule\</baseInstallDirectory>
     </properties>
 
     <modules>
         <module>../truModule</module>
         <module>../truModuleTestHarness</module>
         <module>../../../common-core-java-libraries/Source/truShared/</module>
-        <module>../truModuleMockPaymentApp</module>
     </modules>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <inherited>true</inherited>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.0.1</version>
+                        <configuration>
+                            <outputDirectory>${baseInstallDirectory}</outputDirectory>
+                            <attach>true</attach>
+                            <excludes>
+                                <exclude>eSocketPOSScripts/**</exclude>
+                                <exclude>conEmuScripts/**</exclude>
+                                <exclude>postilion/**</exclude>
+                                <exclude>properties/**</exclude>
+                                <exclude>testProps/**</exclude>
+                                <exclude>*log4j.xml</exclude>
+                            </excludes>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+
 </project>
