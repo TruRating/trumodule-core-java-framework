@@ -53,7 +53,6 @@ public class TruModule implements ITruModule {
     private IXMLNetworkMessenger xmlNetworkMessenger = null;
     private TruRatingMessageFactory truRatingMessageFactory = null;
     private static volatile CachedTruModuleRatingObject cachedTruModuleRatingObject;
-
     private volatile int ratingDeliveryOutcome;
 
     public static final short USER_CANCELLED = -1;
@@ -61,10 +60,8 @@ public class TruModule implements ITruModule {
     public static final short NO_QUESTION_ASKED = -3;
     public static final short MODULE_ERROR = -4;
     public static final short NO_VALUE = -99;
-
     public static final int RATING_DELIVERY_OUTCOME_FAILED = -1;
     public static final int RATING_DELIVERY_OUTCOME_SUCCEEDED = 1;
-
     private String currentTransactionlLanguageCode;
 
     public TruModule(ITruModuleProperties truModuleProperties) {
