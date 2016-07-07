@@ -20,7 +20,6 @@
 package com.trurating;
 
 import com.trurating.network.xml.IXMLNetworkMessenger;
-import com.trurating.prize.PrizeManagerService;
 import com.trurating.properties.ITruModuleProperties;
 import com.trurating.service.v200.xml.*;
 import org.apache.log4j.Logger;
@@ -95,7 +94,7 @@ public class TruModule implements ITruModule {
         }).start();
     }
 
-    public int deliverRating() { //todo put this into a background thread...
+    public int deliverRating() {
         log.info("About to deliver a rating");
         ratingDeliveryOutcome = RATING_DELIVERY_OUTCOME_SUCCEEDED;
 
@@ -224,16 +223,6 @@ public class TruModule implements ITruModule {
             cachedTruModuleRatingObject.rating.setResponseTimeMs(new Long(totalTimeTaken).intValue());
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             cachedTruModuleRatingObject.rating.setDateTime(sdf.format(new Date()));
-
-            //check for prize
-            String prizeCode =PrizeManagerService.checkForAPrize(iDevice, cachedTruModuleRatingObject.response, currentTransactionlLanguageCode);
-            if (prizeCode!=null) {
-                //split the question over multiple lines by displaywidth
-                String[] prizeText = "You've won a prize! | Winning code is:".split("\\\\n");
-                if ((prizeText.length == 1) && (qTextWraps[0].length() > displayWidth))
-                    prizeText = StringUtilities.wordWrap(qText, displayWidth);
-                iDevice.displayMessageWaitForKey(prizeCode+ prizeCode, 5000);
-            }
 
             //if rating wasn't cancelled, then display the appropriate screen response on the ped
             if (!cachedTruModuleRatingObject.cancelled) {
