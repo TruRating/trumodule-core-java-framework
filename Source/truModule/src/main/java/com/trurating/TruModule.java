@@ -228,7 +228,11 @@ public class TruModule implements ITruModule {
             //check for prize
             String prizeCode =PrizeManagerService.checkForAPrize(iDevice, cachedTruModuleRatingObject.response, currentTransactionlLanguageCode);
             if (prizeCode!=null) {
-                iDevice.displayMessageWaitForKey("You've won a prize! | Winning code is:" + prizeCode, 5000);
+                //split the question over multiple lines by displaywidth
+                String[] prizeText = "You've won a prize! | Winning code is:".split("\\\\n");
+                if ((prizeText.length == 1) && (qTextWraps[0].length() > displayWidth))
+                    prizeText = StringUtilities.wordWrap(qText, displayWidth);
+                iDevice.displayMessageWaitForKey(prizeCode+ prizeCode, 5000);
             }
 
             //if rating wasn't cancelled, then display the appropriate screen response on the ped
