@@ -1,4 +1,4 @@
-﻿#TR specific
+#TR specific
 target/
  
 
@@ -55,3 +55,4 @@ fabric.properties
 
 # *.iml
 # modules.xml
+*.iml

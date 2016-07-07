@@ -99,7 +99,7 @@ public class TruModule_RecordResponse_JUnitTest {
             times = 1;
             xmlNetworkMessenger.getResponseRatingFromRatingsDeliveryToService((Request) any);
             returns(null);
-            times = 0;
+            times = 1;
         }};
 
         RequestTransaction transaction = new RequestTransaction();

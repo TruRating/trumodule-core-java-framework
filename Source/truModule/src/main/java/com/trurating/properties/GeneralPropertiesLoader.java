@@ -50,9 +50,9 @@ public class GeneralPropertiesLoader {
     }
 
     public void loadAllPropertiesFromResourcesSystemArg() {   	
-        String resources = System.getProperty("resources");                                                             //static pre Spring config
+        String resources = System.getProperty("resources");
 
-        if (resources == null || resources.equals("")) 
+        if (resources == null || resources.equals(""))  //this is temporary - remove for everything except SCO deployment
         	resources = "C:\\TruRating\\TruModule\\";
         
         if (resources == null || resources.equals("")) 
