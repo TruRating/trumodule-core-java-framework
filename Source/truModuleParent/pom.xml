@@ -22,35 +22,4 @@
         <module>../truModuleTestHarness</module>
     </modules>
 
-            <build>
-                <plugins>
-                    <plugin>
-                        <inherited>true</inherited>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <version>3.0.1</version>
-                        <configuration>
-                            <outputDirectory>${baseInstallDirectory}</outputDirectory>
-                            <attach>true</attach>
-                            <excludes>
-                                <exclude>eSocketPOSScripts/**</exclude>
-                                <exclude>conEmuScripts/**</exclude>
-                                <exclude>postilion/**</exclude>
-                                <exclude>properties/**</exclude>
-                                <exclude>testProps/**</exclude>
-                                <exclude>*log4j.xml</exclude>
-                            </excludes>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>jar-no-fork</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-
 </project>
