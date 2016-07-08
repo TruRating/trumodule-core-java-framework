@@ -157,6 +157,8 @@ public class TruModule implements ITruModule {
                         if (responseScreenList.get(j).getWhen().value().equals("NOTRATED")) {
                             cachedTruModuleObject.responseNoRating=responseScreenList.get(j).getValue();
                         }
+
+                        if (responseScreenList.get(j).isPriority()) cachedTruModuleObject.isPriority=true;
                     }
 
                     List<ResponseReceipt> responseReceiptList = response.getDisplay().getLanguage().get(i).getReceipt();
@@ -228,16 +230,15 @@ public class TruModule implements ITruModule {
             //if rating wasn't cancelled, then display the appropriate screen response on the ped
             if (!cachedTruModuleObject.cancelled) {
                 if (dwelltimeextendEnacted==true) {
-//                    if (isPriorityMessage) {
-//                        log.info("This was a priority/prize message therefore a screen response is required");
-//                    } else
-                    log.info("No screen response required as dwelltimeextend was enacted!");
-                } else {
-                    if (cachedTruModuleObject.rating.getValue() > -1)
-                        iDevice.displayMessage(cachedTruModuleObject.responseWithRating);
-                    else
-                        iDevice.displayMessage(cachedTruModuleObject.responseNoRating);
+                    if (!cachedTruModuleObject.isPriority) {
+                        log.info("No screen response required as dwelltimeextend was enacted, and this is not a priority message!");
+                        return;
+                    }
                 }
+                if (cachedTruModuleObject.rating.getValue() > -1)
+                    iDevice.displayMessage(cachedTruModuleObject.responseWithRating);
+                else
+                    iDevice.displayMessage(cachedTruModuleObject.responseNoRating);
             }
 
         } catch (Exception e) {

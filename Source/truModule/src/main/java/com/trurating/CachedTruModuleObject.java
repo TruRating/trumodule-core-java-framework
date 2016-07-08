@@ -12,9 +12,10 @@ import java.util.Date;
  */
 public class CachedTruModuleObject {
 
+
     /*
-    this is a set of caches of various data held over throughout the trumodule scenario.
-     */
+        this is a set of caches of various data held over throughout the trumodule scenario.
+         */
     public CachedTruModuleObject() {
         sessionID = Long.toString(new Date().getTime());
         rating = new RequestRating();
@@ -32,4 +33,6 @@ public class CachedTruModuleObject {
     public String receiptWithRating;
     public Response response; //entire objects as received from the service
     public Request request;
+    public boolean isPriority; // if the question response is a prize, this means that during dwelltimeextend, we DO show the prize message
+
 }
