@@ -1,16 +1,11 @@
 package com.trurating.trumodule.testharness.configuration;
 
-import java.io.File;
-import java.util.Properties;
-
-import org.apache.log4j.Logger;
-
-import com.trurating.properties.ITruModuleProperties;
+import com.trurating.properties.TruModuleProperties;
 
 /**
  * Created by Paul on 2016. :)
  */
-public class TestProperties implements ITruModuleProperties {
+public class TestProperties extends TruModuleProperties {
 
     private static TestProperties INSTANCE=null;
 
@@ -21,6 +16,10 @@ public class TestProperties implements ITruModuleProperties {
             return INSTANCE= new TestProperties();
         }
         return INSTANCE;
+    }
+
+    public String getPartnerId() {
+        return "1";
     }
 
     public String getMid() {
@@ -35,11 +34,11 @@ public class TestProperties implements ITruModuleProperties {
         return "en-GB";
     }
 
-    public boolean getIncludeReceipt() {
+    public boolean isIncludeReceiptInQuestionRequest() {
         return true;
     }
 
-    public boolean getIncludeAcknowledgement() {
+    public boolean isIncludeAcknowledgement() {
         return true;
     }
 
@@ -51,7 +50,7 @@ public class TestProperties implements ITruModuleProperties {
         return 4;
     }
 
-    public int getDeviceCpl() {
+    public int getDeviceCPL() {
         return 16;
     }
 
@@ -79,18 +78,16 @@ public class TestProperties implements ITruModuleProperties {
         return "MCM4.2";
     }
 
-    public String getTruServiceIPAddress() {
-///        return "tru-sand-service-fis.cloudapp.net";
-        return "tru-sand-service-trurating.cloudapp.net";
-//        return "13.95.156.19";
-//        return "127.0.0.1";
+    public String getTruServiceURL() {
+//        return "http://localhost:31415/api/servicemessage";
+        return "http://tru-sand-service-v200.trurating.com/api/servicemessage";
     }
 
-    public int getTruServiceSocketTimeoutInMilliSeconds() {
-        return 500;
+    public int getSocketTimeoutInMilliSeconds() {
+        return 3000;
     }
 
-    public int getTruServiceSocketPortNumber() {
-        return 9999;
+    public int getDwellTimeExtend() {
+        return 0;
     }
 }

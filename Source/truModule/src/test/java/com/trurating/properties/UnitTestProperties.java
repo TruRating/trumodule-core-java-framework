@@ -1,19 +1,10 @@
 package com.trurating.properties;
 
-import java.io.File;
-import java.util.Properties;
-
-import org.apache.log4j.Logger;
-
 /**
  * Created by Paul on 2016. :)
  */
-public class UnitTestProperties implements ITruModuleProperties {
+public class UnitTestProperties extends TruModuleProperties {
 
-    private static Logger log = Logger.getLogger(UnitTestProperties.class);
-    private Properties properties = null;
-    private File propertiesFile;
-    private String pathToResources;
     private static UnitTestProperties INSTANCE=null;
 
     private UnitTestProperties() {}
@@ -25,24 +16,20 @@ public class UnitTestProperties implements ITruModuleProperties {
         return INSTANCE;
     }
 
+    public String getPartnerId() {
+        return "1";
+    }
+
     public String getMid() {
-        return "123456";
+        return "TRU-150";
     }
 
     public String getTid() {
-        return "65321";
+        return "PAULRUSS";
     }
 
     public String getLanguageCode() {
-        return "en";
-    }
-
-    public boolean getIncludeReceipt() {
-        return true;
-    }
-
-    public boolean getIncludeAcknowledgement() {
-        return true;
+        return "en-GB";
     }
 
     public String getDeviceType() {
@@ -53,7 +40,7 @@ public class UnitTestProperties implements ITruModuleProperties {
         return 4;
     }
 
-    public int getDeviceCpl() {
+    public int getDeviceCPL() {
         return 16;
     }
 
@@ -66,7 +53,7 @@ public class UnitTestProperties implements ITruModuleProperties {
     }
 
     public String getDeviceFontType() {
-        return "FIXED";
+        return "MONOSPACED";
     }
 
 	public int getQuestionTimeout() {
@@ -81,15 +68,12 @@ public class UnitTestProperties implements ITruModuleProperties {
         return "MCM4.2";
     }
 
-    public String getTruServiceIPAddress() {
-        return "tru-sand-service-fis.cloudapp.net";
+    public String getTruServiceURL() {
+//        return "http://localhost:31415/api/servicemessage";
+        return "http://tru-sand-service-v200.trurating.com/api/servicemessage";
     }
 
-    public int getTruServiceSocketTimeoutInMilliSeconds() {
-        return 500;
-    }
-
-    public int getTruServiceSocketPortNumber() {
-        return 9999;
+    public int getDwellTimeExtend() {
+        return 0;
     }
 }

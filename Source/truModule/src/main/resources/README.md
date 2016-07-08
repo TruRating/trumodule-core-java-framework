@@ -1,4 +1,21 @@
-truModule
+/*
+ * Copyright (c) 2016 truRating Limited. All Rights Reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * truRating Limited. ("Confidential Information").  You shall
+ * not disclose such Confidential Information and shall use it only in
+ * accordance with the terms of the license agreement you entered into
+ * with truRating Limited.
+ *
+ * TRURATING LIMITED MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT
+ * THE SUITABILITY OF THE SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING
+ * BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. TRURATING LIMITED
+ * SHALL NOT BE LIABLE FOR ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT
+ * OF USING, MODIFYING OR DISTRIBUTING THIS SOFTWARE OR ITS DERIVATIVES.
+ */
+
+TRUMODULE
 =========
 
 This program should be passed the location of a resources Java properties file via the command line. You can change the location 
@@ -11,10 +28,17 @@ and log into the root directory of the jar file.
 
 -Dlog4j.configuration=file:\C:\truModule\properties\truModuleLog4J.properties
 
-The Payment Application
+THE PAYMENT APPLICATION
 =======================
  
 The payment application supplied is only a mock up, and is in no way intended to be a fully functioning example of such an 
 application. However, it should help developers to see easily where truModule fits into their organisation's stack.
  
 The interface of interest to developers, will be the ITruModule interface.
+
+POSTILION STARTUP
+========================
+
+From inside Postilion\eSocket.POS\
+
+jre\bin\java -Xrs -Dpostilion.postal.start_wait_hint=120000 -Djava.library.path="C:\Postilion\eSocket.POS\bin\presalesWin32" -Xrunjdwp:transport=dt_socket,address=32000,suspend=n,server=y -cp "C:\presales\eSocket.POS\lib\postilion_ingenicoemv_v2.22_2015-11-16.jar;C:\TruRating\truRating4ACI-v1.jar;C:\Postilion\eSocket.POS\bin\classes;C:\postilion\eSocket.POS\bin\postespos-sdk.jar;C:\postilion\eSocket.POS\bin\esocket-tools.jar;C:\Postilion\eSocket.POS\bin\hsqldb.jar;C:\postilion\eSocket.POS\bin\bcprov-jdk16-143.jar;C:\postilion\esocket.pos\bin\comm.jar;c:\postilion\esocket.pos\bin\log4j.jar;" postilion.espuk.posinterface.util.EspRun -p "C:\Postilion\eSocket.POS\properties.txt" -xml -ca -cust postilion.esocketpos.util.HsqldbRun

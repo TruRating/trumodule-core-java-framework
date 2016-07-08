@@ -4,25 +4,20 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.truRating</groupId>
+    <groupId>com.trurating</groupId>
     <artifactId>truModule</artifactId>
     <version>1.1-SNAPSHOT</version>
 
-    <repositories>
-        <repository>
-            <id>trurating.maven</id>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <url>https://tru-maven.azurewebsites.net</url>
-        </repository>
-    </repositories>
+    <properties>
+        <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+        <javaVersion>1.6</javaVersion>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
+        <baseInstallDirectory>c:\TruRating\TruModule\</baseInstallDirectory>
+    </properties>
 
     <parent>
-        <groupId>com.truRating</groupId>
+        <groupId>com.trurating</groupId>
         <artifactId>truModuleParent</artifactId>
         <version>1.1-SNAPSHOT</version>
         <relativePath>../truModuleParent</relativePath>
@@ -60,11 +55,24 @@
         </dependency>
 
         <dependency>
-            <groupId>com.trurating.messages</groupId>
-            <artifactId>trurating.service.v121</artifactId>
-            <version>1.1.3.2</version>
+            <groupId>com.trurating</groupId>
+            <artifactId>core-dto-java</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
-
     </dependencies>
-
+	
+	    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.12.4</version>
+                <configuration>
+                    <systemPropertyVariables>
+                        <resources>C:\trurating\trumodule</resources>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
