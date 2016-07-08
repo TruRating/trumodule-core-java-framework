@@ -52,7 +52,7 @@ public class GeneralPropertiesLoader {
     public void loadAllPropertiesFromResourcesSystemArg() {   	
         String resources = System.getProperty("resources");
 
-        if (resources == null || resources.equals(""))  //this is temporary - remove for everything except SCO deployment
+        if (resources == null || resources.equals(""))
         	resources = "C:\\TruRating\\TruModule\\";
         
         if (resources == null || resources.equals("")) 
