@@ -20,7 +20,6 @@
     <modules>
         <module>../truModule</module>
         <module>../truModuleTestHarness</module>
-        <module>../../../common-core-java-libraries/Source/truShared/</module>
     </modules>
 
             <build>

@@ -50,7 +50,11 @@ public interface ITruModule {
 
     void clearAllCachedModuleData();  // this will clear out all data - response/request messaging for ratings, and transaction data
 
-    CachedTruModuleRatingObject getCachedTruModuleRatingObject(); //used in testing only currently
+    CachedTruModuleObject getCachedTruModuleRatingObject(); //used in testing only currently
 
     void setCurrentTransactionLanguageCode(String currentTransactionlLanguageCode);
+
+    boolean isDwelltimeextendEnacted(); //used to tell if the module has already performed a dwelltimeexted
+
+    void setDwelltimeextendEnacted(boolean dwelltimeextendEnacted);
 }

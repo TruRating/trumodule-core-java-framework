@@ -10,12 +10,12 @@ import java.util.Date;
 /**
  * Created by Paul on 02/06/2016.
  */
-public class CachedTruModuleRatingObject {
+public class CachedTruModuleObject {
 
     /*
     this is a set of caches of various data held over throughout the trumodule scenario.
      */
-    public CachedTruModuleRatingObject() {
+    public CachedTruModuleObject() {
         sessionID = Long.toString(new Date().getTime());
         rating = new RequestRating();
         rating.setValue(TruModule.NO_VALUE);

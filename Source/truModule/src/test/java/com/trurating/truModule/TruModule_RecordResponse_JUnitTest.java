@@ -2,7 +2,7 @@ package com.trurating.truModule;
 
 import static mockit.Deencapsulation.setField;
 
-import com.trurating.CachedTruModuleRatingObject;
+import com.trurating.CachedTruModuleObject;
 import com.trurating.network.xml.IXMLNetworkMessenger;
 import com.trurating.network.xml.TruRatingMessageFactory;
 import com.trurating.properties.ITruModuleProperties;
@@ -42,7 +42,7 @@ public class TruModule_RecordResponse_JUnitTest {
     @Injectable
     TruRatingMessageFactory truRatingMessageFactory;
     @Injectable
-    CachedTruModuleRatingObject cachedTruModuleRatingObject;
+    CachedTruModuleObject cachedTruModuleObject;
 
     private XSD2TestFactory testFactory;
 
@@ -51,13 +51,13 @@ public class TruModule_RecordResponse_JUnitTest {
         properties = UnitTestProperties.getInstance(); // Set of test properties
         testFactory = new XSD2TestFactory(properties);
         truModule = new TruModule(properties);
-        cachedTruModuleRatingObject = new CachedTruModuleRatingObject();
+        cachedTruModuleObject = new CachedTruModuleObject();
 
         setField(truModule, "xmlNetworkMessenger", xmlNetworkMessenger);
         setField(truModule, "iDevice", iDevice);
         setField(truModule, "log", log);
         setField(truModule, "truRatingMessageFactory", truRatingMessageFactory);
-        setField(truModule, "cachedTruModuleRatingObject", cachedTruModuleRatingObject);
+        setField(truModule, "cachedTruModuleObject", cachedTruModuleObject);
     }
 
     /*
@@ -82,8 +82,8 @@ public class TruModule_RecordResponse_JUnitTest {
         responseDisplay.getLanguage().add(new ResponseLanguage());
         responseDisplay.getLanguage().get(0).setRfc1766("en-GB");
         response.setDisplay(responseDisplay);
-        cachedTruModuleRatingObject.response = response;
-        setField(truModule, "cachedTruModuleRatingObject", cachedTruModuleRatingObject);
+        cachedTruModuleObject.response = response;
+        setField(truModule, "cachedTruModuleObject", cachedTruModuleObject);
 
         RequestTransaction transaction = new RequestTransaction();
         truModule.getCachedTruModuleRatingObject().transaction=transaction;
@@ -110,16 +110,16 @@ public class TruModule_RecordResponse_JUnitTest {
 
     @Test
     public void testCancellationTruModule() {
-        CachedTruModuleRatingObject cachedTruModuleRatingObject = new CachedTruModuleRatingObject();
+        CachedTruModuleObject cachedTruModuleObject = new CachedTruModuleObject();
         //fake out the that we are mid-question display
-        cachedTruModuleRatingObject.cancelled=false; //at this point we are not cancelled
+        cachedTruModuleObject.cancelled=false; //at this point we are not cancelled
 
-        setField(truModule, "cachedTruModuleRatingObject", cachedTruModuleRatingObject);
+        setField(truModule, "cachedTruModuleObject", cachedTruModuleObject);
 
         truModule.cancelRating(); //now we should be cancelled
 
-        cachedTruModuleRatingObject = truModule.getCachedTruModuleRatingObject();
-        Assert.assertTrue(cachedTruModuleRatingObject.cancelled);
+        cachedTruModuleObject = truModule.getCachedTruModuleRatingObject();
+        Assert.assertTrue(cachedTruModuleObject.cancelled);
     }
 
     /*
@@ -137,12 +137,12 @@ public class TruModule_RecordResponse_JUnitTest {
             times = 1;
         }};
 
-        CachedTruModuleRatingObject cachedTruModuleRatingObject = truModule.requestQuestionFromServerAndCacheResult(testFactory.generateRequestForQuestion());
+        CachedTruModuleObject cachedTruModuleObject = truModule.requestQuestionFromServerAndCacheResult(testFactory.generateRequestForQuestion());
 
-        Assert.assertEquals("Sorry you didn't rate", cachedTruModuleRatingObject.responseNoRating);
-        Assert.assertEquals("Thanks for rating", cachedTruModuleRatingObject.receiptWithRating);
-        Assert.assertEquals("Sorry you didn't rate", cachedTruModuleRatingObject.responseNoRating);
-        Assert.assertEquals("Thanks for rating", cachedTruModuleRatingObject.responseWithRating);
+        Assert.assertEquals("Sorry you didn't rate", cachedTruModuleObject.responseNoRating);
+        Assert.assertEquals("Thanks for rating", cachedTruModuleObject.receiptWithRating);
+        Assert.assertEquals("Sorry you didn't rate", cachedTruModuleObject.responseNoRating);
+        Assert.assertEquals("Thanks for rating", cachedTruModuleObject.responseWithRating);
     }
 
 
@@ -162,12 +162,12 @@ public class TruModule_RecordResponse_JUnitTest {
         }};
 
         truModule.setCurrentTransactionLanguageCode("es-mx");
-        CachedTruModuleRatingObject cachedTruModuleRatingObject = truModule.requestQuestionFromServerAndCacheResult(testFactory.generateRequestForQuestion());
+        CachedTruModuleObject cachedTruModuleObject = truModule.requestQuestionFromServerAndCacheResult(testFactory.generateRequestForQuestion());
 
-        Assert.assertEquals("Lo siento no rate!", cachedTruModuleRatingObject.responseNoRating);
-        Assert.assertEquals("Gracias para rating", cachedTruModuleRatingObject.receiptWithRating);
-        Assert.assertEquals("Lo siento no rate!", cachedTruModuleRatingObject.responseNoRating);
-        Assert.assertEquals("Gracias para rating", cachedTruModuleRatingObject.responseWithRating);
+        Assert.assertEquals("Lo siento no rate!", cachedTruModuleObject.responseNoRating);
+        Assert.assertEquals("Gracias para rating", cachedTruModuleObject.receiptWithRating);
+        Assert.assertEquals("Lo siento no rate!", cachedTruModuleObject.responseNoRating);
+        Assert.assertEquals("Gracias para rating", cachedTruModuleObject.responseWithRating);
     }
 }
 
