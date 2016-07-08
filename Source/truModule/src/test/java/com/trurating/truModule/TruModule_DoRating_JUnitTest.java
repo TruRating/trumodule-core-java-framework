@@ -2,6 +2,9 @@ package com.trurating.truModule;
 
 import static mockit.Deencapsulation.setField;
 
+import com.trurating.properties.ITruModuleProperties;
+import com.trurating.properties.UnitTestProperties;
+import com.trurating.service.v200.xml.*;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Tested;
@@ -10,6 +13,7 @@ import mockit.integration.junit4.JMockit;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -17,34 +21,20 @@ import com.trurating.TruModule;
 import com.trurating.device.IDevice;
 import com.trurating.network.xml.IXMLNetworkMessenger;
 import com.trurating.network.xml.TruRatingMessageFactory;
-import com.trurating.prize.PrizeManagerService;
-import com.trurating.properties.ITruModuleProperties;
-import com.trurating.properties.TruModuleProperties;
-import trurating.service.v121.xml.questionResponse.QuestionResponseJAXB;
-import trurating.service.v121.xml.questionResponse.QuestionResponseJAXB.Languages;
-import trurating.service.v121.xml.questionResponse.QuestionResponseJAXB.Languages.Language;
-import trurating.service.v121.xml.questionResponse.QuestionResponseJAXB.Languages.Language.DisplayElements.Question;
-import trurating.service.v121.xml.ratingDelivery.RatingDeliveryJAXB;
-import trurating.service.v121.xml.ratingDelivery.RatingDeliveryJAXB.Rating;
-
-import java.math.BigInteger;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * Created by Paul on 10/03/2016.
  */
+@SuppressWarnings("Duplicates")
 @RunWith(JMockit.class)
 public class TruModule_DoRating_JUnitTest {
 
     @Tested
     TruModule truModule;
     @Injectable
-    IDevice iDevice;    
+    IDevice iDevice;
     @Injectable
     IXMLNetworkMessenger xmlNetworkMessenger;
-    @Injectable
-    PrizeManagerService prizeManagerService;
     @Injectable
     Logger log;
     @Injectable
@@ -52,210 +42,103 @@ public class TruModule_DoRating_JUnitTest {
     @Injectable
     TruRatingMessageFactory truRatingMessageFactory;
 
+    private XSD2TestFactory testFactory;
+
     @Before
     public void setUp() {
-        truModule =  new TruModule();
+        properties = UnitTestProperties.getInstance(); // Set of test properties
+        testFactory = new XSD2TestFactory(properties);
+        truModule =  new TruModule(properties);
+
         setField(truModule, "xmlNetworkMessenger", xmlNetworkMessenger);
-        setField(truModule, "prizeManagerService", prizeManagerService);
         setField(truModule, "iDevice", iDevice);
         setField(truModule, "log", log);
         setField(truModule, "truRatingMessageFactory", truRatingMessageFactory);
     }
 
+    /*
+    this test is our sunny day scenario, a rating is made, and we then tests that the current rating record passes
+    contains a datatime, and the correct rating value
+     */
     @Test
     public void doRatingTest() {
-
-        final QuestionResponseJAXB questionResponseJAXB = getQuestionResponseJAXB();
-
         new Expectations() {{
-            xmlNetworkMessenger.getQuestionFromService((ITruModuleProperties)any, anyLong);
-            returns(questionResponseJAXB);
+            xmlNetworkMessenger.getResponseQuestionFromService((Request)any);
+            returns(testFactory.generateResponseForQuestion());
             times = 1;
             iDevice.displayTruratingQuestionGetKeystroke((String[])any, (String)any, anyInt);
             returns ("8");
             times = 1;
-            prizeManagerService.checkForAPrize((IDevice) any, (QuestionResponseJAXB)any, (String) any);
-            returns ("555");
-            times = 1;
-            truRatingMessageFactory.createRatingRecord((ITruModuleProperties)any);
-            returns (getRatingDeliveryJAXB());
+            truRatingMessageFactory.assembleQuestionRequest((ITruModuleProperties) any, (String)any);
+            returns (testFactory.generateRequestForQuestion());
             times = 1;
         }};
 
-        truModule.doRating(properties);
-        RatingDeliveryJAXB iRatingRecord = truModule.getCurrentRatingRecord(properties) ;
-        Rating rating = iRatingRecord.getRating() ;
+        truModule.doRating();
+        RequestRating ratingRecord = truModule.getCurrentRatingRecord() ;
 
-        Assert.assertNotNull(iRatingRecord.getTransaction().getDatetime());
-        Assert.assertEquals(8, rating.getValue());
-        Assert.assertEquals(12345, rating.getQid());
-        Assert.assertEquals("555", rating.getPrizecode());
+        Assert.assertNotNull(ratingRecord.getDateTime());
+        Assert.assertEquals(8, ratingRecord.getValue());
     }
 
+    /*
+    By returning null from the service, we are simulating an error condition
+    The expected behaviour is that the module shows and error condition
+     */
     @Test
-    public void doRatingServiceFailsTest() {
-
+    public void doRatingNetworkServiceCallFails_RatingValueUnset() {
         new Expectations() {{
-            xmlNetworkMessenger.getQuestionFromService((ITruModuleProperties)any, anyLong);
+            xmlNetworkMessenger.getResponseQuestionFromService((Request)any);
             returns(null);
-            truRatingMessageFactory.createRatingRecord((ITruModuleProperties)any);
-            returns (getRatingDeliveryJAXB());
+            times = 1;
+            truRatingMessageFactory.assembleQuestionRequest((ITruModuleProperties) any, (String)any);
+            returns (testFactory.generateRequestForQuestion());
             times = 1;
         }};
 
-        TruModuleProperties properties = new TruModuleProperties() ;
-        truModule.doRating(properties);
-        RatingDeliveryJAXB iRatingRecord = truModule.getCurrentRatingRecord(properties) ;
-        Assert.assertEquals(iRatingRecord.getRating().getValue(), TruModule.NO_RATING_VALUE);
-        // We should have a value
-    }
-
-
-    @Test
-    public void doRatingNoPrizeTest() {
-
-        final QuestionResponseJAXB questionResponseJAXB = getQuestionResponseJAXB();
-
-        new Expectations() {{
-            xmlNetworkMessenger.getQuestionFromService((ITruModuleProperties)any, anyLong);
-            returns(questionResponseJAXB);
-            times = 1;
-            iDevice.displayTruratingQuestionGetKeystroke((String[])any, (String)any, anyInt);
-            returns ("8");
-            times = 1;
-            truRatingMessageFactory.createRatingRecord((ITruModuleProperties)any);
-            returns (getRatingDeliveryJAXB());
-            times = 1;
-            prizeManagerService.checkForAPrize((IDevice) any, (QuestionResponseJAXB)any, (String) any);
-            returns ("");
-            times = 1;
-        }};
-
-        truModule.doRating(properties);
-        Rating rating = truModule.getCurrentRatingRecord(properties).getRating() ;
-        Assert.assertEquals("", rating.getPrizecode());
+        truModule.doRating();
+        RequestRating ratingRecord = truModule.getCurrentRatingRecord() ;
+        Assert.assertEquals(ratingRecord.getValue(), TruModule.MODULE_ERROR);
     }
 
     @Test
     public void doRatingUserPressesCancelOnPedTest() {
 
-        final QuestionResponseJAXB questionResponseJAXB = getQuestionResponseJAXB();
-
         new Expectations() {{
-            xmlNetworkMessenger.getQuestionFromService((ITruModuleProperties)any, anyLong);
-            returns(questionResponseJAXB);
+            xmlNetworkMessenger.getResponseQuestionFromService((Request)any);
+            returns(testFactory.generateResponseForQuestion());
             times = 1;
             iDevice.displayTruratingQuestionGetKeystroke((String[])any, (String)any, anyInt);
-            returns ("-1");
-            times = 1;
-            truRatingMessageFactory.createRatingRecord((ITruModuleProperties)any);
-            returns (getRatingDeliveryJAXB());
-            times = 1;
-            prizeManagerService.checkForAPrize((IDevice) any, (QuestionResponseJAXB)any, (String) any);
-            returns ("");
-            times = 0;
-        }};
-
-        truModule.doRating(properties);
-        Rating rating = truModule.getCurrentRatingRecord(properties).getRating() ;
-        Assert.assertEquals(rating.getValue(), TruModule.USER_CANCELLED);
-        Assert.assertEquals(null, rating.getPrizecode());
-    }
-
-    @Test
-    public void doPrizeCheckFailsTest() {
-
-        final QuestionResponseJAXB questionResponseJAXB = getQuestionResponseJAXB();
-
-        new Expectations() {{
-            xmlNetworkMessenger.getQuestionFromService((ITruModuleProperties)any, anyLong);
-            returns(questionResponseJAXB);
-            times = 1;
-            iDevice.displayTruratingQuestionGetKeystroke((String[])any, (String)any, anyInt);
-            returns ("-1");
-            times = 1;
-            prizeManagerService.checkForAPrize((IDevice) any, (QuestionResponseJAXB)any, (String) any);
-            returns ("555");
-            times = 0;
-            truRatingMessageFactory.createRatingRecord((ITruModuleProperties)any);
-            returns (getRatingDeliveryJAXB());
+            returns (Short.toString(TruModule.USER_CANCELLED));
             times = 1;
         }};
 
-        truModule.doRating(properties);
-        Rating rating = truModule.getCurrentRatingRecord(properties).getRating() ;
-        Assert.assertEquals(rating.getValue(), TruModule.USER_CANCELLED);
-        Assert.assertEquals(null, rating.getPrizecode());
-    }
-    
-    private QuestionResponseJAXB getQuestionResponseJAXB() {
-        QuestionResponseJAXB questionResponseJAXB = new QuestionResponseJAXB();
-        final Question question = new Question();
-        question.setValue("Rate 0-9");
-        questionResponseJAXB.setMessagetype("MY MESSAGE TYPE");
-        question.setQid(12345L);
-        Languages languages = new Languages();
-        Language language = new Language();
-        language.setLanguagetype("EN-GB");
-
-        Language.DisplayElements displayElements = new Language.DisplayElements();
-        displayElements.setAcknowledgement(new Language.DisplayElements.Acknowledgement());
-        displayElements.setQuestion(question);
-        language.setDisplayElements(displayElements);
-
-        QuestionResponseJAXB.Languages.Language.Receipt receipt =
-                new Language.Receipt();
-        receipt.setRatedvalue("8");
-        language.setReceipt(receipt);
-        languages.getLanguage().add(language);
-
-        questionResponseJAXB.setLanguages(languages);
-
-        return questionResponseJAXB;
+        truModule.doRating();
+        RequestRating requestRating = truModule.getCurrentRatingRecord();
+        Assert.assertEquals(requestRating.getValue(), TruModule.USER_CANCELLED);
     }
 
-    private RatingDeliveryJAXB getRatingDeliveryJAXB() {
 
-        RatingDeliveryJAXB ratingDeliveryJAXB = new RatingDeliveryJAXB();
-        ratingDeliveryJAXB.setErrortext("");
-        RatingDeliveryJAXB.CardHash cardHash = new RatingDeliveryJAXB.CardHash();
-        cardHash.setCardhashdata("cardHarhValue");
-        cardHash.setCardhashdatatype("MD5");
-        ratingDeliveryJAXB.setCardHash(cardHash);
-        RatingDeliveryJAXB.Languages languages = new RatingDeliveryJAXB.Languages();
-        RatingDeliveryJAXB.Languages.Language language = new RatingDeliveryJAXB.Languages.Language();
-        language.setIncludereceipt(false);
-        language.setLanguagetype("en-GB");
-        languages.getLanguage().add(language);
-        ratingDeliveryJAXB.setLanguages(languages);
+    /*
+    todo This test should be to simulate the showing of a question, and then the ssimluation of a cancel
+     */
+    @Ignore
+    public void doRatingUserPressesCancelOnPedTestBackgroundThread() {
 
-        ratingDeliveryJAXB.setMid("12345");
-        ratingDeliveryJAXB.setTid("12345");
-        ratingDeliveryJAXB.setMessagetype("TYPE");
-        Rating rating = new Rating();
-        rating.setValue(TruModule.NO_RATING_VALUE);
-        rating.setPrizecode("");
-        rating.setResponsetimemilliseconds(5L);
-        ratingDeliveryJAXB.setRating(rating);
-        ratingDeliveryJAXB.setUid(new BigInteger("123456789"));
+        new Expectations() {{
+            xmlNetworkMessenger.getResponseQuestionFromService((Request)any);
+            returns(testFactory.generateResponseForQuestion());
+            times = 1;
+            iDevice.displayTruratingQuestionGetKeystroke((String[])any, (String)any, anyInt);
+            returns (Short.toString(TruModule.USER_CANCELLED));
+            times = 1;
+        }};
 
-        Date now = new Date();
-        RatingDeliveryJAXB.Transaction transaction = new RatingDeliveryJAXB.Transaction();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        transaction.setDatetime(sdf.format(now));
-        transaction.setTxnid(now.getTime());
-        transaction.setAmount(0);
-        transaction.setGratuity(0);
-        transaction.setCurrency((short) 826);
-        transaction.setCardtype("");
-        transaction.setEntrymode("021");
-        transaction.setTendertype("");
-        transaction.setResult("");
-        transaction.setOperator("");
-        ratingDeliveryJAXB.setTransaction(transaction);
-
-        return ratingDeliveryJAXB;
+        truModule.doRatingInBackground();
+        RequestRating requestRating = truModule.getCurrentRatingRecord();
+        Assert.assertEquals(requestRating.getValue(), TruModule.USER_CANCELLED);
     }
+
 }
 
 

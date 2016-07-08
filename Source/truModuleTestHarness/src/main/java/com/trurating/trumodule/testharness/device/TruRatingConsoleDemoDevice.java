@@ -1,29 +1,109 @@
 package com.trurating.trumodule.testharness.device;
 
+import com.trurating.TruModule;
 import com.trurating.device.DeviceCapabilities;
-import com.trurating.device.IDevice;
 
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.concurrent.*;
 
 /**
  * Created by Paul on 07/03/2016.
  */
-public class TruRatingConsoleDemoDevice implements IDevice {
+@SuppressWarnings("Duplicates")
+public class TruRatingConsoleDemoDevice implements TestIDevice {
 
-    Logger log = Logger.getLogger(TruRatingConsoleDemoDevice.class);
+    private Logger log = Logger.getLogger(TruRatingConsoleDemoDevice.class);
+    private JFrame jFrame = null;
+    private JPanel interiorPanel = new JPanel();
+    private JLabel displayTextLabel;
+    private JComboBox ratingsBox;
+    private JButton cancelButton;
+    private JButton proceedButton;
+    private volatile int ratingVal = TruModule.MODULE_ERROR;
+    private boolean cardIsIn = false;
+    private String welcomeText = "Welcome to Trurating PED simulator!";
+    private volatile boolean paymentWentThroughOkay = false;
+    private Future futurePayment;
+    private Future futureRating;
 
+    public static void main(String[] args) {
+        new TruRatingConsoleDemoDevice();
+    }
+
+    public TruRatingConsoleDemoDevice() {
+        jFrame = new JFrame();
+        jFrame.setTitle("TruRating Console");
+        int height = 300;
+        int width = 1000;
+        jFrame.setSize(width, height);
+        interiorPanel.setSize(width, height);
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        jFrame.setLocation(dim.width / 2 - width / 2, dim.height / 2 - height / 2);
+        jFrame.setVisible(true);
+        displayTextLabel = new JLabel("Please rate!!!!");
+        DefaultComboBoxModel defaultComboBoxModel = new DefaultComboBoxModel();
+        for (int i = 0; i <= 9; i++) {
+            defaultComboBoxModel.addElement(Integer.toString(i));
+        }
+        ratingsBox = new JComboBox();
+        ratingsBox.setModel(defaultComboBoxModel);
+        interiorPanel.setLayout(new FlowLayout(FlowLayout.LEADING, 50, 100));
+        interiorPanel.add(displayTextLabel);
+        interiorPanel.add(ratingsBox);
+        interiorPanel.setVisible(true);
+        cancelButton = new JButton("Cancel");
+        proceedButton = new JButton("Proceed");
+        interiorPanel.add(cancelButton);
+        proceedButton.setVisible(false);
+        cancelButton.setVisible(false);
+        interiorPanel.add(proceedButton);
+        jFrame.add(interiorPanel);
+        jFrame.requestFocus();
+        cardIsIn = false;
+    }
+
+    @Override
     public String getSerialNo() {
         return "1234576";
     }
 
     public DeviceCapabilities getDeviceCapabilities() {
-        return new DeviceCapabilities();
+        DeviceCapabilities deviceCapabilities = new DeviceCapabilities();
+        deviceCapabilities.setDeviceType("TruRating Device");
+        deviceCapabilities.setDisplayColumns(16);
+        deviceCapabilities.setDisplayMargin(0);
+        deviceCapabilities.setDisplayRows(4);
+        return deviceCapabilities;
     }
 
+
     public boolean isCardIn() {
-        return false;
+        return cardIsIn;
+    }
+
+    public boolean isCardIsIn() {
+        return cardIsIn;
+    }
+
+    public void setCardIsIn(boolean cardIsIn) {
+        this.cardIsIn = cardIsIn;
+    }
+
+    @Override
+    public String getDisplayMessageText() {
+        return displayTextLabel.getText();
+    }
+
+    @Override
+    public void disableAllInputs() {
+        cancelButton.setEnabled(false);
+        ratingsBox.setEnabled(false);
+        displayTextLabel.setText("The test cycle is finished.");
     }
 
     public int getKey(int timeout) {
@@ -33,64 +113,144 @@ public class TruRatingConsoleDemoDevice implements IDevice {
     }
 
     public void displayWelcome() {
-    	String string = "trurating welcome" ; 
-        JOptionPane.showMessageDialog(null, string);
-        log.info(string);
+        displayTextLabel.setText(welcomeText);
     }
 
     public void displayPleaseWait() {
-    	String string = "Please wait..." ; 
-        JOptionPane.showMessageDialog(null, string);
-        log.info(string);
+        displayTextLabel.setText("Please wait...");
     }
+
 
     public void displayMessage(String string) {
-        JOptionPane.showMessageDialog(null, string);
-        log.info(string);
+        displayTextLabel.setText(string);
     }
 
-    public void displayMessageWaitForKey(String string, int timeout) {
-        log.info("Displaying message and waiting for key");
-        JOptionPane.showConfirmDialog(
-                null,
-                string,
-                "Winner!",
-                JOptionPane.CLOSED_OPTION);
-        return;
+    public void displayMessageWaitForKey(String string, final int timeout) {
+        log.error("Not implemented");
     }
 
-    public String displaySecurePromptGetKeystroke(String[] prompts, String promptText, int timeout) {
-        log.info("Displaying message and waiting for key");
-        ConsoleManager consoleManager = new ConsoleManager();
-        return new Integer(consoleManager.getKey()).toString();
-    }
+    public String displayTruratingQuestionGetKeystroke(String[] prompts, String promptText, final int timeout) {
 
-    public String displayTruratingQuestionGetKeystroke(String[] prompts, String promptText, int timeout) {
-        log.info(promptText);
+        displayTextLabel.setText(promptText);
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
 
-        Object[] ratingValues = {1,2,3,4,5,6,7,8,9,0};
-        Integer integer = (Integer)JOptionPane.showInputDialog(
-                null,
-                promptText,
-                "Please rate",
-                JOptionPane.PLAIN_MESSAGE,
-                null,
-                ratingValues,
-                9);
+        cancelButton.setVisible(true);
+        ratingsBox.setVisible(true);
 
-        //If a string was returned, say so.
-        if ((integer == null)) {
-            integer=-1;
+        cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ratingVal = TruModule.USER_CANCELLED;
+                log.info("User cancelled rating: " + ratingVal);
+                ratingsBox.setVisible(false);
+                cancelButton.setVisible(false);
+                countDownLatch.countDown();
+            }
+        });
+
+        ratingsBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ratingVal = ratingsBox.getSelectedIndex();
+                log.info("User rated: " + ratingVal);
+                ratingsBox.setVisible(false);
+                cancelButton.setVisible(false);
+                countDownLatch.countDown();
+            }
+        });
+
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        futureRating = executorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                try {
+//                    long t1 = System.currentTimeMillis();
+                    countDownLatch.await(timeout, TimeUnit.MILLISECONDS); //problem is, if end tilling is coming in, this is still waiting, no matter what
+                    //needs cancelling when tilling ends - or question is represented
+//                    long t2 = System.currentTimeMillis();
+//                    if (t2-t1> timeout) {
+//                        ratingVal= TruModule.QUESTION_TIMEOUT_OR_NO_RATED_VALUE;
+//                    }
+
+                } catch (InterruptedException e) {
+                }
+            }
+        });
+
+        try {
+            while (!futureRating.isDone()) Thread.sleep(10);
+        } catch (InterruptedException e) {
         }
+        executorService.shutdown();
+        ActionListener[] al = cancelButton.getListeners(ActionListener.class);
+        cancelButton.removeActionListener(al[0]);
+        al = ratingsBox.getListeners(ActionListener.class);
+        ratingsBox.removeActionListener(al[0]);
 
-//        ConsoleManager consoleManager = new ConsoleManager();
-//        log.info("---> KEYBOARD INPUT REQUIRED!! <---");
-//        return new Integer(consoleManager.getKey()).toString();
-        return integer.toString();
+        return new Integer(ratingVal).toString();
     }
 
     public void cancelInput() {
+        if (futurePayment!=null) futurePayment.cancel(true);
+        if (futureRating!=null) futureRating.cancel(true);
+        cancelButton.setEnabled(false);
+        proceedButton.setEnabled(false);
+        ratingsBox.setEnabled(false);
         return;
     }
 
+    //this is a one off method not in other Idevice to enable us to fake out a take payment on the simulator
+    public boolean doPayment(String amount_transaction) {
+        displayTextLabel.setText("Please insert your card. £"+ amount_transaction);
+        cancelButton.setVisible(true);
+        proceedButton.setVisible(true);
+
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        final long timeout =60000;
+
+        cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                paymentWentThroughOkay=false;
+                log.info("User selected cancel payment");
+                countDownLatch.countDown();
+            }
+        });
+
+        proceedButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                paymentWentThroughOkay=true;
+                log.info("User selected proceed with payment");
+                countDownLatch.countDown();
+            }
+        });
+
+
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+        futurePayment = executorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    countDownLatch.await(timeout, TimeUnit.MILLISECONDS);
+                } catch (InterruptedException e) {
+                }
+            }
+        });
+
+        try {
+            while (!futurePayment.isDone()) Thread.sleep(10);
+        } catch (InterruptedException e) {
+        }
+
+        executorService.shutdown();
+        ActionListener[] al = cancelButton.getListeners(ActionListener.class);
+        cancelButton.removeActionListener(al[0]);
+        cancelButton.setVisible(false);
+        al = proceedButton.getListeners(ActionListener.class);
+        proceedButton.removeActionListener(al[0]);
+        proceedButton.setVisible(false);
+        return paymentWentThroughOkay;
+    }
 }

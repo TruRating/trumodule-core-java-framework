@@ -19,18 +19,11 @@
 
 package com.trurating.network.xml;
 
-import java.math.BigInteger;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.apache.log4j.Logger;
-
-import com.trurating.TruModule;
 import com.trurating.properties.ITruModuleProperties;
-import com.trurating.properties.TruModuleProperties;
-import trurating.service.v121.xml.questionRequest.QuestionRequestJAXB;
-import trurating.service.v121.xml.ratingDelivery.RatingDeliveryJAXB;
-import trurating.service.v121.xml.ratingDelivery.RatingDeliveryJAXB.Rating;
+import com.trurating.service.v200.xml.*;
+import org.apache.log4j.Logger;
 
 /**
  * Created by Paul on 09/03/2016.
@@ -39,111 +32,66 @@ public class TruRatingMessageFactory {
 
     Logger log = Logger.getLogger(TruRatingMessageFactory.class);
 
-    public QuestionRequestJAXB assembleARequestQuestion(ITruModuleProperties propertiesProvided, long transactionId) {
-        QuestionRequestJAXB questionRequestJAXB = null;
-		ITruModuleProperties properties = checkProperties(propertiesProvided) ;
+    public Request assembleQuestionRequest(ITruModuleProperties properties, String sessionID) {
 
-		try {
-            questionRequestJAXB = new QuestionRequestJAXB();
+        Request request = new Request();
+        request.setMerchantId(properties.getMid());
+        request.setPartnerId(properties.getPartnerId());
+        request.setTerminalId(properties.getTid());
+        request.setSessionId(sessionID);
 
-//            questionRequestJAXB.setErrortext("");
-//            questionRequestJAXB.setErrorcode(new BigInteger("0"));
+        try {
 
-            QuestionRequestJAXB.Languages.Language language = new QuestionRequestJAXB.Languages.Language();
-            language.setLanguagetype(properties.getLanguageCode());
-            language.setIncludeacknowledgement(new Boolean(properties.getIncludeAcknowledgement()));
-            language.setIncludereceipt(new Boolean(properties.getIncludeReceipt()));
-            QuestionRequestJAXB.Languages languages = new QuestionRequestJAXB.Languages();
-            languages.getLanguage().add(language);
-            questionRequestJAXB.setLanguages(languages);
+            ResponseLanguage language = new ResponseLanguage();
+            language.setRfc1766(properties.getLanguageCode());
 
-            QuestionRequestJAXB.DeviceInfo deviceInfoType = new QuestionRequestJAXB.DeviceInfo();
-            deviceInfoType.setDevice(properties.getDeviceType());
-            deviceInfoType.setFirmware(properties.getDeviceFirmware());
-            deviceInfoType.setNlines((byte) properties.getDeviceLines());
-            deviceInfoType.setCpl((byte) properties.getDeviceCpl());
-            deviceInfoType.setFormat(properties.getDeviceFormat());
-            deviceInfoType.setFonttype(properties.getDeviceFontType());
-            deviceInfoType.setReceiptwidth((byte)20);
-            questionRequestJAXB.setDeviceInfo(deviceInfoType);
+            RequestPeripheral requestPeripheral = new RequestPeripheral();
+            requestPeripheral.setFont(Font.valueOf(properties.getDeviceFontType()));
+            requestPeripheral.setFormat(Format.valueOf(properties.getDeviceFormat()));
+            requestPeripheral.setHeight((short) properties.getDeviceLines());
+            if (requestPeripheral.getFont() == Font.MONOSPACED) requestPeripheral.setUnit(Unit.LINE);
+            else requestPeripheral.setUnit(Unit.PIXEL);
 
-            QuestionRequestJAXB.ServerInfo serverInfo = new QuestionRequestJAXB.ServerInfo();
-            serverInfo.setServerid(properties.getServerId());
-            serverInfo.setPpafirmware(properties.getPpaFirmware());
-            questionRequestJAXB.setServerInfo(serverInfo);
+            requestPeripheral.setWidth((short) properties.getDeviceCPL());
 
-            questionRequestJAXB.setMessagetype("QuestionRequest");
-            questionRequestJAXB.setTid(properties.getTid());
-            questionRequestJAXB.setUid(new BigInteger(String.valueOf(transactionId)));
-            questionRequestJAXB.setMid(properties.getMid());
+            RequestDevice requestDevice = new RequestDevice();
+            requestDevice.setFirmware(properties.getPpaFirmware());
+            requestDevice.setName(properties.getDeviceType());
+            requestDevice.setScreen(requestPeripheral);
+
+            RequestQuestion requestQuestion = new RequestQuestion();
+            requestQuestion.setDevice(requestDevice);
+            RequestLanguage requestLanguage = new RequestLanguage();
+            requestLanguage.setRfc1766(properties.getLanguageCode());
+            requestQuestion.getLanguage().add(requestLanguage);
+            Trigger trigger = Trigger.DWELLTIME;
+            requestQuestion.setTrigger(trigger);
+            request.setQuestion(requestQuestion);
 
         } catch (NumberFormatException e) {
-            log.error("There was an error assembling the questionRequestJAXB ", e);
+            log.error("There was an error assembling the request for a question ", e);
+            return null;
         }
 
-        return questionRequestJAXB;
+        return request;
     }
+    public Request assembleRatingsDeliveryRequest(ITruModuleProperties properties, String sessionID) {
 
-    public RatingDeliveryJAXB createRatingRecord(ITruModuleProperties propertiesProvided) {
-        RatingDeliveryJAXB ratingDeliveryJAXB = new RatingDeliveryJAXB();
-        Rating rating = ratingDeliveryJAXB.getRating() ; 
-		Date now = new Date();
-		
-		ITruModuleProperties properties = checkProperties(propertiesProvided) ;
+        Request request = null;
+        try {
+            request = new Request();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        request.setMerchantId(properties.getMid());
+        request.setPartnerId(properties.getPartnerId());
+        request.setTerminalId(properties.getTid());
+        request.setSessionId(sessionID);
 
-        ratingDeliveryJAXB.setMessagetype("RatingDelivery");
-        ratingDeliveryJAXB.setTid(properties.getTid());
-        ratingDeliveryJAXB.setMid(properties.getMid());
-        ratingDeliveryJAXB.setUid(new BigInteger(String.valueOf(now.getTime())));
+        RequestRating requestRating = new RequestRating();
+        requestRating.setRfc1766(properties.getLanguageCode());
+        requestRating.setDateTime(Long.toString(new Date().getTime()));
 
-        // Rating element
-        RatingDeliveryJAXB.Rating ratingElement = new RatingDeliveryJAXB.Rating();
-        ratingElement.setValue(TruModule.NO_RATING_VALUE); // No rating value
-        ratingElement.setResponsetimemilliseconds(0L);
-        ratingElement.setQid(0L);
-        ratingElement.setPrizecode("");
-        ratingElement.setRatinglanguage(properties.getLanguageCode());
-        ratingDeliveryJAXB.setRating(ratingElement);
-
-        // Language element
-        RatingDeliveryJAXB.Languages.Language language = new RatingDeliveryJAXB.Languages.Language();
-        language.setLanguagetype(properties.getLanguageCode());
-        language.setIncludereceipt(true);
-        RatingDeliveryJAXB.Languages languages = new RatingDeliveryJAXB.Languages();
-        languages.getLanguage().add(language);
-        ratingDeliveryJAXB.setLanguages(languages);
-
-        // Transaction element
-        RatingDeliveryJAXB.Transaction transaction = new RatingDeliveryJAXB.Transaction();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		transaction.setDatetime(sdf.format(now));
-        transaction.setTxnid(now.getTime());
-        transaction.setAmount(0);
-        transaction.setGratuity(0);
-        transaction.setCurrency((short) 826);
-        transaction.setCardtype("");
-        transaction.setEntrymode("021");
-        transaction.setTendertype("");
-        transaction.setResult("");
-        transaction.setOperator("");
-        ratingDeliveryJAXB.setTransaction(transaction);
-
-        RatingDeliveryJAXB.CardHash cardHash = new RatingDeliveryJAXB.CardHash();
-//        cardHash.setCardhashdatatype(""); //taking out during refactoring -- this needs adding post payment
-//        cardHash.setCardhashdata("");
-        ratingDeliveryJAXB.setCardHash(cardHash);
-
-        ratingDeliveryJAXB.setErrorcode(new BigInteger("0"));
-//        ratingDeliveryJAXB.setErrortext("");
-
-        return ratingDeliveryJAXB;
-    }
-
-
-    private ITruModuleProperties checkProperties (ITruModuleProperties properties) {
-    	if (properties != null)
-    		return properties ;
-    	log.error("Null properties given to TruRatingMessageFactory");
-    	return new TruModuleProperties() ;
+        return request;
     }
 }

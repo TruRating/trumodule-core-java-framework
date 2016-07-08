@@ -2,9 +2,12 @@ package com.trurating.truModule;
 
 import static mockit.Deencapsulation.setField;
 
-import java.math.BigInteger;
-
+import com.trurating.CachedTruModuleRatingObject;
 import com.trurating.network.xml.IXMLNetworkMessenger;
+import com.trurating.network.xml.TruRatingMessageFactory;
+import com.trurating.properties.ITruModuleProperties;
+import com.trurating.properties.UnitTestProperties;
+import com.trurating.service.v200.xml.*;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Tested;
@@ -18,18 +21,11 @@ import org.junit.runner.RunWith;
 
 import com.trurating.TruModule;
 import com.trurating.device.IDevice;
-import com.trurating.network.xml.XMLNetworkMessenger;
-import com.trurating.properties.ITruModuleProperties;
-import trurating.service.v121.xml.ratingDelivery.RatingDeliveryJAXB;
-import trurating.service.v121.xml.ratingDelivery.RatingDeliveryJAXB.Rating;
-import trurating.service.v121.xml.ratingResponse.RatingResponseJAXB;
-import trurating.service.v121.xml.ratingResponse.RatingResponseJAXB.Languages;
-import trurating.service.v121.xml.ratingResponse.RatingResponseJAXB.Languages.Language;
-import trurating.service.v121.xml.ratingResponse.RatingResponseJAXB.Languages.Language.Receipt;
 
 /**
  * Created by Paul on 10/03/2016.
  */
+@SuppressWarnings("Duplicates")
 @RunWith(JMockit.class)
 public class TruModule_RecordResponse_JUnitTest {
 
@@ -44,70 +40,134 @@ public class TruModule_RecordResponse_JUnitTest {
     @Injectable
     ITruModuleProperties properties;
     @Injectable
-    RatingDeliveryJAXB.Transaction transaction;
+    TruRatingMessageFactory truRatingMessageFactory;
+    @Injectable
+    CachedTruModuleRatingObject cachedTruModuleRatingObject;
+
+    private XSD2TestFactory testFactory;
 
     @Before
     public void setUp() {
-        truModule = new TruModule();
+        properties = UnitTestProperties.getInstance(); // Set of test properties
+        testFactory = new XSD2TestFactory(properties);
+        truModule = new TruModule(properties);
+        cachedTruModuleRatingObject = new CachedTruModuleRatingObject();
+
         setField(truModule, "xmlNetworkMessenger", xmlNetworkMessenger);
         setField(truModule, "iDevice", iDevice);
         setField(truModule, "log", log);
-
+        setField(truModule, "truRatingMessageFactory", truRatingMessageFactory);
+        setField(truModule, "cachedTruModuleRatingObject", cachedTruModuleRatingObject);
     }
 
+    /*
+    This test will mock the behaviour of a succesful ratings delivery
+    The expected behaviour when conditions are correct it that the delivery
+    should return RATING_DELIVERY_OUTCOME_SUCCEEDED
+     */
     @Test
-    public void recordResponseTest() {
-
-        final RatingResponseJAXB ratingResponseJAXB= getRatingResponseMockJAXBTest();
-
+    public void deliverySucceedsTest() {
         new Expectations() {{
-            xmlNetworkMessenger.deliverRatingToService((RatingDeliveryJAXB) any);
-            returns(ratingResponseJAXB);
+            xmlNetworkMessenger.getResponseRatingFromRatingsDeliveryToService((Request) any);
+            returns(testFactory.generateResponseForQuestion());
+            times = 1;
+            truRatingMessageFactory.assembleRatingsDeliveryRequest((ITruModuleProperties) any, (String)any);
+            returns (testFactory.generateRequestForQuestion());
             times = 1;
         }};
 
-        RatingDeliveryJAXB iRatingRecord = truModule.getCurrentRatingRecord(properties) ;
-        Rating rating = iRatingRecord.getRating() ;
-        rating.setValue((short)8);
+        //set up a fake Rfc
+        Response response = new Response();
+        ResponseDisplay responseDisplay = new ResponseDisplay();
+        responseDisplay.getLanguage().add(new ResponseLanguage());
+        responseDisplay.getLanguage().get(0).setRfc1766("en-GB");
+        response.setDisplay(responseDisplay);
+        cachedTruModuleRatingObject.response = response;
+        setField(truModule, "cachedTruModuleRatingObject", cachedTruModuleRatingObject);
 
-        boolean methodSucceeded = truModule.deliverRating(properties);
-        Assert.assertEquals(true, methodSucceeded);
+        RequestTransaction transaction = new RequestTransaction();
+        truModule.getCachedTruModuleRatingObject().transaction=transaction;
+        int truModuleOutcome =truModule.deliverRating();
+        Assert.assertTrue(truModuleOutcome==TruModule.RATING_DELIVERY_OUTCOME_SUCCEEDED);
     }
 
     @Test
     public void recordResponseDeliveryFailsTest() {
-
         new Expectations() {{
-            xmlNetworkMessenger.deliverRatingToService((RatingDeliveryJAXB) any);
+            truRatingMessageFactory.assembleRatingsDeliveryRequest((ITruModuleProperties) any, (String)any);
+            returns (testFactory.generateRequestForQuestion());
+            times = 1;
+            xmlNetworkMessenger.getResponseRatingFromRatingsDeliveryToService((Request) any);
             returns(null);
-            times = 0;
+            times = 1;
         }};
 
-        boolean methodSucceeded = truModule.deliverRating(properties);
-        Assert.assertEquals(false, methodSucceeded);
+        RequestTransaction transaction = new RequestTransaction();
+        truModule.getCachedTruModuleRatingObject().transaction=transaction;
+        int truModuleOutcome =truModule.deliverRating();
+        Assert.assertTrue(truModuleOutcome==TruModule.RATING_DELIVERY_OUTCOME_FAILED);
     }
 
-    private RatingResponseJAXB getRatingResponseMockJAXBTest() {
-        RatingResponseJAXB ratingResponseJAXB = new RatingResponseJAXB();
-        RatingResponseJAXB.Languages languages = new Languages();
-        Language language = new Language();
+    @Test
+    public void testCancellationTruModule() {
+        CachedTruModuleRatingObject cachedTruModuleRatingObject = new CachedTruModuleRatingObject();
+        //fake out the that we are mid-question display
+        cachedTruModuleRatingObject.cancelled=false; //at this point we are not cancelled
 
-        Receipt receipt = new Receipt();
-        receipt.setRatedvalue("7");
-        receipt.setNotratedvalue("8");
-        language.setReceipt(receipt);
-        language.setIncludereceipt(true);
-        language.setLanguagetype("EN-GB");
-        languages.getLanguage().add(language);
-        ratingResponseJAXB.setLanguages(languages);
+        setField(truModule, "cachedTruModuleRatingObject", cachedTruModuleRatingObject);
 
-        ratingResponseJAXB.setErrorcode(new BigInteger("0"));
-        ratingResponseJAXB.setErrortext("");
-        ratingResponseJAXB.setMessagetype("A message type");
-        ratingResponseJAXB.setMid("MID1");
-        ratingResponseJAXB.setTid("TID1");
-        ratingResponseJAXB.setUid(new BigInteger("15"));
-        return ratingResponseJAXB;
+        truModule.cancelRating(); //now we should be cancelled
+
+        cachedTruModuleRatingObject = truModule.getCachedTruModuleRatingObject();
+        Assert.assertTrue(cachedTruModuleRatingObject.cancelled);
+    }
+
+    /*
+    This test should cache the correct screen and receipt responses to an incoming question based
+    off the setCurrentTransactionLanguageCode
+     */
+    @Test
+    public void requestQuestionFromServerAndCacheResultTest() {
+
+        final Response response = testFactory.generateResponseForQuestion();
+
+        new Expectations() {{
+            xmlNetworkMessenger.getResponseQuestionFromService((Request) any);
+            returns (response);
+            times = 1;
+        }};
+
+        CachedTruModuleRatingObject cachedTruModuleRatingObject = truModule.requestQuestionFromServerAndCacheResult(testFactory.generateRequestForQuestion());
+
+        Assert.assertEquals("Sorry you didn't rate", cachedTruModuleRatingObject.responseNoRating);
+        Assert.assertEquals("Thanks for rating", cachedTruModuleRatingObject.receiptWithRating);
+        Assert.assertEquals("Sorry you didn't rate", cachedTruModuleRatingObject.responseNoRating);
+        Assert.assertEquals("Thanks for rating", cachedTruModuleRatingObject.responseWithRating);
+    }
+
+
+    /*
+    This test should cache the correct screen and receipt responses to an incoming question based
+    off the setCurrentTransactionLanguageCode
+     */
+    @Test
+    public void requestQuestionFromServerAndCacheResultSpanishLanguageTest() {
+
+        final Response response = testFactory.generateResponseForQuestion();
+
+        new Expectations() {{
+            xmlNetworkMessenger.getResponseQuestionFromService((Request) any);
+            returns (response);
+            times = 1;
+        }};
+
+        truModule.setCurrentTransactionLanguageCode("es-mx");
+        CachedTruModuleRatingObject cachedTruModuleRatingObject = truModule.requestQuestionFromServerAndCacheResult(testFactory.generateRequestForQuestion());
+
+        Assert.assertEquals("Lo siento no rate!", cachedTruModuleRatingObject.responseNoRating);
+        Assert.assertEquals("Gracias para rating", cachedTruModuleRatingObject.receiptWithRating);
+        Assert.assertEquals("Lo siento no rate!", cachedTruModuleRatingObject.responseNoRating);
+        Assert.assertEquals("Gracias para rating", cachedTruModuleRatingObject.responseWithRating);
     }
 }
 

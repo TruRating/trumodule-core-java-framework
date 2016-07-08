@@ -1,12 +1,9 @@
 package com.trurating.network;
 
-import static mockit.Deencapsulation.setField;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
-import mockit.Injectable;
-import mockit.Tested;
+import com.trurating.properties.ITruModuleProperties;
+import com.trurating.service.v200.xml.Request;
+import com.trurating.service.v200.xml.RequestRating;
+import com.trurating.service.v200.xml.Response;
 import mockit.integration.junit4.JMockit;
 
 import org.junit.Assert;
@@ -14,15 +11,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.trurating.TruModule;
 import com.trurating.network.xml.TruRatingMessageFactory;
 import com.trurating.network.xml.XMLNetworkMessenger;
-import com.trurating.properties.ITruModuleProperties;
 import com.trurating.properties.UnitTestProperties;
 import com.trurating.util.IntegrationTestStartUp;
-import trurating.service.v121.xml.questionResponse.QuestionResponseJAXB;
-import trurating.service.v121.xml.ratingDelivery.RatingDeliveryJAXB;
-import trurating.service.v121.xml.ratingResponse.RatingResponseJAXB;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by Paul on 11/03/2016.
@@ -30,45 +25,44 @@ import trurating.service.v121.xml.ratingResponse.RatingResponseJAXB;
 @RunWith(JMockit.class)
 public class XMLNetworkMessengerIntegrationTest {
 
-    @Tested
-    TruModule truModule;
-    @Injectable
-    ITruModuleProperties properties;
-	
+    /*
+    By using the properties, which are hardcoded in the UnitTestProperties class, fire a message down to the service specified.
+    If the properties are configured correctly, this will pass an assertion against null.
+     */
+    private ITruModuleProperties properties;
+
     @Before
     public void init() {
     	properties = UnitTestProperties.getInstance();
     }
 
     @Test
-    public void TestgetQuestionFromService_checkForReturnedMessage() {
+    public void deliveryRatingToService_checkForReturnedMessage(){
+
         IntegrationTestStartUp.setupLog4J();
         IntegrationTestStartUp.startup();
 
-        XMLNetworkMessenger xmlNetworkMessenger = new XMLNetworkMessenger();
-        QuestionResponseJAXB questionResponse = xmlNetworkMessenger.getQuestionFromService(properties, 12345);
-        Assert.assertNotNull(questionResponse);
+        XMLNetworkMessenger xmlNetworkMessenger = new XMLNetworkMessenger(properties);
+        TruRatingMessageFactory truRatingMessageFactory = new TruRatingMessageFactory();
+        String sessionId= Long.toString(new Date().getTime());
+        Request request = truRatingMessageFactory.assembleQuestionRequest(properties, sessionId);
+
+        Response questionResponseFromService = xmlNetworkMessenger.getResponseQuestionFromService(request);
+        Assert.assertNotNull(questionResponseFromService);
+        	
+        Request deliveryRequest = new TruRatingMessageFactory().assembleRatingsDeliveryRequest(properties, sessionId);
+        RequestRating requestRating = new RequestRating();
+        requestRating.setResponseTimeMs(5000);
+        requestRating.setRfc1766("en-GB");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        requestRating.setValue((short)5);
+        requestRating.setDateTime(sdf.format(new Date()));
+
+        deliveryRequest.setRating(requestRating);
+
+        Response ratingDeliveryResponseFromService = xmlNetworkMessenger.getResponseQuestionFromService(deliveryRequest);
+        Assert.assertNotNull(ratingDeliveryResponseFromService);
     }
-    
-    @Test
-    public void deliveryRatingToService_checkForReturnedMessage() {
-        //will fail because the rating is not fully setup correctly
-        IntegrationTestStartUp.setupLog4J();
-        IntegrationTestStartUp.startup();
-
-        XMLNetworkMessenger xmlNetworkMessenger = new XMLNetworkMessenger();
-        // Open the connection
-        QuestionResponseJAXB questionResponse = xmlNetworkMessenger.getQuestionFromService(properties, 12345);
-        
-        RatingDeliveryJAXB ratingRecord = new TruRatingMessageFactory().createRatingRecord(properties);
-        ratingRecord.getRating().setValue((short) 5);
-        
-        // Deliver the result
-        RatingResponseJAXB ratingResponseJAXB= xmlNetworkMessenger.deliverRatingToService(ratingRecord);
-        Assert.assertNotNull(ratingResponseJAXB);
-    }
-
-    //todo make a full rating for test purposes.. :)
-
-
 }
+
+//            URL url = new URL("http://tru-sand-service-v200.trurating.com/api/servicemessage ");

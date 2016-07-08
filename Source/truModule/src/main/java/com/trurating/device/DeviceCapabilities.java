@@ -33,7 +33,6 @@ public class DeviceCapabilities {
 
 
     public DeviceCapabilities() {
-
     }
 
     public DeviceCapabilities(String deviceType, int displayRows, int displayColumns, int displayMargin) {
@@ -45,7 +44,7 @@ public class DeviceCapabilities {
 
     public DeviceCapabilities(ITruModuleProperties properties) {
         this.displayRows = properties.getDeviceLines();
-        this.displayColumns = properties.getDeviceCpl();
+        this.displayColumns = properties.getDeviceCPL();
         this.deviceType = properties.getDeviceType();
         
         // Display margin not currently available through properties

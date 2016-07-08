@@ -20,54 +20,37 @@
 package com.trurating;
 
 import com.trurating.device.IDevice;
-import com.trurating.properties.ITruModuleProperties;
-import trurating.service.v121.xml.ratingDelivery.RatingDeliveryJAXB;
+import com.trurating.service.v200.xml.RequestRating;
+import com.trurating.service.v200.xml.RequestTransaction;
 
 /**
  * Created by Paul on 01/03/2016.
  */
 public interface ITruModule {
 
-    /**
-     * if a device ref is set inside the module, the module will use this
-     * otherwise it will expect to be able to contact device via payment app.
-     */
-    void setDevice(IDevice deviceRef);
+    void setDevice(IDevice deviceRef); //this is the device that will be used to request and collect the truRating keystroke
 
-    /**
-     * Get a reference to the current record
-     */
+    RequestRating getCurrentRatingRecord(); // return the current ratings record
 
-    RatingDeliveryJAXB.Transaction getCurrentRatingRecordTransaction();
+    void doRating(); //display the question on the ped, and take a user keystroke
 
-    RatingDeliveryJAXB getCurrentRatingRecord(ITruModuleProperties properties);
+    void doRatingInBackground(); //display the question on the ped, and take a user keystroke - run in background thread
 
-    void doRating(ITruModuleProperties properties);
+    void cancelRating(); //clear away all ped activity - used when a payment arrives and ped needs to be clear
 
-    /**
-     * Background ratings are used for dwell time to allow a cancel command
-     * to be issued in the foreground thread if a payment questionRequest is made
-     */
-    void doRatingInBackground(ITruModuleProperties properties);
+    int deliverRating(); //deliver the rating the the truService
 
-    /**
-     * Clear any question that is still being displayed on the device,
-     * to allow payment to proceed
-     */
-    void cancelRating();
+    String getReceiptMessage(); // for use in receipt printing
 
-    boolean deliverRating(ITruModuleProperties properties);
+    void createNewCachedTransaction(); // this contains transaction data: cardtype, amount - eventually POS data
 
-    /**
-     * The message that should appear on the receipt as a consequence
-     * of the outcome of this rating question
-     */
-    String getReceiptMessage();
+    void updateCachedTransaction(RequestTransaction requestTransaction); // updates the transaction data with the supplied transaction
 
-    /**
-     * If we are mid transaction, then clean up the open socket.
-     */
-    void close();
+    RequestTransaction getCurrentCachedTransaction(); // returns the current cached transaction data
 
-    void clearValueOfCachedRatingAndReceipt();
+    void clearAllCachedModuleData();  // this will clear out all data - response/request messaging for ratings, and transaction data
+
+    CachedTruModuleRatingObject getCachedTruModuleRatingObject(); //used in testing only currently
+
+    void setCurrentTransactionLanguageCode(String currentTransactionlLanguageCode);
 }
