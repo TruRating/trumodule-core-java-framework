@@ -25,18 +25,16 @@
 
 package com.trurating.trumodule;
 
-import com.trurating.service.v210.xml.RequestTransaction;
-import com.trurating.service.v210.xml.Response;
+import com.trurating.service.v220.xml.RequestTransaction;
 
+/**
+ * The interface Tru module standalone.
+ */
 public interface ITruModuleStandalone {
     /**
      * Do rating string.
-     *
-     * @param merchantId the merchant id
-     * @param terminalId the terminal id
-     * @return the string
      */
-    String doRating(String merchantId, String terminalId);
+    void doRating();
 
     /**
      * Cancel rating.
@@ -47,10 +45,8 @@ public interface ITruModuleStandalone {
     /**
      * Send transaction response.
      *
-     * @param merchantId         the merchant id
-     * @param terminalId         the terminal id
      * @param requestTransaction the request transaction
-     * @return the response
      */
-    Response sendTransaction(String merchantId, String terminalId, RequestTransaction requestTransaction);
+    @SuppressWarnings("unused")
+    void sendTransaction(RequestTransaction requestTransaction);
 }

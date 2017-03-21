@@ -24,6 +24,9 @@
 
 package com.trurating.trumodule.security;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -31,11 +34,13 @@ import javax.crypto.spec.DESedeKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
-import java.util.logging.Logger;
 
+/**
+ * The type Mac signature calculator.
+ */
 public class MacSignatureCalculator {
     private static final int API_ENCRYPTION_SCHEME = 3;
-    final private static Logger log = Logger.getLogger(MacSignatureCalculator.class.getName());
+    final private static Logger logger = LoggerFactory.getLogger(MacSignatureCalculator.class);
     final private static char[] hexArray = "0123456789ABCDEF".toCharArray();
 
     /**
@@ -46,6 +51,7 @@ public class MacSignatureCalculator {
      * @return the byte [ ]
      */
     public static byte[] calculateMac(byte[] requestBody, String transportKey) {
+        logger.debug("Calculating MAC using transport key: {}",transportKey);
         try {
             DESedeKeySpec keySpec = new DESedeKeySpec(transportKey.getBytes("UTF-8"));
             SecretKey key = SecretKeyFactory.getInstance("DESede").generateSecret(keySpec);
@@ -55,11 +61,9 @@ public class MacSignatureCalculator {
             byte[] cypherOut = cipher.doFinal(md.digest(requestBody));
             return bytesToHex(cypherOut).getBytes("UTF-8");
         } catch (GeneralSecurityException e) {
-            log.severe(e.toString());
-            e.printStackTrace();
+            logger.error("Error calculating MAC",e);
         } catch (UnsupportedEncodingException e) {
-            log.severe(e.toString());
-            e.printStackTrace();
+            logger.error("Error calculating MAC",e);
         }
         return null;
     }
@@ -69,14 +73,14 @@ public class MacSignatureCalculator {
      *
      * @return the int
      */
-    public static int getApiEncryptionScheme(){
+    public static int getApiEncryptionScheme() {
         return API_ENCRYPTION_SCHEME;
     }
 
     // java.xml.bind.DatatypeConverter.printHexBinary() is not available in android so here is a new version
     private static String bytesToHex(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];
-        for ( int j = 0; j < bytes.length; j++ ) {
+        for (int j = 0; j < bytes.length; j++) {
             int v = bytes[j] & 0xFF;
             hexChars[j * 2] = hexArray[v >>> 4];
             hexChars[j * 2 + 1] = hexArray[v & 0x0F];

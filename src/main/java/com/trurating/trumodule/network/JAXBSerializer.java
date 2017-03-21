@@ -24,64 +24,64 @@
  */
 package com.trurating.trumodule.network;
 
-import com.trurating.service.v210.xml.Request;
-import com.trurating.service.v210.xml.Response;
+import com.trurating.service.v220.xml.Request;
+import com.trurating.service.v220.xml.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
-import java.util.logging.Logger;
 
-public class JAXBMarshallSerialiser implements IMarshaller{
-
-    final private Logger log = Logger.getLogger(HttpClient.class.getName());
+/**
+ * The type Jaxb marshall serializer.
+ */
+@SuppressWarnings("SpellCheckingInspection")
+public class JAXBSerializer implements ISerializer {
+    final private Logger logger = LoggerFactory.getLogger(JAXBSerializer.class);
     private Marshaller requestMarshaller;
     private Unmarshaller responseUnmarshaller;
 
     /**
-     * Instantiates a new Jaxb marshall serialiser.
+     * Instantiates a new Jaxb marshall serializer.
      */
     @SuppressWarnings("WeakerAccess")
-    public JAXBMarshallSerialiser() {
+    public JAXBSerializer() {
+        logger.debug("Loading JAXBSerializer...");
         try {
             requestMarshaller = JAXBContext.newInstance(Request.class).createMarshaller();
             requestMarshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
             requestMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             responseUnmarshaller = JAXBContext.newInstance(Response.class).createUnmarshaller();
         } catch (JAXBException e) {
-            log.severe(e.toString());
+            logger.error("Error loading JAXB",e);
         }
     }
 
-    @Override
     public StringWriter marshall(Request request) {
         try {
             StringWriter sw = new StringWriter();
             requestMarshaller.marshal(request, sw);
             return sw;
         } catch (JAXBException e) {
-            log.severe("Error marshalling Request");
-            log.severe(e.toString());
+            logger.error("Error marshalling Request",e);
             return null;
         }
     }
 
-    @Override
     public Response unMarshall(String responseString) {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(responseString.getBytes());
-        Response response = null;
+        Response response;
         try {
             response = (Response) responseUnmarshaller.unmarshal(inputStream);
             inputStream.close();
         } catch (JAXBException e) {
-            log.severe("Error unmarshalling response");
-            log.severe(e.toString());
+            logger.error("Error unmarshalling response",e);
             return null;
         } catch (IOException e) {
-            log.severe("Error unmarshalling response");
-            log.severe(e.toString());
+            logger.error("Error unmarshalling response",e);
             return null;
         }
         return response;

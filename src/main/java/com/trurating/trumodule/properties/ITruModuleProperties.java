@@ -40,11 +40,26 @@ public interface ITruModuleProperties {
     String getPartnerId();
 
     /**
+     * Sets partner id.
+     *
+     * @param partnerId the partner id
+     */
+    void setPartnerId(String partnerId);
+
+    /**
      * Gets merchant id.
      *
      * @return the merchant id
      */
     String getMerchantId();
+
+    /**
+     * Sets merchant id.
+     *
+     * @param merchantId the merchant id
+     */
+    @SuppressWarnings("unused")
+    void setMerchantId(String merchantId);
 
     /**
      * Gets terminal id.
@@ -54,11 +69,26 @@ public interface ITruModuleProperties {
     String getTerminalId();
 
     /**
+     * Sets terminal id.
+     *
+     * @param terminalId the terminal id
+     */
+    @SuppressWarnings("unused")
+    void setTerminalId(String terminalId);
+
+    /**
      * Gets transport key.
      *
      * @return the transport key
      */
     String getTransportKey();
+
+    /**
+     * Sets transport key.
+     *
+     * @param transportKey the transport key
+     */
+    void setTransportKey(String transportKey);
 
     /**
      * Gets socket timeout in milli seconds.
@@ -68,11 +98,25 @@ public interface ITruModuleProperties {
     int getSocketTimeoutInMilliSeconds();
 
     /**
+     * Sets socket timeout in milli seconds.
+     *
+     * @param milliSeconds the milli seconds
+     */
+    void setSocketTimeoutInMilliSeconds(int milliSeconds);
+
+    /**
      * Gets tru service url.
      *
      * @return the tru service url
      */
     URL getTruServiceURL();
+
+    /**
+     * Sets tru service url.
+     *
+     * @param url the url
+     */
+    void setTruServiceURL(URL url);
 
     /**
      * Gets rfc.
@@ -81,4 +125,11 @@ public interface ITruModuleProperties {
      */
     String getRFC();
 
+    /**
+     * Sets rfc.
+     *
+     * @param rfc the rfc
+     */
+    @SuppressWarnings("unused")
+    void setRFC(String rfc);
 }

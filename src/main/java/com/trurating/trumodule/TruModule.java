@@ -25,17 +25,23 @@
 
 package com.trurating.trumodule;
 
-import com.trurating.service.v210.xml.*;
+import com.trurating.service.v220.xml.*;
 import com.trurating.trumodule.device.IDevice;
+import com.trurating.trumodule.device.IReceiptManager;
+import com.trurating.trumodule.messages.PosParams;
+import com.trurating.trumodule.messages.TruModuleMessageFactory;
 import com.trurating.trumodule.network.HttpClient;
-import com.trurating.trumodule.network.IMarshaller;
+import com.trurating.trumodule.network.ISerializer;
 import com.trurating.trumodule.properties.ITruModuleProperties;
-import com.trurating.trumodule.util.TruRatingMessageFactory;
+import com.trurating.trumodule.util.TruModuleDateUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URL;
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 
 /**
@@ -43,7 +49,6 @@ import java.util.logging.Logger;
  * - to the TruService application
  * - retrieve a question,
  * - run a rating question,
- * - check for a prize,
  * - issue an appropriate receipt message
  * - and deliver the rating to truService
  * <p>
@@ -54,115 +59,106 @@ import java.util.logging.Logger;
  */
 public abstract class TruModule {
 
-    private final Logger logger = Logger.getLogger(TruModule.class.getName()); //Log4J is used, but feel free to use any logging framework.
+    //================================================================================
+    // Properties
+    //================================================================================
 
-    private ITruModuleProperties truModuleProperties; //TruModule's properties file
+    private final Logger logger = LoggerFactory.getLogger(TruModule.class);
+
+    private final ITruModuleProperties truModuleProperties; //TruModule's properties file
     private IDevice iDevice; //The TruModule wrapper around partner specific implementations of the PED
+    private IReceiptManager iReceiptManager;
     private HttpClient httpClient = null; //HttpClient for marshalling messages through to TruService via JAXB
     private CountDownLatch dwellTimeLatch = null; // the dwell time latch is used to synchronise TruModule on a rating or timeout, whichever comes first
 
-    /**
-     * The Tru rating message factory.
-     */
-    TruRatingMessageFactory truRatingMessageFactory = new TruRatingMessageFactory();
     private volatile boolean questionRunning = false; // this flags the entrance and exits to the method that displays the question, and is used as a check during dwelltime extend
-    private volatile boolean isCancelled = false;
+    private volatile boolean questionCancelled = false;
+
+    private volatile long activationRecheck;
+    private volatile boolean isActivated;
     private volatile String sessionId;
-    private String receiptTextCache =""; //this only exists for the unique scenario seen in use case 8.
     private volatile int dwellTimeExtendMs;
 
-    /**
-     * The enum Module status.
-     */
-    @SuppressWarnings("unused")
-    public enum ModuleStatus{
-        /**
-         * User cancelled module status.
-         */
-        USER_CANCELLED,
-        /**
-         * Question timeout module status.
-         */
-        QUESTION_TIMEOUT,
-        /**
-         * Module error module status.
-         */
-        MODULE_ERROR
-    }
+    private Trigger trigger;
+
+    private final Object questionRunningLock = new Object();
+    private final Object questionCancelledLock = new Object();
+
+    //================================================================================
+    // Constructors
+    //================================================================================
 
     /**
-     * Instantiates a new Tru module.
+     * Instantiates a new TruModule.
      *
-     * @param truModuleProperties the tru module properties
+     * @param truModuleProperties the TruModule properties
+     * @param iReceiptManager     the receipt manager
      * @param device              the device
      */
-    public TruModule(ITruModuleProperties truModuleProperties, IDevice device){
-        this(truModuleProperties,device,null);
+    @SuppressWarnings("WeakerAccess")
+    public TruModule(ITruModuleProperties truModuleProperties, IReceiptManager iReceiptManager, IDevice device) {
+        this(truModuleProperties, iReceiptManager, device, null);
     }
 
     /**
      * Instantiates a new Tru module.
      *
      * @param truModuleProperties the tru module properties
+     * @param iReceiptManager     the receipt manager
      * @param device              the device
      * @param marshaller          the marshaller
      */
-    public TruModule(ITruModuleProperties truModuleProperties, IDevice device, IMarshaller marshaller) {
-        this.logger.info("Loading TruModule");
+    public TruModule(ITruModuleProperties truModuleProperties, IReceiptManager iReceiptManager, IDevice device, ISerializer marshaller) {
+        this(truModuleProperties, iReceiptManager, device, marshaller, false);
+    }
+
+    /**
+     * Instantiates a new TruModule.
+     *
+     * @param truModuleProperties  the TruModule properties
+     * @param iReceiptManager      the receipt manager
+     * @param device               the device
+     * @param marshaller           the marshaller
+     * @param deferActivationCheck the defer activation check
+     */
+    @SuppressWarnings("WeakerAccess")
+    public TruModule(ITruModuleProperties truModuleProperties, IReceiptManager iReceiptManager, IDevice device, ISerializer marshaller, boolean deferActivationCheck) {
+        this.logger.debug("Loading TruModule...");
         this.truModuleProperties = truModuleProperties;
-        if(marshaller != null){
-            this.httpClient = new HttpClient(truModuleProperties,marshaller);
-        }
-        else{
+        if (marshaller != null) {
+            this.httpClient = new HttpClient(truModuleProperties, marshaller);
+        } else {
             this.httpClient = new HttpClient(truModuleProperties);
         }
-        if(device != null){
-            this.iDevice = device;
+        if (device != null) {
+            this.setIDevice(device);
+        }
+        if (iReceiptManager != null) {
+            this.setIReceiptManager(iReceiptManager);
+        }
+        if (!deferActivationCheck) {
+            this.isActivated(true);
         }
     }
 
-    /**
-     * Sets receipt text cache.
-     *
-     * @param receiptTextCache the receipt text cache
-     */
-    @SuppressWarnings("unused")
-    void setReceiptTextCache(String receiptTextCache) {
-        this.receiptTextCache = receiptTextCache;
-    }
-
-    /**
-     * Gets receipt text cache.
-     *
-     * @return the receipt text cache
-     */
-    public String getReceiptTextCache() {
-        return this.receiptTextCache;
-    }
-
-    /**
-     * Register i device.
-     *
-     * @param device the device
-     */
-    @SuppressWarnings("unused")
-    public void registerIDevice(IDevice device){
-        this.iDevice = device;
-    }
+    //================================================================================
+    // Accessors
+    //================================================================================
 
     /**
      * Gets logger.
      *
      * @return the logger
      */
-    protected Logger getLogger() {
+    @SuppressWarnings("WeakerAccess")
+    Logger getLogger() {
         return this.logger;
     }
 
     /**
-     * Gets tru module properties.
+     * Gets TruModule properties.
      *
-     * @return the tru module properties
+     * @return the TruModule properties
      */
     ITruModuleProperties getTruModuleProperties() {
         return this.truModuleProperties;
@@ -173,7 +169,7 @@ public abstract class TruModule {
      *
      * @return the device
      */
-    protected IDevice getIDevice() {
+    IDevice getIDevice() {
         return this.iDevice;
     }
 
@@ -182,37 +178,66 @@ public abstract class TruModule {
      *
      * @param device the device
      */
-    protected void setIDevice(IDevice device){
+    @SuppressWarnings("WeakerAccess")
+    public void setIDevice(IDevice device) {
         this.iDevice = device;
     }
 
     /**
-     * Gets http client.
+     * Gets i receipt manager.
      *
-     * @return the http client
+     * @return the i receipt manager
      */
-   private  HttpClient getHttpClient() {
-        return httpClient;
+    IReceiptManager getIReceiptManager() {
+        return this.iReceiptManager;
     }
 
     /**
-     * Is question running boolean.
+     * Sets i receipt manager.
      *
-     * @return the boolean
+     * @param receiptManager the receipt manager
      */
-    @SuppressWarnings("unused")
-    public boolean isQuestionRunning() {
-        return this.questionRunning;
+    @SuppressWarnings("WeakerAccess")
+    public void setIReceiptManager(IReceiptManager receiptManager) {
+        this.iReceiptManager = receiptManager;
+    }
+
+    private boolean isQuestionRunning() {
+        synchronized (this.questionRunningLock) {
+            return this.questionRunning;
+        }
+    }
+
+    private void setQuestionRunning(boolean questionRunning) {
+        synchronized (this.questionRunningLock) {
+            this.questionRunning = questionRunning;
+        }
     }
 
     /**
-     * Is cancelled boolean.
+     * Is question cancelled boolean.
      *
      * @return the boolean
      */
-    @SuppressWarnings("unused")
-    public boolean isCancelled() {
-        return this.isCancelled;
+    boolean isQuestionCancelled() {
+        synchronized (this.questionCancelledLock) {
+            return this.questionCancelled;
+        }
+    }
+
+    private void setQuestionCancelled(boolean questionCancelled) {
+        synchronized (this.questionCancelledLock) {
+            this.questionCancelled = questionCancelled;
+        }
+    }
+
+    /**
+     * Gets session id.
+     *
+     * @return the session id
+     */
+    String getSessionId() {
+        return this.getSessionId(null);
     }
 
     /**
@@ -222,125 +247,369 @@ public abstract class TruModule {
      * @return the session id
      */
     String getSessionId(PosParams params) {
-        if (params==null){
+        if (params == null) {
+            if (this.sessionId == null) {
+                return Long.toString(TruModuleDateUtils.timeNowMillis());
+            }
             return this.sessionId;
         }
         return params.getSessionId();
     }
 
     /**
-     * Set session id.
+     * Sets session id.
      *
      * @param sessionId the session id
      */
-    protected void setSessionId(String sessionId){
+    void setSessionId(String sessionId) {
         this.sessionId = sessionId;
     }
 
     /**
-     * Gets dwell time extend ms.
+     * Gets trigger.
      *
-     * @return the dwell time extend ms
+     * @return the trigger
      */
-    @SuppressWarnings("unused")
-    public int getDwellTimeExtendMs() {
-        return dwellTimeExtendMs;
+    Trigger getTrigger() {
+        return this.trigger;
     }
 
     /**
-     * Send transaction response.
+     * Sets trigger.
      *
-     * @param merchantId         the merchant id
-     * @param terminalId         the terminal id
-     * @param requestTransaction the request transaction
-     * @return the response
+     * @param trigger the trigger
      */
-    public Response sendTransaction(String merchantId, String terminalId, RequestTransaction requestTransaction) {
+    void setTrigger(Trigger trigger) {
+        this.trigger = trigger;
+    }
+
+    //================================================================================
+    // Public methods
+    //================================================================================
+
+    /**
+     * Cancel rating.
+     *
+     * @noinspection WeakerAccess
+     */
+    public void cancelRating() {
+        this.setQuestionCancelled(true); //Set flag to show question has been cancelled
+        if (this.isQuestionRunning()) {
+            if (this.getTrigger() == Trigger.DWELLTIMEEXTEND) {
+                this.getLogger().info("Waiting " + this.dwellTimeExtendMs + " to cancel rating");
+                this.dwellTimeLatch = new CountDownLatch(1);
+                try {
+                    this.dwellTimeLatch.await(this.dwellTimeExtendMs, TimeUnit.MILLISECONDS);
+                } catch (InterruptedException e) {
+                    this.getLogger().warn("Error setting dwellTimeLatch.await()", e);
+                }
+                if (this.isQuestionRunning()) {
+                    if (this.iDevice != null) {
+                        this.iDevice.resetDisplay(); //Force the 1AQ1KR loop to exit and release control of the PED
+                    }
+                }
+                this.dwellTimeLatch = null;
+            } else {
+                if (this.iDevice != null) {
+                    this.iDevice.resetDisplay(); //Force the 1AQ1KR loop to exit and release control of the PED
+                }
+            }
+        }
+    }
+
+    /**
+     * Activate.
+     */
+    @SuppressWarnings({"unused", "WeakerAccess"})
+    public void activate() {
+        if (this.isActivated()) {
+            return;
+        }
+
+        this.getIDevice().displayMessage("This device is not registered");
+
+        String registrationCode = this.getIDevice().readLine("Type your registration code, Press ENTER to register via form input or type SKIP to skip registration");
+
+        boolean result;
+        if (registrationCode == null || registrationCode.equals("")) {
+
+            int sectorNode = -1;
+            String timeZone = null;
+            String emailAddress = null;
+            String password = null;
+            String address = null;
+            String mobileNumber = null;
+            String merchantName = null;
+            String businessName = null;
+
+            Hashtable<Integer, String> sectorOptions = this.getLookupResponse(LookupName.SECTORNODE);
+
+            while (sectorNode < 0) {
+                String possibleInt = this.getIDevice().readLine("Please pick a numbered " + LookupName.SECTORNODE);
+
+                try {
+
+
+                    int selectedOptionNumber = Integer.parseInt(possibleInt);
+
+                    if (sectorOptions.containsKey(selectedOptionNumber)) {
+
+                        sectorNode = Integer.parseInt(sectorOptions.get(selectedOptionNumber));
+
+
+                    }
+                } catch (Exception e) {
+                    this.getLogger().info("Sector node option cannot be parsed");
+                }
+            }
+
+            Hashtable<Integer, String> timeZoneOptions = this.getLookupResponse(LookupName.TIMEZONE);
+
+            while (timeZone == null) {
+                String possibleInt = this.getIDevice().readLine("Please pick a numbered " + LookupName.TIMEZONE);
+                try {
+
+                    int selectedOptionNumber = Integer.parseInt(possibleInt);
+                    if (timeZoneOptions.containsKey(selectedOptionNumber)) {
+                        timeZone = timeZoneOptions.get(selectedOptionNumber);
+                    }
+                } catch (Exception e) {
+                    this.getLogger().info("Time zone option cannot be parsed");
+                }
+            }
+
+            while (emailAddress == null || emailAddress.equals("")) {
+                emailAddress = this.getIDevice().readLine("Enter your email address (required)");
+            }
+            while (password == null || password.equals("")) {
+                password = this.getIDevice().readLine("Enter a password (required)");
+            }
+            while (address == null || address.equals("")) {
+                address = this.getIDevice().readLine("Enter your postal address");
+            }
+            while (mobileNumber == null || mobileNumber.equals("")) {
+                mobileNumber = this.getIDevice().readLine("Enter your mobile number, e.g. +44 (1234) 787123");
+            }
+            while (businessName == null || businessName.equals("")) {
+                businessName = this.getIDevice().readLine("Enter your business name, e.g. McDonalds");
+            }
+            while (merchantName == null || merchantName.equals("")) {
+                merchantName = this.getIDevice().readLine("Enter your outlet name, e.g. McDonalds Fleet Street");
+            }
+
+            result = this.activate(sectorNode, timeZone, PaymentInstant.PAYBEFORE, emailAddress, password, address, mobileNumber, merchantName, businessName);
+        } else {
+            result = this.activate(registrationCode);
+        }
+        if (result) {
+            this.getIDevice().displayMessage("This device is activated");
+        } else {
+            this.getIDevice().displayMessage("This device is not activated");
+        }
+    }
+
+    /**
+     * Activate boolean.
+     *
+     * @param registrationCode the registration code
+     * @return the boolean
+     */
+    @SuppressWarnings("WeakerAccess")
+    public boolean activate(String registrationCode) {
+        if (this.isActivated()) {
+            return true;
+        }
+
+        if (registrationCode.equalsIgnoreCase("SKIP")) {
+            return this.isActivated;
+        }
+
+        Response response = this.sendRequest(TruModuleMessageFactory.assembleRequestActivate(this.getIDevice(), this.getIReceiptManager(), this.getTruModuleProperties().getPartnerId(), this.getTruModuleProperties().getMerchantId(), this.getTruModuleProperties().getTerminalId(), this.getSessionId(), registrationCode));
+        return response != null && this.processStatusResponse(response.getStatus());
+    }
+
+    /**
+     * Activate boolean.
+     *
+     * @param sectorNode     the sector node
+     * @param timeZone       the time zone
+     * @param paymentInstant the payment instant
+     * @param emailAddress   the email address
+     * @param password       the password
+     * @param address        the address
+     * @param mobileNumber   the mobile number
+     * @param merchantName   the merchant name
+     * @param businessName   the business name
+     * @return the boolean
+     */
+    @SuppressWarnings("WeakerAccess")
+    public boolean activate(int sectorNode,
+                            String timeZone,
+                            @SuppressWarnings("SameParameterValue") PaymentInstant paymentInstant,
+                            String emailAddress,
+                            String password,
+                            String address,
+                            String mobileNumber,
+                            String merchantName,
+                            String businessName) {
+        if (this.isActivated()) {
+            return true;
+        }
+        Response response = this.sendRequest(TruModuleMessageFactory.assembleRequestActivate(this.getIDevice(), this.getIReceiptManager(), this.getTruModuleProperties().getPartnerId(), this.getTruModuleProperties().getMerchantId(), this.getTruModuleProperties().getTerminalId(), this.getSessionId(), sectorNode, timeZone, paymentInstant, emailAddress, password, address, mobileNumber, merchantName, businessName));
+        return response != null && this.processStatusResponse(response.getStatus());
+    }
+
+    //================================================================================
+    // Protected methods
+    //================================================================================
+
+    /**
+     * Is activated boolean.
+     *
+     * @return the boolean
+     */
+    boolean isActivated() {
+        return this.isActivated(false);
+    }
+
+    /**
+     * Send transaction.
+     *
+     * @param sessionId          the session id
+     * @param requestTransaction the request transaction
+     */
+    void sendTransaction(String sessionId, RequestTransaction requestTransaction) {
 
         try {
-            Request request = this.truRatingMessageFactory.assembleRequestTransaction(
+            Request request = TruModuleMessageFactory.assembleRequestTransaction(
                     this.truModuleProperties.getPartnerId(),
-                    merchantId,
-                    terminalId,
+                    this.truModuleProperties.getMerchantId(),
+                    this.truModuleProperties.getTerminalId(),
                     sessionId,
                     requestTransaction);
 
             if (request != null) {
-                return this.getHttpClient().send(this.truModuleProperties.getTruServiceURL(), request);
-            } else {
-                return null;
+                this.httpClient.send(this.truModuleProperties.getTruServiceURL(), request);
             }
         } catch (Exception e) {
-            this.logger.severe("Error sending rating");
-            this.logger.severe(e.toString());
-            return null;
+            this.logger.error("Error sending rating", e);
         }
     }
 
     /**
-     * Send pos event response.
+     * Send request response.
      *
-     * @param params the params
-     * @param event  the event
+     * @param request the request
      * @return the response
      */
-    protected Response sendPosEvent(PosParams params, RequestPosEvent event){
-        Request request = new Request();
-        request.setTerminalId(this.truModuleProperties.getTerminalId());
-        request.setSessionId(getSessionId(params));
-        request.setPartnerId(getTruModuleProperties().getPartnerId());
-        request.setMerchantId(this.truModuleProperties.getMerchantId());
-        request.setPosEvent(event);
-        return this.getHttpClient().send(this.truModuleProperties.getTruServiceURL(),request);
+    Response sendRequest(Request request) {
+        return this.httpClient.send(this.truModuleProperties.getTruServiceURL(), request);
     }
 
     /**
-     * Send pos event list response.
+     * Do rating string.
      *
-     * @param params    the params
-     * @param eventList the event list
-     * @return the response
+     * @param request the request
      */
-    protected Response sendPosEventList(PosParams params, RequestPosEventList eventList){
-        Request request = new Request();
-        request.setTerminalId(this.truModuleProperties.getTerminalId());
-        request.setSessionId(getSessionId(params));
-        request.setPartnerId(getTruModuleProperties().getPartnerId());
-        request.setMerchantId(this.truModuleProperties.getMerchantId());
-        request.setPosEventList(eventList);
-        return this.getHttpClient().send(this.truModuleProperties.getTruServiceURL(),request);
-    }
-
-    /**
-     * Cancel rating.
-     */
-    @SuppressWarnings("WeakerAccess")
-    public void cancelRating() {
-        this.isCancelled = true; //Set flag to show question has been cancelled
-        if (this.iDevice != null) {
-            this.iDevice.resetDisplay(); //Force the 1AQ1KR loop to exit and release control of the PED
+    void doRating(final Request request) {
+        Response response = getQuestion(request);
+        if (response == null) {
+            this.logger.info("Response was null");
+            return;
         }
-    }
 
-    /**
-     * `
-     * Cancel rating dwell time extend.
-     *
-     */
-    @SuppressWarnings("unused")
-    public void cancelRatingDwellTimeExtend() {
-        this.isCancelled = true; //Set flag to show question has been cancelled - ensures that acknowledgement is skipped unless is a priority (i.e. prize)
+        this.setQuestionCancelled(false);
+
+        ResponseLanguage responseLanguage = filterResponseLanguage(response, this.truModuleProperties.getRFC());
+        if (responseLanguage == null) {
+            this.logger.error("The service returned no language for the sought RFC");
+            return;
+        }
+
+        this.setTrigger(request.getQuestion().getTrigger()); //assume it's the request trigger that is king. Then if the service provides a trigger use this instead.
+        if (response.getEvent() != null) {
+            this.setTrigger(response.getEvent().getQuestion().getTrigger());
+        }
+
+        if (responseLanguage.getQuestion() == null) {
+            this.logger.error("Question was null");
+            return;
+        }
+
         try {
-            if (this.questionRunning) {
-                this.dwellTimeLatch = new CountDownLatch(1);
-                this.dwellTimeLatch.await(this.dwellTimeExtendMs, TimeUnit.MILLISECONDS);
-            }
-        } catch (InterruptedException ignored) {
+            //used to ascertain the length of time that a rating takes
+            final long startTime = System.currentTimeMillis();
 
+            final int keyStroke = collectRatingFromDevice(responseLanguage.getQuestion().getValue(), responseLanguage.getQuestion().getTimeoutMs());
+
+            final long endTime = System.currentTimeMillis();
+            final long totalTimeTaken = endTime - startTime;
+
+            final ITruModuleProperties truModuleProperties = this.truModuleProperties;
+            final String sessionId;
+            if (request.getSessionId() != null) {
+                sessionId = request.getSessionId();
+            } else {
+                sessionId = this.getSessionId();
+            }
+
+            sendRatingData(truModuleProperties.getTruServiceURL(), request.getPartnerId(), request.getMerchantId(), request.getTerminalId(), sessionId, truModuleProperties.getRFC(), keyStroke, totalTimeTaken);
+
+            //if rating wasn't cancelled, then display the appropriate screen response on the ped
+            ResponseScreen responseScreen = filterScreenAcknowledgement(responseLanguage, keyStroke);
+            ResponseReceipt responseReceipt = filterReceiptAcknowledgement(responseLanguage, keyStroke);
+            if (!this.isQuestionCancelled() || (responseScreen != null && responseScreen.isPriority())) {
+                if (responseScreen != null) {
+                    this.iDevice.displayMessage(responseScreen.getValue());
+                    Thread.sleep(responseScreen.getTimeoutMs());
+                }
+            }
+
+            this.setQuestionRunning(false);
+
+            if (responseReceipt != null) {
+                this.getIReceiptManager().appendReceipt(responseReceipt.getValue());
+            }
+        } catch (Exception e) {
+            this.logger.error("Error collecting rating", e);
         }
 
-        this.cancelRating();
-        this.dwellTimeLatch = null;
+        if (this.dwellTimeLatch != null) {
+            this.dwellTimeLatch.countDown();
+        }
+    }
+
+    //================================================================================
+    // Private methods
+    //================================================================================
+
+    private int collectRatingFromDevice(String questionText, int timeoutMs) {
+
+        this.setQuestionRunning(true);
+
+
+        if (trigger == Trigger.DWELLTIMEEXTEND) {
+            timeoutMs = Integer.MAX_VALUE;
+            this.dwellTimeExtendMs = timeoutMs;
+        }
+
+        // Synchronous 1AQ1KR call
+        final int keyStroke = this.iDevice.display1AQ1KR(
+                questionText,
+                timeoutMs
+        );
+        this.logger.info("Keystroke came back as : " + Integer.toString(keyStroke));
+
+        return keyStroke;
+    }
+
+    private boolean processStatusResponse(ResponseStatus responseStatus) {
+        if (responseStatus == null) {
+            return false;
+        }
+        this.activationRecheck = TruModuleDateUtils.timeNowMillis() + responseStatus.getTimeToLive();
+        this.isActivated = responseStatus.isIsActive();
+        return this.isActivated;
     }
 
     /**
@@ -349,103 +618,13 @@ public abstract class TruModule {
      * @param request the request
      * @return the question
      */
-    Response getQuestion(Request request) {
+    private Response getQuestion(Request request) {
         if (request == null) {
             return null;
         }
 
-        return this.getHttpClient().send(this.truModuleProperties.getTruServiceURL(), request);
+        return this.httpClient.send(this.truModuleProperties.getTruServiceURL(), request);
     }
-
-    /**
-     * Do rating string.
-     *
-     * @param request the request
-     * @return the string
-     */
-    String doRating(final Request request) {
-        Response response = getQuestion(request);
-        if (response==null) {
-            this.logger.info("Response was null");
-            return null;
-        }
-
-        this.isCancelled = false;
-        String result = null;
-
-        ResponseLanguage responseLanguage = filterResponseLanguage(response, this.truModuleProperties.getRFC());
-        if (responseLanguage == null) {
-            this.logger.severe("The service returned no language for the sought RFC");
-            return null;
-        }
-
-        Trigger trigger=request.getQuestion().getTrigger(); //assume it's the request trigger that is king. Then if the service provides a trigger use this instead.
-        if (response.getEvent()!=null) {
-            trigger = response.getEvent().getQuestion().getTrigger(); //this can be a question, or a clear, or nothing
-        }
-
-        if (responseLanguage.getQuestion() == null) {
-            this.logger.severe("Question was null");
-            return null;
-        }
-
-        try {
-            //used to ascertain the length of time that a rating takes
-            final long startTime = System.currentTimeMillis();
-
-            this.questionRunning = true;
-
-            int timeoutMs = responseLanguage.getQuestion().getTimeoutMs();
-
-            if(trigger == Trigger.DWELLTIMEEXTEND){
-                timeoutMs= Integer.MAX_VALUE;
-                this.dwellTimeExtendMs = responseLanguage.getQuestion().getTimeoutMs();
-            }
-
-            // Synchronous 1AQ1KR call
-            final int keyStroke = this.iDevice.display1AQ1KR(
-                    responseLanguage.getQuestion().getValue(),
-                    timeoutMs
-            );
-            this.logger.info("Keystroke came back as : " + Integer.toString(keyStroke));
-
-            final long endTime = System.currentTimeMillis();
-            final long totalTimeTaken = endTime - startTime;
-
-            final ITruModuleProperties truModuleProperties = this.truModuleProperties;
-            final String sessionId = this.sessionId;
-            new Thread(new Runnable() { //Send rating now
-                public void run() {
-                    sendRatingData(truModuleProperties.getTruServiceURL(), request.getPartnerId(), request.getMerchantId(), request.getTerminalId(), sessionId, truModuleProperties.getRFC(), keyStroke, totalTimeTaken);
-                }
-            }).start();
-
-            //if rating wasn't cancelled, then display the appropriate screen response on the ped
-            ResponseScreen responseScreen = filterScreenAcknowledgement(responseLanguage, keyStroke);
-            ResponseReceipt responseReceipt = filterReceiptAcknowledgement(responseLanguage, keyStroke);
-            if (!isCancelled || (responseScreen != null && responseScreen.isPriority())) {
-                if (responseScreen != null) {
-                    this.iDevice.displayMessage(responseScreen.getValue());
-                    Thread.sleep(responseScreen.getTimeoutMs());
-                }
-            }
-
-            this.questionRunning = false;
-
-            if (responseReceipt != null) {
-                result = responseReceipt.getValue();
-            }
-        } catch (Exception e) {
-            this.logger.severe(e.toString());
-        }
-
-        if (this.dwellTimeLatch != null){
-            this.dwellTimeLatch.countDown();
-        }
-
-        return result;
-    }
-
 
     /**
      * Filter response language response language.
@@ -454,10 +633,10 @@ public abstract class TruModule {
      * @param currentTransactionLanguageCode the current transaction language code
      * @return the response language
      */
-    ResponseLanguage filterResponseLanguage(Response response, String currentTransactionLanguageCode) {
+    private ResponseLanguage filterResponseLanguage(Response response, String currentTransactionLanguageCode) {
         try {
             if (response.getDisplay() == null || response.getDisplay().getLanguage() == null) {
-                this.logger.warning("Response getDisplay or getLanguage were null");
+                this.logger.warn("Response getDisplay or getLanguage were null");
                 return null;
             }
             for (int i = 0; i < response.getDisplay().getLanguage().size(); i++) { //loop through all the possible languages until we get one that matches
@@ -466,12 +645,11 @@ public abstract class TruModule {
                 }
             }
 
-            this.logger.warning("No languages matched. There was no question to ask.");
+            this.logger.warn("No languages matched. There was no question to ask.");
             return null;
 
         } catch (NullPointerException e) {
-            this.logger.severe("Error fetching the next question");
-            this.logger.severe(e.toString());
+            this.logger.error("Error fetching the next question", e);
         }
         return null;
     }
@@ -541,29 +719,80 @@ public abstract class TruModule {
      * @param rfc1766        the rfc 1766
      * @param keyStroke      the key stroke
      * @param totalTimeTaken the total time taken
-     * @return the response
      */
-    Response sendRatingData(URL url,
-                                      String partnerId,
-                                      String merchantId,
-                                      String terminalId,
-                                      String sessionId,
-                                      String rfc1766,
-                                      int keyStroke,
-                                      long totalTimeTaken) {
+    private void sendRatingData(URL url,
+                                String partnerId,
+                                String merchantId,
+                                String terminalId,
+                                String sessionId,
+                                String rfc1766,
+                                int keyStroke,
+                                long totalTimeTaken) {
         try {
-            Request request = this.truRatingMessageFactory.assembleRatingsDeliveryRequest(rfc1766, partnerId, merchantId, terminalId, sessionId, (short) keyStroke, (int) totalTimeTaken);
+            Request request = TruModuleMessageFactory.assembleRatingsDeliveryRequest(rfc1766, partnerId, merchantId, terminalId, sessionId, (short) keyStroke, (int) totalTimeTaken);
             if (request != null) {
-                return this.getHttpClient().send(url, request);
+                this.httpClient.send(url, request);
+
             } else {
-                this.logger.warning("Returning a null response");
-                return null;
+                this.logger.warn("Returning a null response");
             }
 
         } catch (Exception e) {
-            this.logger.severe("Error sending rating");
-            this.logger.severe(e.toString());
-            return null;
+            this.logger.error("Error sending rating", e);
         }
+    }
+
+    private boolean isActivated(boolean force) {
+        if (this.activationRecheck > TruModuleDateUtils.timeNowMillis()) {
+            getLogger().info("Not querying TruService status, next check at " + this.activationRecheck + ". IsActive is " + (this.isActivated ? "true" : "false"));
+            return this.isActivated;
+        }
+        Response response = this.sendRequest(TruModuleMessageFactory.assembleRequestQuery(this.getIReceiptManager(),this.getIDevice(),this.getTruModuleProperties().getPartnerId(), this.getTruModuleProperties().getMerchantId(), this.getTruModuleProperties().getTerminalId(), this.getSessionId(), force));
+        if (response != null) {
+            ResponseStatus responseStatus = response.getStatus();
+            return this.processStatusResponse(responseStatus);
+        }
+        return this.isActivated;
+    }
+
+    private Hashtable<Integer, String> getLookupResponse(LookupName lookupName) {
+        Hashtable<Integer, String> result = new Hashtable<Integer, String>();
+
+        Response response = this.sendRequest(TruModuleMessageFactory.assembleRequestlookup(this.getIDevice(), this.getIReceiptManager(), this.getTruModuleProperties().getPartnerId(), this.getTruModuleProperties().getMerchantId(), this.getTruModuleProperties().getTerminalId(), this.getSessionId(), lookupName));
+
+        if (response != null && response.getLookup() != null) {
+            int optionNumber = 0;
+            for (ResponseLookup.Language language : response.getLookup().getLanguage()) {
+                if (language.getRfc1766().equals(this.getIDevice().getCurrentLanguage())) {
+                    if (language.getOption() != null) {
+                        for (LookupOption option : language.getOption()) {
+
+                            result.putAll(this.printLookUps(option, 1, optionNumber++));
+                        }
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private Map<Integer, String> printLookUps(LookupOption lookupOption, int depth, int optionNumber) {
+        Hashtable<Integer, String> result = new Hashtable<Integer, String>();
+
+        if (lookupOption.getValue() != null) {
+
+            result.put(optionNumber, lookupOption.getValue());
+        }
+        this.getIDevice().displayMessage((lookupOption.getValue() == null ? "N/A" : "\"" + optionNumber + "\"") +
+                String.format("%1$-" + depth + "s", " ") + lookupOption.getText() + " (" + lookupOption.getValue() + ")");
+        if (lookupOption.getOption() != null) {
+
+            for (LookupOption option : lookupOption.getOption()) {
+
+                result.putAll(this.printLookUps(option, depth + 1, optionNumber++));
+            }
+        }
+        return result;
     }
 }

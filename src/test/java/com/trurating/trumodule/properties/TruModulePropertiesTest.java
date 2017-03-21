@@ -70,7 +70,7 @@ public class TruModulePropertiesTest extends TruModuleUnitTest {
     public void getSocketTimeoutInMilliSeconds() throws Exception {
         int value = 100;
         TruModuleProperties obj = new TruModuleProperties();
-        testSetValue(obj, "socketTimeoutInMilliSeconds", value);
+        testSetValue(obj, "socketTimeout", value);
         Assert.assertEquals(value,obj.getSocketTimeoutInMilliSeconds());
     }
 
@@ -79,7 +79,7 @@ public class TruModulePropertiesTest extends TruModuleUnitTest {
         int value = 100;
         TruModuleProperties obj = new TruModuleProperties();
         obj.setSocketTimeoutInMilliSeconds(value);
-        Assert.assertEquals(value,testGetValue(obj,"socketTimeoutInMilliSeconds"));
+        Assert.assertEquals(value,testGetValue(obj,"socketTimeout"));
     }
 
     @Test

@@ -1,4 +1,3 @@
-
 /*
  *  The MIT License
  *
@@ -22,59 +21,30 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
+package com.trurating.trumodule.network;
 
-package com.trurating.trumodule.device;
+import com.trurating.service.v220.xml.Request;
+import com.trurating.service.v220.xml.Response;
 
-import com.trurating.service.v210.xml.Font;
-import com.trurating.service.v210.xml.Format;
-import com.trurating.service.v210.xml.UnitDimension;
+import java.io.StringWriter;
 
 /**
- * The interface Peripheral capabilities.
+ * The interface Marshaller.
  */
-public interface IPeripheralCapabilities {
-
+public interface ISerializer {
+    /**
+     * Marshall a Request object to a StringWriter
+     *
+     * @param request the request
+     * @return the string writer
+     */
+    StringWriter marshall(Request request);
 
     /**
-     * Gets font.
+     * UnMarshall a response String to Response object
      *
-     * @return the font
+     * @param responseString the response in raw String format
+     * @return the Response object
      */
-    Font getFont();
-
-    /**
-     * Gets format.
-     *
-     * @return the format
-     */
-    Format getFormat();
-
-    /**
-     * Gets height.
-     *
-     * @return the height
-     */
-    Short getHeight();
-
-    /**
-     * Gets unit.
-     *
-     * @return the unit
-     */
-    UnitDimension getUnit();
-
-    /**
-     * Gets separator.
-     *
-     * @return the separator
-     */
-    String getSeparator();
-
-    /**
-     * Gets width.
-     *
-     * @return the width
-     */
-    Short getWidth();
-
+    Response unMarshall(String responseString);
 }

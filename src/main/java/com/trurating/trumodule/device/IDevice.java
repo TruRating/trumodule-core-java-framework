@@ -25,12 +25,11 @@
 
 package com.trurating.trumodule.device;
 
+import com.trurating.service.v220.xml.*;
+
 /**
  * An interface that describes the behaviour that the trurating
  * application requires of a PIN entry device.
- */
-/*
-
  */
 public interface IDevice {
     /**
@@ -39,6 +38,15 @@ public interface IDevice {
      * @param string the string
      */
     void displayMessage(String string);
+
+    /**
+     * Display message.
+     *
+     * @param string  the string
+     * @param timeout the timeout
+     */
+    @SuppressWarnings("unused")
+    void displayMessage(String string, int timeout);
 
     /**
      * Display the TruRating question and wait for a single keystroke. The last parameter is optional
@@ -54,54 +62,41 @@ public interface IDevice {
      */
     void resetDisplay();
 
-    /**
-     * Gets screen capabilities.
-     *
-     * @return the screen capabilities
-     */
-    IPeripheralCapabilities getScreenCapabilities();
+    String readLine(String promptText);
 
     /**
-     * Gets receipt capabilities.
+     * Gets request device.
      *
-     * @return the receipt capabilities
+     * @return the request device
      */
-    IPeripheralCapabilities getReceiptCapabilities();
+    RequestPeripheral getScreenCapabilities();
 
-    /**
-     * Gets device capabilities.
-     *
-     * @return the device capabilities
-     */
-    @SuppressWarnings("unused")
-    IPeripheralCapabilities getDeviceCapabilities();
 
-    /**
-     * Gets device type.
-     *
-     * @return the device type
-     */
-    @SuppressWarnings("unused")
-    String getDeviceType();
-
-    /**
-     * Gets firmware.
-     *
-     * @return the firmware
-     */
-    String getFirmware();
-
-    /**
-     * Gets name.
-     *
-     * @return the name
-     */
-    String getName();
+    SkipInstruction getSkipInstruction();
 
     /**
      * Gets rfc 1766 language code.
      *
      * @return the rfc 1766 language code
      */
-    String getRfc1766LanguageCode();
+    String getCurrentLanguage();
+
+    /**
+     * Get languages request language [ ].
+     *
+     * @return the request language [ ]
+     */
+    @SuppressWarnings("unused")
+    RequestLanguage[] getLanguages();
+
+    /**
+     * Gets server.
+     *
+     * @return the server
+     */
+    RequestServer getServer();
+
+    String getName();
+
+    String getFirmware();
 }

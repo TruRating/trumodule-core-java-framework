@@ -21,207 +21,147 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-
 package com.trurating.trumodule.properties;
-import java.io.File;
+
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.logging.Logger;
 
 /**
- * Implementation of the ITruModuleProperties. Also overrides the abstract
- * loadAllPropertiesFromResourcesSystemArg(), from GeneralPropertiesLoader.
+ * The type Tru module properties simple.
  */
-public class TruModuleProperties extends GeneralPropertiesLoader implements ITruModuleProperties {
-
-    private String partnerId = "";
-    private String merchantId = "";
-    private String terminalId = "";
-    private String rfc = "en-GB";
-    private int socketTimeoutInMilliSeconds;
-    private static Logger log = Logger.getLogger(TruModuleProperties.class.getName());
-    private URL truServiceURL;
-    private String propertiesFilePath;
+@SuppressWarnings("unused")
+public class TruModuleProperties implements ITruModuleProperties {
+    private String partnerId;
+    private String merchantId;
+    private String terminalId;
     private String transportKey;
-
-    /**
-     * Instantiates a new Tru module properties.
-     */
-    public TruModuleProperties(){
-        super();
-    }
+    private int socketTimeout;
+    private URL truServiceURL;
+    private String rfc;
 
     /**
      * Instantiates a new Tru module properties.
      *
-     * @param propertiesFilePath the properties file path
      * @throws MalformedURLException the malformed url exception
      */
-    @SuppressWarnings("unused")
-    public TruModuleProperties(String propertiesFilePath) throws MalformedURLException{
-        super();
-        setPropertiesFilePath(propertiesFilePath);
-        this.loadAllFromFile();
-        setPartnerId(getProperty("partnerId"));
-        setMerchantId(getProperty("merchantId"));
-        setTerminalId(getProperty("terminalId"));
-        setSocketTimeoutInMilliSeconds(getPropertyAsInt("socket_timeout"));
-        setTruServiceURL(new URL(getProperty("service_URL")));
-        setRFC(getProperty("rfc"));
+    TruModuleProperties() throws MalformedURLException {
+        this(null, null, null);
     }
 
     /**
-     * This method override will check the for a system property of TRResources,
-     * if one if found it will full in ALL properties files on that path.
-     * If no system property is found, classpath in general is scanned.
-     * The general classpath in IDEs under Maven will have the properties file in scope
-     * for development processes.
-     */
-    @Override
-    public void loadAllFromFile(){
-
-        int i = this.propertiesFilePath.lastIndexOf('.');
-        int p = Math.max(this.propertiesFilePath.lastIndexOf('/'), this.propertiesFilePath.lastIndexOf('\\'));
-
-        if (i > p) {
-            String extension = this.propertiesFilePath.substring(i+1);
-
-            if(extension.equals("properties")){
-                load(new File(extension));
-                return;
-            }
-            else if(extension.equals("xml")){
-                loadFromXML(new File(extension));
-                return;
-            }
-        }
-        getLog().severe("No resource file specified");
-    }
-
-    /**
-     * Gets properties file path.
+     * Instantiates a new Tru module properties simple.
      *
-     * @return the properties file path
+     * @param partnerId  the partner id
+     * @param merchantId the merchant id
+     * @param terminalId the terminal id
+     * @throws MalformedURLException the malformed url exception
      */
-    String getPropertiesFilePath() {
-        return propertiesFilePath;
+    public TruModuleProperties(String partnerId, String merchantId, String terminalId) throws MalformedURLException {
+        this(partnerId, merchantId, terminalId, null, new URL("http://tru-sand-service-v200.trurating.com/api"), "en-GB", 500);
     }
 
     /**
-     * Sets properties file path.
+     * Instantiates a new Tru module properties simple.
      *
-     * @param propertiesFilePath the properties file path
+     * @param partnerId     the partner id
+     * @param merchantId    the merchant id
+     * @param terminalId    the terminal id
+     * @param transportKey  the transport key
+     * @param truServiceURL the tru service url
      */
-    void setPropertiesFilePath(String propertiesFilePath) {
-        this.propertiesFilePath = propertiesFilePath;
+    public TruModuleProperties(String partnerId, String merchantId, String terminalId, String transportKey, URL truServiceURL) {
+        this(partnerId, merchantId, terminalId, transportKey, truServiceURL, "en-GB", 5000);
     }
 
     /**
-     * Gets log.
+     * Instantiates a new Tru module properties simple.
      *
-     * @return the log
+     * @param partnerId     the partner id
+     * @param merchantId    the merchant id
+     * @param terminalId    the terminal id
+     * @param transportKey  the transport key
+     * @param truServiceURL the tru service url
+     * @param rfc           the rfc
      */
-    public static Logger getLog() {
-        return log;
+    public TruModuleProperties(String partnerId, String merchantId, String terminalId, String transportKey, URL truServiceURL, String rfc) {
+        this(partnerId, merchantId, terminalId, transportKey, truServiceURL, rfc, 5000);
     }
 
-    @Override
+    /**
+     * Instantiates a new Tru module properties simple.
+     *
+     * @param partnerId     the partner id
+     * @param merchantId    the merchant id
+     * @param terminalId    the terminal id
+     * @param transportKey  the transport key
+     * @param truServiceURL the tru service url
+     * @param rfc           the rfc
+     * @param socketTimeout the socket timeout
+     */
+    @SuppressWarnings("WeakerAccess")
+    public TruModuleProperties(String partnerId, String merchantId, String terminalId, String transportKey, URL truServiceURL, String rfc, int socketTimeout) {
+        this.partnerId = partnerId;
+        this.merchantId = merchantId;
+        this.terminalId = terminalId;
+        this.transportKey = transportKey;
+        this.truServiceURL = truServiceURL;
+        this.rfc = rfc;
+        this.socketTimeout = socketTimeout;
+    }
+
     public String getPartnerId() {
-        return partnerId;
+        return this.partnerId;
     }
 
-    /**
-     * Sets partner id.
-     *
-     * @param partnerId the partner id
-     */
-    void setPartnerId(String partnerId) {
+    public void setPartnerId(String partnerId) {
         this.partnerId = partnerId;
     }
 
-    @Override
     public String getMerchantId() {
-        return merchantId;
+        return this.merchantId;
     }
 
-    /**
-     * Sets merchant id.
-     *
-     * @param merchantId the merchant id
-     */
-    void setMerchantId(String merchantId) {
+    public void setMerchantId(String merchantId) {
         this.merchantId = merchantId;
     }
 
-    @Override
     public String getTerminalId() {
-        return terminalId;
+        return this.terminalId;
     }
 
-    /**
-     * Sets terminal id.
-     *
-     * @param terminalId the terminal id
-     */
-    void setTerminalId(String terminalId) {
+    public void setTerminalId(String terminalId) {
         this.terminalId = terminalId;
     }
 
-    @Override
     public String getTransportKey() {
-        return transportKey;
+        return this.transportKey;
     }
 
-    /**
-     * Sets transport key.
-     *
-     * @param transportKey the transport key
-     */
-    void setTransportKey(String transportKey) {
+    public void setTransportKey(String transportKey) {
         this.transportKey = transportKey;
     }
 
-    @Override
     public int getSocketTimeoutInMilliSeconds() {
-        return socketTimeoutInMilliSeconds;
+        return this.socketTimeout;
     }
 
-
-    /**
-     * Sets socket timeout in milli seconds.
-     *
-     * @param socketTimeoutInMilliSeconds the socket timeout in milli seconds
-     */
-    void setSocketTimeoutInMilliSeconds(int socketTimeoutInMilliSeconds) {
-        this.socketTimeoutInMilliSeconds = socketTimeoutInMilliSeconds;
+    public void setSocketTimeoutInMilliSeconds(int milliSeconds) {
+        this.socketTimeout = milliSeconds;
     }
 
-    @Override
     public URL getTruServiceURL() {
-        return truServiceURL;
+        return this.truServiceURL;
     }
 
-    /**
-     * Sets tru service url.
-     *
-     * @param truServiceURL the tru service url
-     */
-    void setTruServiceURL(URL truServiceURL) {
-        this.truServiceURL = truServiceURL;
+    public void setTruServiceURL(URL url) {
+        this.truServiceURL = url;
     }
 
-    @Override
     public String getRFC() {
         return this.rfc;
     }
 
-    /**
-     * Sets rfc.
-     *
-     * @param rfc the rfc
-     */
-    @SuppressWarnings("WeakerAcccess")
-    void setRFC(String rfc) {
+    public void setRFC(String rfc) {
         this.rfc = rfc;
     }
 }

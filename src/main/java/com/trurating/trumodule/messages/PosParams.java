@@ -22,21 +22,47 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
+package com.trurating.trumodule.messages;
 
-package com.trurating.trumodule;
+/**
+ * The type Pos params.
+ */
+public class PosParams {
 
-import com.trurating.trumodule.util.TruModuleUnitTest;
-import org.junit.Assert;
-import org.junit.Test;
+    private String sessionId;
 
-public class PosParamsTest extends TruModuleUnitTest {
+    /**
+     * Instantiates a new Pos params.
+     */
+    public PosParams() {
+    }
 
-    @Test
-    public void getSessionId() throws Exception {
-        String value = "1234567890";
-        PosParams obj = new PosParams();
-        testSetValue(obj, "sessionId", value);
-        Assert.assertEquals(value,obj.getSessionId());
+    /**
+     * Instantiates a new Pos params.
+     *
+     * @param sessionId the session id
+     */
+    public PosParams(String sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    /**
+     * Gets session id.
+     *
+     * @return the session id
+     */
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    /**
+     * Sets session id.
+     *
+     * @param sessionId the session id
+     */
+    @SuppressWarnings("unused")
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
     }
 
 }
