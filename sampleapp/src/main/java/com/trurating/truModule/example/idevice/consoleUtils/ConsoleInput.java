@@ -1,5 +1,5 @@
-
 /*
+ *
  *  The MIT License
  *
  *  Copyright (c) 2017 TruRating Ltd. https://www.trurating.com
@@ -22,59 +22,45 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
+package com.trurating.truModule.example.idevice.consoleUtils;
 
-package com.trurating.trumodule.device;
+import java.util.concurrent.*;
 
-import com.trurating.service.v210.xml.Font;
-import com.trurating.service.v210.xml.Format;
-import com.trurating.service.v210.xml.UnitDimension;
+public class ConsoleInput {
+    private final int timeout;
+    private final TimeUnit unit;
+    Future<String> result;
 
-/**
- * The interface Peripheral capabilities.
- */
-public interface IPeripheralCapabilities {
+    public ConsoleInput(int timeout, TimeUnit unit) {
+        this.timeout = timeout;
+        this.unit = unit;
+    }
 
+    public String readLine() throws InterruptedException {
+        ExecutorService ex = Executors.newSingleThreadExecutor();
+        String input = null;
+        try {
+            // start working
+            this.result = ex.submit(
+                    new ConsoleInputReadTask());
+            try {
+                input = result.get(timeout, unit);
+            } catch (ExecutionException e) {
+                e.getCause().printStackTrace();
+            } catch (TimeoutException e) {
+                result.cancel(true);
+            }
 
-    /**
-     * Gets font.
-     *
-     * @return the font
-     */
-    Font getFont();
+        } finally {
+            ex.shutdownNow();
+        }
+        return input;
+    }
 
-    /**
-     * Gets format.
-     *
-     * @return the format
-     */
-    Format getFormat();
-
-    /**
-     * Gets height.
-     *
-     * @return the height
-     */
-    Short getHeight();
-
-    /**
-     * Gets unit.
-     *
-     * @return the unit
-     */
-    UnitDimension getUnit();
-
-    /**
-     * Gets separator.
-     *
-     * @return the separator
-     */
-    String getSeparator();
-
-    /**
-     * Gets width.
-     *
-     * @return the width
-     */
-    Short getWidth();
-
+    public void cancel(){
+        if(this.result != null){
+            this.result.cancel(true);
+            this.result = null;
+        }
+    }
 }

@@ -25,27 +25,29 @@
 
 package com.trurating.trumodule;
 
-import com.trurating.service.v210.xml.*;
+import com.trurating.service.v220.xml.*;
+import com.trurating.trumodule.messages.PosParams;
 
+/**
+ * The interface Tru module integrated.
+ */
 public interface ITruModuleIntegrated {
     /**
      * Send pos event response.
      *
      * @param params the params
      * @param event  the event
-     * @return the response
      */
-    Response sendPosEvent(PosParams params, RequestPosEvent event);
+    void sendPosEvent(PosParams params, RequestPosEvent event);
 
     /**
      * Send pos event list response.
      *
      * @param params    the params
      * @param eventList the event list
-     * @return the response
      */
     @SuppressWarnings("unused")
-    Response sendPosEventList(PosParams params, RequestPosEventList eventList);
+    void sendPosEventList(PosParams params, RequestPosEventList eventList);
 
     /**
      * Cancel rating.
@@ -58,8 +60,15 @@ public interface ITruModuleIntegrated {
      *
      * @param params             the params
      * @param requestTransaction the request transaction
-     * @return the response
      */
     @SuppressWarnings("unused")
-    Response sendTransaction(PosParams params, RequestTransaction requestTransaction);
+    void sendTransaction(PosParams params, RequestTransaction requestTransaction);
+
+    /**
+     * Initiate payment.
+     *
+     * @param params the params
+     */
+    @SuppressWarnings("unused")
+    void initiatePayment(PosParams params);
 }

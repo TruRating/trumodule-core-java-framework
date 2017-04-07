@@ -24,153 +24,179 @@
 
 package com.trurating.trumodule;
 
-import com.trurating.service.v210.xml.*;
+import com.trurating.service.v220.xml.*;
 import com.trurating.trumodule.device.IDevice;
-import com.trurating.trumodule.network.IMarshaller;
+import com.trurating.trumodule.device.IReceiptManager;
+import com.trurating.trumodule.messages.PosParams;
+import com.trurating.trumodule.messages.TruModuleMessageFactory;
+import com.trurating.trumodule.network.ISerializer;
 import com.trurating.trumodule.properties.ITruModuleProperties;
 
-import java.util.HashMap;
 
+/**
+ * The type Tru module integrated.
+ */
 public class TruModuleIntegrated extends TruModule implements ITruModuleIntegrated {
-    private HashMap<POSEvent,Trigger> triggerMappings;
-    private Trigger trigger;
+    private final Object sendPosEventLock = new Object();
+    private final Object sendPosEventListLock = new Object();
+    private final Object sendTransactionLock = new Object();
+
 
     /**
      * Instantiates a new Tru module integrated.
      *
      * @param truModuleProperties the tru module properties
      */
-    @SuppressWarnings("WeakerAccess")
+    @SuppressWarnings("unused")
     public TruModuleIntegrated(ITruModuleProperties truModuleProperties) {
-        this(truModuleProperties, null);
+        this(truModuleProperties, null, null);
     }
 
     /**
      * Instantiates a new Tru module integrated.
      *
      * @param truModuleProperties the tru module properties
+     * @param receiptManager      the receipt manager
      * @param device              the device
      */
-    public TruModuleIntegrated(ITruModuleProperties truModuleProperties, IDevice device) {
-        this(truModuleProperties, device, null);
+    @SuppressWarnings("WeakerAccess")
+    public TruModuleIntegrated(ITruModuleProperties truModuleProperties, IReceiptManager receiptManager, IDevice device) {
+        this(truModuleProperties, receiptManager, device, null);
     }
 
     /**
      * Instantiates a new Tru module integrated.
      *
      * @param truModuleProperties the tru module properties
+     * @param receiptManager      the receipt manager
      * @param device              the device
      * @param marshaller          the marshaller
      */
+    @SuppressWarnings({"SameParameterValue", "WeakerAccess"})
+    public TruModuleIntegrated(ITruModuleProperties truModuleProperties, IReceiptManager receiptManager, IDevice device, ISerializer marshaller) {
+        super(truModuleProperties, receiptManager, device, marshaller);
+    }
+
+    /**
+     * Instantiates a new Tru module integrated.
+     *
+     * @param truModuleProperties  the tru module properties
+     * @param receiptManager       the receipt manager
+     * @param device               the device
+     * @param marshaller           the marshaller
+     * @param deferActivationCheck the defer activation check
+     */
     @SuppressWarnings("WeakerAccess")
-    public TruModuleIntegrated(ITruModuleProperties truModuleProperties, IDevice device, IMarshaller marshaller) {
-        super(truModuleProperties, device, marshaller);
+    public TruModuleIntegrated(ITruModuleProperties truModuleProperties, IReceiptManager receiptManager, IDevice device, ISerializer marshaller, boolean deferActivationCheck) {
+        super(truModuleProperties, receiptManager, device, marshaller, deferActivationCheck);
     }
 
-    public Response sendPosEvent(PosParams params, RequestPosEvent event) {
-        POSEvent posEvent = this.convertRequestPosEventToPOSEvent(event);
-        if(posEvent != null){
-            Trigger triggerEvent = this.getQuestionTriggerEvent(posEvent);
-            if(triggerEvent != null && triggerEvent == this.trigger){
-                // This event is set as a trigger (ie. payment request)
-                this.fetchQuestionAndDoRating(params,triggerEvent);
+    public void sendPosEvent(final PosParams params, final RequestPosEvent event) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                sendPosEventImpl(params, event);
+            }
+        }).start();
+    }
+
+    /**
+     * Send pos event.
+     *
+     * @param params the params
+     * @param event  the event
+     */
+    void sendPosEventImpl(final PosParams params, final RequestPosEvent event) {
+        synchronized (sendPosEventLock) {
+            if (super.isActivated()) {
+                Response response = super.sendRequest(TruModuleMessageFactory.assembleRequestPosEvent(super.getTruModuleProperties().getPartnerId(), super.getTruModuleProperties().getMerchantId(), super.getTruModuleProperties().getTerminalId(), super.getSessionId(params), event));
+                this.processResponse(params, response);
             }
         }
-        Response response = super.sendPosEvent(params,event);
-        return this.processResponse(params,response);
     }
 
-    @Override
-    public Response sendPosEventList(PosParams params, RequestPosEventList eventList) {
-        Response response = super.sendPosEventList(params, eventList);
-        return this.processResponse(params,response);
-    }
-
-    @Override
-    public Response sendTransaction(PosParams params, RequestTransaction requestTransaction) {
-        return super.sendTransaction(this.getTruModuleProperties().getMerchantId(),this.getTruModuleProperties().getTerminalId(),requestTransaction);
-    }
-
-    private POSEvent convertRequestPosEventToPOSEvent(RequestPosEvent event){
-        if(event.getStartTransaction() != null){
-            return POSEvent.REQUESTPOSSTARTTRANSACTION;
-        }
-        if(event.getItemOrDiscount() != null){
-            if (event.getItemOrDiscount().size()>0) {
-                if (event.getItemOrDiscount().get(0) != null) {
-                    if (event.getItemOrDiscount().get(0) instanceof RequestPosItem) {
-                        return POSEvent.REQUESTPOSITEM;
-                    }
-                    if (event.getItemOrDiscount().get(0) instanceof RequestPosItemDiscount) {
-                        return POSEvent.REQUESTPOSDISCOUNT;
-                    }
-                }
+    public void sendPosEventList(final PosParams params, final RequestPosEventList eventList) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                sendPosEventListImpl(params, eventList);
             }
-            return null;
-        }
-        if(event.getCustomer() != null){
-            return POSEvent.REQUESTCUSTOMER;
-        }
-        if(event.getEndTilling() != null){
-            return POSEvent.REQUESTPOSENDTILLING;
-        }
-        if(event.getEndTransaction() != null){
-            return POSEvent.REQUESTPOSENDTRANSACTION;
-        }
-        if(event.getReceiptData() != null){
-            return POSEvent.REQUESTPOSRECEIPTDATA;
-        }
-        return null;
+        }).start();
     }
 
-    private void fetchQuestionAndDoRating(PosParams params, Trigger trigger){
-        Request questionRequest = super.truRatingMessageFactory.assembleQuestionRequest(
-                super.getIDevice().getRfc1766LanguageCode(),
+    /**
+     * Send pos event list.
+     *
+     * @param params    the params
+     * @param eventList the event list
+     */
+    void sendPosEventListImpl(final PosParams params, final RequestPosEventList eventList) {
+        synchronized (sendPosEventListLock) {
+            if (super.isActivated()) {
+                Response response = super.sendRequest(TruModuleMessageFactory.assembleRequestPosEvent(super.getTruModuleProperties().getPartnerId(), super.getTruModuleProperties().getMerchantId(), super.getTruModuleProperties().getTerminalId(), super.getSessionId(params), eventList));
+                this.processResponse(params, response);
+            }
+        }
+    }
+
+    public void sendTransaction(final PosParams params, final RequestTransaction requestTransaction) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                sendTransactionImpl(params, requestTransaction);
+            }
+        }).start();
+    }
+
+    /**
+     * Send transaction.
+     *
+     * @param params             the params
+     * @param requestTransaction the request transaction
+     */
+    void sendTransactionImpl(final PosParams params, final RequestTransaction requestTransaction) {
+        synchronized (sendTransactionLock) {
+            if (super.isActivated()) {
+                this.sendTransaction(this.getSessionId(params), requestTransaction);
+            }
+        }
+    }
+
+    public void initiatePayment(PosParams params) {
+        if (super.isActivated()) {
+            if (super.getTrigger() == Trigger.PAYMENTREQUEST) {
+                this.assembleRequestAndDoRating(params, super.getTrigger());
+            } else {
+                super.cancelRating();
+            }
+        }
+    }
+
+    private void assembleRequestAndDoRating(PosParams params, Trigger trigger) {
+        Request request = TruModuleMessageFactory.assembleQuestionRequest(
+                super.getIDevice().getCurrentLanguage(),
                 super.getIDevice(),
+                super.getIReceiptManager(),
                 super.getTruModuleProperties().getPartnerId(),
-                this.getTruModuleProperties().getMerchantId(),
-                this.getTruModuleProperties().getTerminalId(),
+                super.getTruModuleProperties().getMerchantId(),
+                super.getTruModuleProperties().getTerminalId(),
                 super.getSessionId(params),
                 trigger);
 
-        Response eventResponse = super.getQuestion(questionRequest);
-        if (eventResponse == null) {
-            super.getLogger().severe("Response came back as null from truService - exiting");
-            return;
-        }
-
-        ResponseLanguage responseLanguage = super.filterResponseLanguage(eventResponse, "en-GB"); //filter the correct language type
-        if (responseLanguage == null){
-            super.getLogger().severe("Response came back as without required language from truService - exiting");
-            return;
-        }
-
-        super.setReceiptTextCache(super.doRating(questionRequest));
+        super.doRating(request);
     }
 
-    @SuppressWarnings("WeakerAccess")
-    public void setQuestionTriggerEvent(POSEvent event, Trigger trigger){
-        if(this.triggerMappings == null){
-            this.triggerMappings = new HashMap<POSEvent, Trigger>();
-        }
-        this.triggerMappings.put(event,trigger);
-    }
-
-    private Trigger getQuestionTriggerEvent(POSEvent event){
-        if(this.triggerMappings == null){
-            return null;
-        }
-        return this.triggerMappings.get(event);
-    }
-
-    private Response processResponse(PosParams params, Response response){
-        if ((response != null) && (response.getEvent() != null) && (response.getEvent().getQuestion() != null) && (response.getEvent().getQuestion().getTrigger() != null)) {
-            this.trigger = response.getEvent().getQuestion().getTrigger();
-            if(this.trigger == Trigger.DWELLTIME || this.trigger == Trigger.DWELLTIMEEXTEND){
-                // Request question now
-                this.fetchQuestionAndDoRating(params,trigger);
+    private void processResponse(PosParams params, Response response) {
+        if ((response != null) && (response.getEvent() != null)) {
+            if ((response.getEvent().getQuestion() != null) && (response.getEvent().getQuestion().getTrigger() != null)) {
+                super.setTrigger(response.getEvent().getQuestion().getTrigger());
+                if (super.getTrigger() == Trigger.DWELLTIME || super.getTrigger() == Trigger.DWELLTIMEEXTEND) {
+                    // Request question now
+                    this.assembleRequestAndDoRating(params, super.getTrigger());
+                }
+            } else if (response.getEvent().getClear() != null) {
+                super.cancelRating();
             }
         }
-        return response;
     }
 }

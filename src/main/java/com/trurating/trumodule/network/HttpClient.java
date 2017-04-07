@@ -25,15 +25,18 @@
 
 package com.trurating.trumodule.network;
 
-import com.trurating.service.v210.xml.Request;
-import com.trurating.service.v210.xml.Response;
+import com.trurating.service.v220.xml.Request;
+import com.trurating.service.v220.xml.Response;
 import com.trurating.trumodule.properties.ITruModuleProperties;
-import com.trurating.trumodule.security.MacSignatureCalculator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.logging.Logger;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * The type Http client.
@@ -41,18 +44,22 @@ import java.util.logging.Logger;
 @SuppressWarnings("Duplicates")
 public class HttpClient {
 
-    final private Logger log = Logger.getLogger(HttpClient.class.getName());
+    final private Logger logger = LoggerFactory.getLogger(HttpClient.class);
 
-    private IMarshaller marshaller;
-    private String transportKey = null;
+
+    private TruServiceHttpClient truServiceHttpClient;
+
+    private ITruModuleProperties properties;
 
     /**
      * Instantiates a new Http client.
      *
      * @param properties the properties
      */
-    public HttpClient(ITruModuleProperties properties){
-        this(properties,new JAXBMarshallSerialiser());
+    public HttpClient(ITruModuleProperties properties) {
+        logger.debug("Loading HttpClient...");
+        this.properties = properties;
+        this.truServiceHttpClient = new TruServiceHttpClient(properties);
     }
 
     /**
@@ -61,17 +68,10 @@ public class HttpClient {
      * @param properties the properties
      * @param marshaller the marshaller
      */
-    public HttpClient(ITruModuleProperties properties, IMarshaller marshaller) {
-        log.info("Loading HttpClient...");
-        try {
-            this.transportKey = properties.getTransportKey();
-            if(marshaller != null){
-                this.marshaller = marshaller;
-            }
-        } catch (Exception e) {
-            log.severe("Error starting com.trurating.trumodule.network.HttpClient");
-            log.severe(e.toString());
-        }
+    public HttpClient(ITruModuleProperties properties, ISerializer marshaller) {
+        logger.debug("Loading HttpClient...");
+        this.properties = properties;
+        this.truServiceHttpClient = new TruServiceHttpClient(properties,marshaller);
     }
 
     /**
@@ -86,86 +86,86 @@ public class HttpClient {
         try {
             connection = (HttpURLConnection) url.openConnection();
             connection.setDoOutput(true);
-            int httpTimeout = 1000;
+            int httpTimeout = this.properties.getSocketTimeoutInMilliSeconds();
             connection.setConnectTimeout(httpTimeout);
             connection.setReadTimeout(httpTimeout);
         } catch (Exception e) {
-            log.severe(e.toString());
+            logger.error("Error opening connection to {}",url,e);
             return null;
         }
 
-        connection = addHeaderInformation(connection, request);
+        connection = truServiceHttpClient.addHeaderInformation(connection, request);
         Response response = sendRequestToHost(connection, request);
         connection.disconnect();
         return response;
     }
 
-    private HttpURLConnection addHeaderInformation(HttpURLConnection connection, Request request) {
-        connection.setRequestProperty("x-tru-api-partner-id", request.getPartnerId());
-        connection.setRequestProperty("x-tru-api-merchant-id", request.getMerchantId());
-        connection.setRequestProperty("x-tru-api-terminal-id", request.getTerminalId());
-        connection.setRequestProperty("x-tru-api-encryption-scheme", Integer.toString(MacSignatureCalculator.getApiEncryptionScheme()));
-
-        String data = null;
-        try {
-            data = marshaller.marshall(request).toString();
-        } catch (Exception e) {
-            log.severe(e.toString());
-        }
-        try {
-            byte[] hash = MacSignatureCalculator.calculateMac(data != null ? data.getBytes("UTF-8") : new byte[0], transportKey);
-            connection.setRequestProperty("x-tru-api-mac", new String(hash != null ? hash : new byte[0]));
-        } catch (UnsupportedEncodingException e) {
-            log.severe(e.toString());
-        }
-
-        connection.setRequestProperty("Accept", "application/xml");
-        connection.setRequestProperty("Accept-Charset", "UTF-8");
-        connection.setRequestProperty("Content-Type", "application/xml");
-        return connection;
-    }
 
     private Response sendRequestToHost(HttpURLConnection urlConnection, Request request) {
         StringWriter sw;
         InputStream inputStream;
         try {
-            sw = marshaller.marshall(request);
+            sw = truServiceHttpClient.serializeRequest(request);
         } catch (Exception e) {
-            log.severe(e.toString());
+            logger.error("Error serializing request",e);
             return null;
         }
 
         OutputStream outputStream;
         try {
             outputStream = urlConnection.getOutputStream();
-            outputStream.write(sw.toString().getBytes());
+            outputStream.write(sw.toString().getBytes("UTF-8"));
             outputStream.flush();
             outputStream.close();
 
+            if(logger.isTraceEnabled()){
+                String headers = "";
+                String ls = System.getProperty("line.separator");
+                Map<String, List<String>> hdrs = urlConnection.getHeaderFields();
+                Set<String> hdrKeys = hdrs.keySet();
+
+                for (String k : hdrKeys){
+                    headers = headers.concat(k + ": " +  hdrs.get(k) + ls);
+                }
+                logger.trace("Request: {} {}",headers,sw);
+            }
+
             inputStream = urlConnection.getInputStream();
 
-            if (inputStream==null) {
-                log.severe("URLConnection.getInputStream() returns null");
+            if (inputStream == null) {
+                logger.error("URLConnection.getInputStream() returns null");
                 return null;
             }
 
-            if(urlConnection.getResponseCode() != HttpURLConnection.HTTP_OK){
-                log.severe("HttpURLConnection.getResponseCode() is not HTTP_ACCEPTED");
+            if (urlConnection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                logger.error("HttpURLConnection.getResponseCode() is {} not 200", urlConnection.getResponseCode());
                 return null;
             }
 
         } catch (IOException e) {
+            logger.error("Error sending message to {}",urlConnection.getURL(),e);
             return null;
         }
 
         String raw = convertStreamToString(inputStream);
-        log.info(raw);
-        Response response;
 
+        if(logger.isTraceEnabled()){
+            String headers = "";
+            String ls = System.getProperty("line.separator");
+            @SuppressWarnings("SpellCheckingInspection") Map<String, List<String>> hdrs = urlConnection.getHeaderFields();
+            Set<String> hdrKeys = hdrs.keySet();
+
+            for (String k : hdrKeys){
+                headers = headers.concat(k + ": " +  hdrs.get(k) + ls);
+            }
+            logger.trace("Response: {} {}",headers,raw);
+        }
+
+        Response response;
         try {
-            response = marshaller.unMarshall(raw);
+            response = truServiceHttpClient.unSerializeResponse(raw);
         } catch (Exception e) {
-            log.severe(e.toString());
+            logger.error("Error unserializing response",e);
             return null;
         }
         return response;

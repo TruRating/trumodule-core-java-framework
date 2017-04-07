@@ -24,19 +24,21 @@
 
 package com.trurating.trumodule.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.logging.Logger;
 
 /**
  * The type Tru module date utils.
  */
 public class TruModuleDateUtils {
 
-    private static Logger log = Logger.getLogger(TruModuleDateUtils.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(TruModuleDateUtils.class);
 
     /**
      * Provides the time now.
@@ -52,8 +54,36 @@ public class TruModuleDateUtils {
         try {
             xmlGregorianCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
         } catch (DatatypeConfigurationException e) {
-            log.severe(e.toString());
+            logger.error("Error formatting date",e);
         }
         return xmlGregorianCalendar;
+    }
+
+    /**
+     * Time from millis xml gregorian calendar.
+     *
+     * @param timeInMillis the time in millis
+     * @return the xml gregorian calendar
+     */
+    public static XMLGregorianCalendar timeFromMillis(@SuppressWarnings("SameParameterValue") long timeInMillis) {
+        GregorianCalendar gregorianCalendar = new GregorianCalendar();
+        gregorianCalendar.setTimeInMillis(timeInMillis);
+        XMLGregorianCalendar xmlGregorianCalendar = null;
+
+        try {
+            xmlGregorianCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
+        } catch (DatatypeConfigurationException e) {
+            logger.error("Error formatting date",e);
+        }
+        return xmlGregorianCalendar;
+    }
+
+    /**
+     * Time now millis long.
+     *
+     * @return the long
+     */
+    public static long timeNowMillis() {
+        return new Date().getTime();
     }
 }

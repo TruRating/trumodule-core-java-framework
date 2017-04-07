@@ -27,12 +27,14 @@ package com.trurating.trumodule.properties;
 
 import com.trurating.trumodule.util.TruModuleUnitTest;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.net.URL;
 
 public class TruModulePropertiesFromResourcesTest extends TruModuleUnitTest{
     @Test
+    @Ignore
     public void TruModulePropertiesFromResources() throws Exception {
         TruModuleProperties obj = new TruModulePropertiesFromResources();
         Assert.assertEquals(1,Integer.parseInt((String) testGetValue(obj,"partnerId")));
@@ -41,6 +43,7 @@ public class TruModulePropertiesFromResourcesTest extends TruModuleUnitTest{
     }
 
     @Test
+    @Ignore
     public void loadAllPropertiesFromResourcesSystemArg() throws Exception {
         TruModuleProperties obj = new TruModulePropertiesFromResources("properties/truModule.properties");
         Assert.assertEquals(1,Integer.parseInt((String) testGetValue(obj,"partnerId")));

@@ -23,52 +23,96 @@
  */
 package com.trurating.trumodule;
 
-import com.trurating.service.v210.xml.Request;
-import com.trurating.service.v210.xml.Trigger;
+import com.trurating.service.v220.xml.Request;
+import com.trurating.service.v220.xml.RequestTransaction;
+import com.trurating.service.v220.xml.Trigger;
 import com.trurating.trumodule.device.IDevice;
-import com.trurating.trumodule.network.IMarshaller;
+import com.trurating.trumodule.device.IReceiptManager;
+import com.trurating.trumodule.messages.TruModuleMessageFactory;
+import com.trurating.trumodule.network.ISerializer;
 import com.trurating.trumodule.properties.ITruModuleProperties;
-
-import java.util.Date;
+import com.trurating.trumodule.util.TruModuleDateUtils;
 
 /**
- * The type Tru module standalone.
+ * The type TruModule standalone.
  */
-public class TruModuleStandalone extends TruModule implements ITruModuleStandalone{
+public class TruModuleStandalone extends TruModule implements ITruModuleStandalone {
+    private final Object sendTransactionLock = new Object();
+
     /**
      * Instantiates a new Tru module standalone.
      *
      * @param truModuleProperties the tru module properties
-     * @param device              the device
      */
-    public TruModuleStandalone(ITruModuleProperties truModuleProperties, IDevice device) {
-        this(truModuleProperties, device, null);
+    @SuppressWarnings("unused")
+    public TruModuleStandalone(ITruModuleProperties truModuleProperties) {
+        this(truModuleProperties, null, null);
     }
 
     /**
      * Instantiates a new Tru module standalone.
      *
      * @param truModuleProperties the tru module properties
+     * @param receiptManager      the receipt manager
      * @param device              the device
-     * @param marshaller          the marshaller
      */
     @SuppressWarnings("WeakerAccess")
-    public TruModuleStandalone(ITruModuleProperties truModuleProperties, IDevice device, IMarshaller marshaller){
-        super(truModuleProperties, device, marshaller);
+    public TruModuleStandalone(ITruModuleProperties truModuleProperties, IReceiptManager receiptManager, IDevice device) {
+        this(truModuleProperties, receiptManager, device, null, false);
     }
 
-    @Override
-    public String doRating(String merchantId, String terminalId) {
-        setSessionId(Long.toString(new Date().getTime()));
-        Request request = truRatingMessageFactory.assembleQuestionRequest(
-                getIDevice().getRfc1766LanguageCode(),
-                getIDevice(),
-                getTruModuleProperties().getPartnerId(),
-                merchantId,
-                terminalId,
-                getSessionId(null),
-                Trigger.PAYMENTREQUEST);
+    /**
+     * Instantiates a new Tru module standalone.
+     *
+     * @param truModuleProperties  the tru module properties
+     * @param receiptManager       the receipt manager
+     * @param device               the device
+     * @param marshaller           the marshaller
+     * @param deferActivationCheck the defer activation check
+     */
+    @SuppressWarnings({"SameParameterValue", "WeakerAccess"})
+    public TruModuleStandalone(ITruModuleProperties truModuleProperties, IReceiptManager receiptManager, IDevice device, ISerializer marshaller, boolean deferActivationCheck) {
+        super(truModuleProperties, receiptManager, device, marshaller, deferActivationCheck);
+    }
 
-        return super.doRating(request);
+    public void doRating() {
+        setSessionId(Long.toString(TruModuleDateUtils.timeNowMillis()));
+        if (super.isActivated()) {
+            Request request = TruModuleMessageFactory.assembleQuestionRequest(
+                    getIDevice().getCurrentLanguage(),
+                    getIDevice(),
+                    getIReceiptManager(),
+                    getTruModuleProperties().getPartnerId(),
+                    getTruModuleProperties().getMerchantId(),
+                    getTruModuleProperties().getTerminalId(),
+                    getSessionId(null),
+                    Trigger.PAYMENTREQUEST);
+
+            super.doRating(request);
+        }
+    }
+
+    public void sendTransaction(final RequestTransaction requestTransaction) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                sendTransactionImpl(requestTransaction);
+            }
+        }).start();
+    }
+
+    /**
+     * Send transaction.
+     *
+     * @param requestTransaction the request transaction
+     */
+    void sendTransactionImpl(final RequestTransaction requestTransaction) {
+        synchronized (sendTransactionLock) {
+            String sessionId = super.getSessionId();
+            if (super.isActivated()) {
+                sendTransaction(sessionId, requestTransaction);
+            }
+            this.setSessionId(null);
+        }
     }
 }

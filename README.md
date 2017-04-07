@@ -32,4 +32,14 @@ This project builds to a java library that exemplifies how TruModule should inte
 
 The library uses a library of Data Transformation (DTO) classes generated from the TruRating XSD schema files using the JAXB XJC utility. This is supplied as a binary but will but be deilvered via Maven in future release.
 
+Sample Application:
+------
 
+This project additional provides an example implementation of using TruModule in Java.
+
+A requirements specification for TruModule can be found on the TruRating document gateway at:
+https://docs.trurating.com/get-started/integrated-systems/specification/requirements/
+
+Build
+-----
+The project can be opened in a Java IDE such as eclipse, using the maven project file pom.xml. A full set of unit tests is included which should be run as part of a maven build.

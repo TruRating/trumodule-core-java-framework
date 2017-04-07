@@ -1,4 +1,3 @@
-
 /*
  *  The MIT License
  *
@@ -22,21 +21,30 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
+package com.trurating.trumodule.network;
 
-package com.trurating.trumodule;
+import com.trurating.service.v220.xml.Request;
+import com.trurating.service.v220.xml.Response;
 
-import com.trurating.trumodule.util.TruModuleUnitTest;
-import org.junit.Assert;
-import org.junit.Test;
+import java.io.StringWriter;
 
-public class PosParamsTest extends TruModuleUnitTest {
+/**
+ * The interface Marshaller.
+ */
+public interface ISerializer {
+    /**
+     * Marshall a Request object to a StringWriter
+     *
+     * @param request the request
+     * @return the string writer
+     */
+    StringWriter marshall(Request request);
 
-    @Test
-    public void getSessionId() throws Exception {
-        String value = "1234567890";
-        PosParams obj = new PosParams();
-        testSetValue(obj, "sessionId", value);
-        Assert.assertEquals(value,obj.getSessionId());
-    }
-
+    /**
+     * UnMarshall a response String to Response object
+     *
+     * @param responseString the response in raw String format
+     * @return the Response object
+     */
+    Response unMarshall(String responseString);
 }

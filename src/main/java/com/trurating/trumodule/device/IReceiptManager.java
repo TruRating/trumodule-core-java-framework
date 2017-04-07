@@ -21,29 +21,25 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-package com.trurating.trumodule.network;
+package com.trurating.trumodule.device;
 
-import com.trurating.service.v210.xml.Request;
-import com.trurating.service.v210.xml.Response;
+import com.trurating.service.v220.xml.RequestPeripheral;
 
-import java.io.StringWriter;
-
-public interface IMarshaller {
+/**
+ * The interface Receipt manager.
+ */
+public interface IReceiptManager {
     /**
-     * Marshall a Request object to a StringWriter
+     * Gets receipt capabilities.
      *
-     * @param request       the request
-     * @return the string writer
-     * @throws Exception the exception
+     * @return the receipt capabilities
      */
-    StringWriter marshall(Request request) throws Exception;
+    RequestPeripheral getReceiptCapabilities();
 
     /**
-     * Un
+     * Append receipt.
      *
-     * @param responseString the response in raw String format
-     * @return the Response object
-     * @throws Exception the exception
+     * @param value the value
      */
-    Response unMarshall(String responseString) throws Exception;
+    void appendReceipt(String value);
 }
