@@ -6,7 +6,11 @@
 
     <groupId>com.trurating</groupId>
     <artifactId>trumodule-core-java-framework</artifactId>
+    <packaging>pom</packaging>
     <version>2.2.0</version>
+    <modules>
+        <module>sampleapp</module>
+    </modules>
 
     <properties>
         <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>

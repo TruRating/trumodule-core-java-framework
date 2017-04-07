@@ -586,18 +586,19 @@ public abstract class TruModule {
     private int collectRatingFromDevice(String questionText, int timeoutMs) {
 
         this.setQuestionRunning(true);
-
+        int terminalTimeout = timeoutMs;
 
         if (trigger == Trigger.DWELLTIMEEXTEND) {
-            timeoutMs = Integer.MAX_VALUE;
+            terminalTimeout = Integer.MAX_VALUE;
             this.dwellTimeExtendMs = timeoutMs;
         }
 
         // Synchronous 1AQ1KR call
         final int keyStroke = this.iDevice.display1AQ1KR(
                 questionText,
-                timeoutMs
+                terminalTimeout
         );
+
         this.logger.info("Keystroke came back as : " + Integer.toString(keyStroke));
 
         return keyStroke;
