@@ -76,7 +76,7 @@ public class TruModuleStandalone extends TruModule implements ITruModuleStandalo
     }
 
     public void doRating() {
-        setSessionId(Long.toString(TruModuleDateUtils.timeNowMillis()));
+        setSessionId(Long.toString(TruModuleDateUtils.getInstance().timeNowMillis()));
         if (super.isActivated()) {
             Request request = TruModuleMessageFactory.assembleQuestionRequest(
                     getIDevice().getCurrentLanguage(),

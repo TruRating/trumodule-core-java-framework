@@ -249,7 +249,7 @@ public abstract class TruModule {
     String getSessionId(PosParams params) {
         if (params == null) {
             if (this.sessionId == null) {
-                return Long.toString(TruModuleDateUtils.timeNowMillis());
+                return Long.toString(TruModuleDateUtils.getInstance().timeNowMillis());
             }
             return this.sessionId;
         }
@@ -286,6 +286,16 @@ public abstract class TruModule {
     //================================================================================
     // Public methods
     //================================================================================
+
+    /**
+     * Is activated boolean.
+     *
+     * @return the boolean
+     */
+    @SuppressWarnings("WeakerAccess")
+    public boolean isActivated() {
+        return this.isActivated(false);
+    }
 
     /**
      * Cancel rating.
@@ -342,7 +352,7 @@ public abstract class TruModule {
             String merchantName = null;
             String businessName = null;
 
-            Hashtable<Integer, String> sectorOptions = this.getLookupResponse(LookupName.SECTORNODE);
+            Hashtable<Integer, String> sectorOptions = this.getLookupHashtable(LookupName.SECTORNODE);
 
             while (sectorNode < 0) {
                 String possibleInt = this.getIDevice().readLine("Please pick a numbered " + LookupName.SECTORNODE);
@@ -363,7 +373,7 @@ public abstract class TruModule {
                 }
             }
 
-            Hashtable<Integer, String> timeZoneOptions = this.getLookupResponse(LookupName.TIMEZONE);
+            Hashtable<Integer, String> timeZoneOptions = this.getLookupHashtable(LookupName.TIMEZONE);
 
             while (timeZone == null) {
                 String possibleInt = this.getIDevice().readLine("Please pick a numbered " + LookupName.TIMEZONE);
@@ -463,13 +473,10 @@ public abstract class TruModule {
     // Protected methods
     //================================================================================
 
-    /**
-     * Is activated boolean.
-     *
-     * @return the boolean
-     */
-    boolean isActivated() {
-        return this.isActivated(false);
+
+    @SuppressWarnings("unused")
+    public void forceAcivationCheck(){
+        this.isActivated(true);
     }
 
     /**
@@ -579,6 +586,11 @@ public abstract class TruModule {
         }
     }
 
+    @SuppressWarnings("unused")
+    public ResponseLookup.Language getLookupSectors(){
+        return this.getLookupResponse(LookupName.SECTORNODE);
+    }
+
     //================================================================================
     // Private methods
     //================================================================================
@@ -608,7 +620,7 @@ public abstract class TruModule {
         if (responseStatus == null) {
             return false;
         }
-        this.activationRecheck = TruModuleDateUtils.timeNowMillis() + responseStatus.getTimeToLive();
+        this.activationRecheck = TruModuleDateUtils.getInstance().timeNowMillis() + responseStatus.getTimeToLive();
         this.isActivated = responseStatus.isIsActive();
         return this.isActivated;
     }
@@ -744,7 +756,7 @@ public abstract class TruModule {
     }
 
     private boolean isActivated(boolean force) {
-        if (this.activationRecheck > TruModuleDateUtils.timeNowMillis()) {
+        if (this.activationRecheck > TruModuleDateUtils.getInstance().timeNowMillis()) {
             getLogger().info("Not querying TruService status, next check at " + this.activationRecheck + ". IsActive is " + (this.isActivated ? "true" : "false"));
             return this.isActivated;
         }
@@ -756,26 +768,38 @@ public abstract class TruModule {
         return this.isActivated;
     }
 
-    private Hashtable<Integer, String> getLookupResponse(LookupName lookupName) {
+    private Hashtable<Integer, String> getLookupHashtable(LookupName lookupName) {
         Hashtable<Integer, String> result = new Hashtable<Integer, String>();
+        int optionNumber = 0;
 
-        Response response = this.sendRequest(TruModuleMessageFactory.assembleRequestlookup(this.getIDevice(), this.getIReceiptManager(), this.getTruModuleProperties().getPartnerId(), this.getTruModuleProperties().getMerchantId(), this.getTruModuleProperties().getTerminalId(), this.getSessionId(), lookupName));
+        ResponseLookup.Language language = getLookupResponse(lookupName);
 
-        if (response != null && response.getLookup() != null) {
-            int optionNumber = 0;
-            for (ResponseLookup.Language language : response.getLookup().getLanguage()) {
-                if (language.getRfc1766().equals(this.getIDevice().getCurrentLanguage())) {
-                    if (language.getOption() != null) {
-                        for (LookupOption option : language.getOption()) {
-
-                            result.putAll(this.printLookUps(option, 1, optionNumber++));
-                        }
-                    }
+        if(language != null) {
+            if (language.getOption() != null) {
+                for (LookupOption option : language.getOption()) {
+                    result.putAll(this.printLookUps(option, 1, optionNumber++));
                 }
             }
         }
 
         return result;
+    }
+
+    private ResponseLookup.Language getLookupResponse(LookupName lookupName){
+        Response response = this.sendRequest(TruModuleMessageFactory.assembleRequestlookup(this.getIDevice(), this.getIReceiptManager(), this.getTruModuleProperties().getPartnerId(), this.getTruModuleProperties().getMerchantId(), this.getTruModuleProperties().getTerminalId(), this.getSessionId(), lookupName));
+
+        if (response != null && response.getLookup() != null) {
+
+            for (ResponseLookup.Language language : response.getLookup().getLanguage()) {
+                if (language.getRfc1766().equals(this.getIDevice().getCurrentLanguage())) {
+                    if (language.getOption() != null) {
+                        return language;
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 
     private Map<Integer, String> printLookUps(LookupOption lookupOption, int depth, int optionNumber) {

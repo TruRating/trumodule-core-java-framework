@@ -39,6 +39,19 @@ import java.util.GregorianCalendar;
 public class TruModuleDateUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(TruModuleDateUtils.class);
+    private static DatatypeFactory datatypeFactory;
+
+    private TruModuleDateUtils(){
+        try {
+            datatypeFactory = DatatypeFactory.newInstance();
+        } catch (DatatypeConfigurationException e) {
+            logger.error("Error loading DatatypeFactory",e);
+        }
+    }
+
+    public static TruModuleDateUtils getInstance(){
+        return TruModuleDateUtilsSingletonHolder.INSTANCE;
+    }
 
     /**
      * Provides the time now.
@@ -46,16 +59,15 @@ public class TruModuleDateUtils {
      *
      * @return An XMLGregorianCalendar set to the time the method was called
      */
-    public static XMLGregorianCalendar timeNow() {
+    public XMLGregorianCalendar timeNow() {
         GregorianCalendar gregorianCalendar = new GregorianCalendar();
         gregorianCalendar.setTimeInMillis(new Date().getTime());
         XMLGregorianCalendar xmlGregorianCalendar = null;
 
-        try {
-            xmlGregorianCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
-        } catch (DatatypeConfigurationException e) {
-            logger.error("Error formatting date",e);
+        if(datatypeFactory != null){
+            xmlGregorianCalendar = datatypeFactory.newXMLGregorianCalendar(gregorianCalendar);
         }
+
         return xmlGregorianCalendar;
     }
 
@@ -65,16 +77,15 @@ public class TruModuleDateUtils {
      * @param timeInMillis the time in millis
      * @return the xml gregorian calendar
      */
-    public static XMLGregorianCalendar timeFromMillis(@SuppressWarnings("SameParameterValue") long timeInMillis) {
+    public XMLGregorianCalendar timeFromMillis(@SuppressWarnings("SameParameterValue") long timeInMillis) {
         GregorianCalendar gregorianCalendar = new GregorianCalendar();
         gregorianCalendar.setTimeInMillis(timeInMillis);
         XMLGregorianCalendar xmlGregorianCalendar = null;
 
-        try {
-            xmlGregorianCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
-        } catch (DatatypeConfigurationException e) {
-            logger.error("Error formatting date",e);
+        if(datatypeFactory != null){
+            xmlGregorianCalendar = datatypeFactory.newXMLGregorianCalendar(gregorianCalendar);
         }
+
         return xmlGregorianCalendar;
     }
 
@@ -83,7 +94,11 @@ public class TruModuleDateUtils {
      *
      * @return the long
      */
-    public static long timeNowMillis() {
+    public long timeNowMillis() {
         return new Date().getTime();
+    }
+
+    private static class TruModuleDateUtilsSingletonHolder {
+        private static final TruModuleDateUtils INSTANCE = new TruModuleDateUtils();
     }
 }

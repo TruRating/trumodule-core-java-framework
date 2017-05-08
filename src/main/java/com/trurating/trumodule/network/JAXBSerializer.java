@@ -51,10 +51,10 @@ public class JAXBSerializer implements ISerializer {
     public JAXBSerializer() {
         logger.debug("Loading JAXBSerializer...");
         try {
-            requestMarshaller = JAXBContext.newInstance(Request.class).createMarshaller();
+            requestMarshaller = JAXBContext.newInstance("com.trurating.service.v220.xml").createMarshaller();
             requestMarshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
             requestMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-            responseUnmarshaller = JAXBContext.newInstance(Response.class).createUnmarshaller();
+            responseUnmarshaller = JAXBContext.newInstance("com.trurating.service.v220.xml").createUnmarshaller();
         } catch (JAXBException e) {
             logger.error("Error loading JAXB",e);
         }

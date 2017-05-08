@@ -138,7 +138,7 @@ public class TruModuleMessageFactory {
         RequestRating requestRating = new RequestRating();
 
         requestRating.setRfc1766(rfc1766);
-        requestRating.setDateTime(TruModuleDateUtils.timeNow());
+        requestRating.setDateTime(TruModuleDateUtils.getInstance().timeNow());
         requestRating.setValue(value);
         requestRating.setResponseTimeMs(responseTimeMs);
 

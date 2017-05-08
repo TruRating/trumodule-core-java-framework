@@ -87,7 +87,7 @@ public class TruModuleMessageFactoryTest {
         RequestTransaction requestTransaction = new RequestTransaction();
         requestTransaction.setAmount(1000);
         requestTransaction.setCurrency((short)826);
-        requestTransaction.setDateTime(TruModuleDateUtils.timeFromMillis(1000000));
+        requestTransaction.setDateTime(TruModuleDateUtils.getInstance().timeFromMillis(1000000));
         requestTransaction.setGratuity(0);
         requestTransaction.setId("UNITTEST_TRANSACTION_1");
         requestTransaction.setResult(TransactionResult.APPROVED);
@@ -120,9 +120,7 @@ public class TruModuleMessageFactoryTest {
 
     @Test
     public void assembleRequestQuery() throws Exception {
-        boolean force = true;
-
-        Request request = TruModuleMessageFactory.assembleRequestQuery(receiptManager,device,partnerId,merchantId,terminalId,sessionId,force);
+        Request request = TruModuleMessageFactory.assembleRequestQuery(receiptManager,device,partnerId,merchantId,terminalId,sessionId,true);
 
         Assert.assertEquals(receiptManager.getReceiptCapabilities().getHeight(),request.getQuery().getDevice().getReceipt().getHeight());
         Assert.assertEquals(receiptManager.getReceiptCapabilities().getWidth(),request.getQuery().getDevice().getReceipt().getWidth());
@@ -132,7 +130,7 @@ public class TruModuleMessageFactoryTest {
         Assert.assertEquals(merchantId,request.getMerchantId());
         Assert.assertEquals(terminalId,request.getTerminalId());
         Assert.assertEquals(sessionId,request.getSessionId());
-        Assert.assertEquals(force,request.getQuery().isForce());
+        Assert.assertEquals(true,request.getQuery().isForce());
     }
 
     @Test
