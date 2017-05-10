@@ -88,7 +88,8 @@ public class HttpClient {
             connection.setDoOutput(true);
             int httpTimeout = this.properties.getSocketTimeoutInMilliSeconds();
             connection.setConnectTimeout(httpTimeout);
-            connection.setReadTimeout(httpTimeout);
+            // Set read timeout to times 2 connect. So fail fast of we can't connect but allow a little time to read
+            connection.setReadTimeout(httpTimeout * 2);
         } catch (Exception e) {
             logger.error("Error opening connection to {}",url,e);
             return null;
