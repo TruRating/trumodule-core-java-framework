@@ -297,6 +297,12 @@ public abstract class TruModule {
         return this.isActivated(false);
     }
 
+    @SuppressWarnings({"WeakerAccess", "unused"})
+    public boolean isActivatedIgnoreTTL() {
+        this.activationRecheck = 0;
+        return this.isActivated(true);
+    }
+
     /**
      * Cancel rating.
      *
@@ -767,6 +773,8 @@ public abstract class TruModule {
         }
         return this.isActivated;
     }
+
+
 
     private Hashtable<Integer, String> getLookupHashtable(LookupName lookupName) {
         Hashtable<Integer, String> result = new Hashtable<Integer, String>();
