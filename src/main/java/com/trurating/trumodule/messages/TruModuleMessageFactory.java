@@ -177,6 +177,7 @@ public class TruModuleMessageFactory {
 
         RequestDevice requestDevice = new RequestDevice();
         requestDevice.setScreen(device.getScreenCapabilities());
+        requestDevice.setSkipInstruction(device.getSkipInstruction());
         requestDevice.setReceipt(receiptManager.getReceiptCapabilities());
         requestDevice.setFirmware(device.getFirmware());
         requestDevice.setName(device.getName());
@@ -259,6 +260,7 @@ public class TruModuleMessageFactory {
 
         RequestDevice requestDevice = new RequestDevice();
         requestDevice.setScreen(device.getScreenCapabilities());
+        requestDevice.setSkipInstruction(device.getSkipInstruction());
         requestDevice.setReceipt(receiptManager.getReceiptCapabilities());
         requestDevice.setFirmware(device.getFirmware());
         requestDevice.setName(device.getName());
