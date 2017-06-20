@@ -42,6 +42,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 
 /**
@@ -74,7 +75,7 @@ public abstract class TruModule {
     private volatile boolean questionRunning = false; // this flags the entrance and exits to the method that displays the question, and is used as a check during dwelltime extend
     private volatile boolean questionCancelled = false;
 
-    private volatile long activationRecheck;
+    private volatile AtomicLong activationRecheck;
     private volatile boolean isActivated;
     private volatile String sessionId;
     private volatile int dwellTimeExtendMs;
@@ -136,6 +137,7 @@ public abstract class TruModule {
         if (iReceiptManager != null) {
             this.setIReceiptManager(iReceiptManager);
         }
+        activationRecheck = new AtomicLong(0);
         if (!deferActivationCheck) {
             this.isActivated(true);
         }
@@ -299,7 +301,7 @@ public abstract class TruModule {
 
     @SuppressWarnings({"WeakerAccess", "unused"})
     public boolean isActivatedIgnoreTTL() {
-        this.activationRecheck = 0;
+        this.activationRecheck.set(0);
         return this.isActivated(true);
     }
 
@@ -626,7 +628,7 @@ public abstract class TruModule {
         if (responseStatus == null) {
             return false;
         }
-        this.activationRecheck = TruModuleDateUtils.getInstance().timeNowMillis() + responseStatus.getTimeToLive();
+        this.activationRecheck.set(TruModuleDateUtils.getInstance().timeNowMillis() + responseStatus.getTimeToLive());
         this.isActivated = responseStatus.isIsActive();
         return this.isActivated;
     }
@@ -762,7 +764,7 @@ public abstract class TruModule {
     }
 
     private boolean isActivated(boolean force) {
-        if (this.activationRecheck > TruModuleDateUtils.getInstance().timeNowMillis()) {
+        if (this.activationRecheck.get() > TruModuleDateUtils.getInstance().timeNowMillis()) {
             getLogger().info("Not querying TruService status, next check at " + this.activationRecheck + ". IsActive is " + (this.isActivated ? "true" : "false"));
             return this.isActivated;
         }

@@ -50,6 +50,7 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static mockit.Deencapsulation.getField;
 import static mockit.Deencapsulation.setField;
@@ -85,7 +86,7 @@ public class TruModuleIntegratedTest extends TruModuleUnitTest{
         iReceiptManager = new MockReceiptManger();
         truModuleIntegrated = new TruModuleIntegrated(properties,iReceiptManager,iDevice,serializer,true);
         setField(truModuleIntegrated,"isActivated",true);
-        setField(truModuleIntegrated,"activationRecheck", TruModuleDateUtils.getInstance().timeNowMillis() + TimeUnit.DAYS.toMillis(1)); // Set the next activation check to tomorrow
+        setField(truModuleIntegrated,"activationRecheck", new AtomicLong(TruModuleDateUtils.getInstance().timeNowMillis() + TimeUnit.DAYS.toMillis(1))); // Set the next activation check to tomorrow
         setField(truModuleIntegrated, "httpClient", httpClient);
         setField(truModuleIntegrated, "logger", logger);
     }
@@ -109,11 +110,11 @@ public class TruModuleIntegratedTest extends TruModuleUnitTest{
 
         // Quick hack to stop sendPosEvent attempting to send any data
         setField(truModuleIntegrated,"isActivated",false);
-        setField(truModuleIntegrated,"activationRecheck", TruModuleDateUtils.getInstance().timeNowMillis() - TimeUnit.DAYS.toMillis(1)); // Set the next activation check to tomorrow
+        setField(truModuleIntegrated,"activationRecheck", new AtomicLong(TruModuleDateUtils.getInstance().timeNowMillis() - TimeUnit.DAYS.toMillis(1))); // Set the next activation check to tomorrow
         truModuleIntegrated.sendPosEvent(params,requestPosEvent);
         Thread.sleep(200);
         setField(truModuleIntegrated,"isActivated",true);
-        setField(truModuleIntegrated,"activationRecheck", TruModuleDateUtils.getInstance().timeNowMillis() + TimeUnit.DAYS.toMillis(1)); // Set the next activation check to tomorrow
+        setField(truModuleIntegrated,"activationRecheck", new AtomicLong(TruModuleDateUtils.getInstance().timeNowMillis() + TimeUnit.DAYS.toMillis(1))); // Set the next activation check to tomorrow
     }
 
 
@@ -227,11 +228,11 @@ public class TruModuleIntegratedTest extends TruModuleUnitTest{
 
         // Quick hack to stop sendPosEventList attempting to send any data
         setField(truModuleIntegrated,"isActivated",false);
-        setField(truModuleIntegrated,"activationRecheck", TruModuleDateUtils.getInstance().timeNowMillis() - TimeUnit.DAYS.toMillis(1)); // Set the next activation check to tomorrow
+        setField(truModuleIntegrated,"activationRecheck", new AtomicLong(TruModuleDateUtils.getInstance().timeNowMillis() - TimeUnit.DAYS.toMillis(1))); // Set the next activation check to tomorrow
         truModuleIntegrated.sendPosEventList(params,requestPosEventList);
         Thread.sleep(200);
         setField(truModuleIntegrated,"isActivated",true);
-        setField(truModuleIntegrated,"activationRecheck", TruModuleDateUtils.getInstance().timeNowMillis() + TimeUnit.DAYS.toMillis(1)); // Set the next activation check to tomorrow
+        setField(truModuleIntegrated,"activationRecheck", new AtomicLong(TruModuleDateUtils.getInstance().timeNowMillis() + TimeUnit.DAYS.toMillis(1))); // Set the next activation check to tomorrow
     }
 
 
@@ -345,11 +346,11 @@ public class TruModuleIntegratedTest extends TruModuleUnitTest{
 
         // Quick hack to stop sendTransaction attempting to send any data
         setField(truModuleIntegrated,"isActivated",false);
-        setField(truModuleIntegrated,"activationRecheck", TruModuleDateUtils.getInstance().timeNowMillis() - TimeUnit.DAYS.toMillis(1)); // Set the next activation check to tomorrow
+        setField(truModuleIntegrated,"activationRecheck", new AtomicLong(TruModuleDateUtils.getInstance().timeNowMillis() - TimeUnit.DAYS.toMillis(1))); // Set the next activation check to tomorrow
         truModuleIntegrated.sendTransaction(params,requestTransaction);
         Thread.sleep(200);
         setField(truModuleIntegrated,"isActivated",true);
-        setField(truModuleIntegrated,"activationRecheck", TruModuleDateUtils.getInstance().timeNowMillis() + TimeUnit.DAYS.toMillis(1)); // Set the next activation check to tomorrow
+        setField(truModuleIntegrated,"activationRecheck", new AtomicLong(TruModuleDateUtils.getInstance().timeNowMillis() + TimeUnit.DAYS.toMillis(1))); // Set the next activation check to tomorrow
     }
 
 
@@ -597,7 +598,7 @@ public class TruModuleIntegratedTest extends TruModuleUnitTest{
         }};
 
         setField(truModuleIntegrated,"isActivated",false);
-        setField(truModuleIntegrated,"activationRecheck", TruModuleDateUtils.getInstance().timeNowMillis() + TimeUnit.DAYS.toMillis(1)); // Set the next activation check to tomorrow
+        setField(truModuleIntegrated,"activationRecheck", new AtomicLong(TruModuleDateUtils.getInstance().timeNowMillis() + TimeUnit.DAYS.toMillis(1))); // Set the next activation check to tomorrow
 
         truModuleIntegrated.activate();
         Assert.assertTrue((Boolean) getField(truModuleIntegrated,"isActivated"));
@@ -622,7 +623,7 @@ public class TruModuleIntegratedTest extends TruModuleUnitTest{
         }};
 
         setField(truModuleIntegrated,"isActivated",false);
-        setField(truModuleIntegrated,"activationRecheck", TruModuleDateUtils.getInstance().timeNowMillis() + TimeUnit.DAYS.toMillis(1)); // Set the next activation check to tomorrow
+        setField(truModuleIntegrated,"activationRecheck", new AtomicLong(TruModuleDateUtils.getInstance().timeNowMillis() + TimeUnit.DAYS.toMillis(1))); // Set the next activation check to tomorrow
 
         truModuleIntegrated.activate("UNIT_TEST_REGCODE");
         Assert.assertTrue((Boolean) getField(truModuleIntegrated,"isActivated"));
@@ -646,7 +647,7 @@ public class TruModuleIntegratedTest extends TruModuleUnitTest{
         }};
 
         setField(truModuleIntegrated,"isActivated",false);
-        setField(truModuleIntegrated,"activationRecheck", TruModuleDateUtils.getInstance().timeNowMillis() + TimeUnit.DAYS.toMillis(1)); // Set the next activation check to tomorrow
+        setField(truModuleIntegrated,"activationRecheck", new AtomicLong(TruModuleDateUtils.getInstance().timeNowMillis() + TimeUnit.DAYS.toMillis(1))); // Set the next activation check to tomorrow
 
         truModuleIntegrated.activate(4,"GMT",PaymentInstant.PAYAFTER,"unittest@trurating.com","password","107 Leadenhall Street","07765123456","Unit test merchants","Unit test business");
         Assert.assertTrue((Boolean) getField(truModuleIntegrated,"isActivated"));
@@ -655,21 +656,21 @@ public class TruModuleIntegratedTest extends TruModuleUnitTest{
     @Test
     public void isActivated() throws Exception {
         setField(truModuleIntegrated,"isActivated",true);
-        setField(truModuleIntegrated,"activationRecheck", TruModuleDateUtils.getInstance().timeNowMillis() + TimeUnit.DAYS.toMillis(1)); // Set the next activation check to tomorrow
+        setField(truModuleIntegrated,"activationRecheck", new AtomicLong(TruModuleDateUtils.getInstance().timeNowMillis() + TimeUnit.DAYS.toMillis(1))); // Set the next activation check to tomorrow
         Assert.assertTrue(truModuleIntegrated.isActivated());
     }
 
     @Test
     public void isActivated_false() throws Exception {
         setField(truModuleIntegrated,"isActivated",false);
-        setField(truModuleIntegrated,"activationRecheck", TruModuleDateUtils.getInstance().timeNowMillis() + TimeUnit.DAYS.toMillis(1)); // Set the next activation check to tomorrow
+        setField(truModuleIntegrated,"activationRecheck", new AtomicLong(TruModuleDateUtils.getInstance().timeNowMillis() + TimeUnit.DAYS.toMillis(1))); // Set the next activation check to tomorrow
         Assert.assertFalse(truModuleIntegrated.isActivated());
     }
 
     @Test
     public void isActivated_recheck() throws Exception {
         setField(truModuleIntegrated,"isActivated",false);
-        setField(truModuleIntegrated,"activationRecheck", TruModuleDateUtils.getInstance().timeNowMillis() - TimeUnit.DAYS.toMillis(1)); // Set the next activation check to tomorrow
+        setField(truModuleIntegrated,"activationRecheck", new AtomicLong(TruModuleDateUtils.getInstance().timeNowMillis() - TimeUnit.DAYS.toMillis(1))); // Set the next activation check to tomorrow
 
         final Response activateResponse = new Response();
         activateResponse.setPartnerId(partnerId);

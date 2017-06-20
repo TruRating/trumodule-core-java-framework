@@ -49,6 +49,7 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static mockit.Deencapsulation.getField;
 import static mockit.Deencapsulation.setField;
@@ -85,7 +86,7 @@ public class TruModuleStandaloneTest extends TruModuleUnitTest{
         iReceiptManager = new MockReceiptManger();
         truModuleStandalone = new TruModuleStandalone(properties,iReceiptManager,iDevice,serializer,true);
         setField(truModuleStandalone,"isActivated",true);
-        setField(truModuleStandalone,"activationRecheck", TruModuleDateUtils.getInstance().timeNowMillis() + TimeUnit.DAYS.toMillis(1)); // Set the next activation check to tomorrow
+        setField(truModuleStandalone,"activationRecheck", new AtomicLong(TruModuleDateUtils.getInstance().timeNowMillis() + TimeUnit.DAYS.toMillis(1))); // Set the next activation check to tomorrow
         setField(truModuleStandalone, "httpClient", httpClient);
         setField(truModuleStandalone, "logger", logger);
     }
@@ -107,11 +108,11 @@ public class TruModuleStandaloneTest extends TruModuleUnitTest{
 
         // Quick hack to stop sendTransaction attempting to send any data
         setField(truModuleStandalone,"isActivated",false);
-        setField(truModuleStandalone,"activationRecheck", TruModuleDateUtils.getInstance().timeNowMillis() - TimeUnit.DAYS.toMillis(1)); // Set the next activation check to tomorrow
+        setField(truModuleStandalone,"activationRecheck", new AtomicLong(TruModuleDateUtils.getInstance().timeNowMillis() - TimeUnit.DAYS.toMillis(1))); // Set the next activation check to tomorrow
         truModuleStandalone.sendTransaction(requestTransaction);
         Thread.sleep(200);
         setField(truModuleStandalone,"isActivated",true);
-        setField(truModuleStandalone,"activationRecheck", TruModuleDateUtils.getInstance().timeNowMillis() + TimeUnit.DAYS.toMillis(1)); // Set the next activation check to tomorrow
+        setField(truModuleStandalone,"activationRecheck", new AtomicLong(TruModuleDateUtils.getInstance().timeNowMillis() + TimeUnit.DAYS.toMillis(1))); // Set the next activation check to tomorrow
     }
 
 
@@ -298,7 +299,7 @@ public class TruModuleStandaloneTest extends TruModuleUnitTest{
         }};
 
         setField(truModuleStandalone,"isActivated",false);
-        setField(truModuleStandalone,"activationRecheck", TruModuleDateUtils.getInstance().timeNowMillis() + TimeUnit.DAYS.toMillis(1)); // Set the next activation check to tomorrow
+        setField(truModuleStandalone,"activationRecheck", new AtomicLong(TruModuleDateUtils.getInstance().timeNowMillis() + TimeUnit.DAYS.toMillis(1))); // Set the next activation check to tomorrow
 
         truModuleStandalone.activate();
         Assert.assertTrue((Boolean) getField(truModuleStandalone,"isActivated"));
@@ -323,7 +324,7 @@ public class TruModuleStandaloneTest extends TruModuleUnitTest{
         }};
 
         setField(truModuleStandalone,"isActivated",false);
-        setField(truModuleStandalone,"activationRecheck", TruModuleDateUtils.getInstance().timeNowMillis() + TimeUnit.DAYS.toMillis(1)); // Set the next activation check to tomorrow
+        setField(truModuleStandalone,"activationRecheck", new AtomicLong(TruModuleDateUtils.getInstance().timeNowMillis() + TimeUnit.DAYS.toMillis(1))); // Set the next activation check to tomorrow
 
         truModuleStandalone.activate("UNIT_TEST_REGCODE");
         Assert.assertTrue((Boolean) getField(truModuleStandalone,"isActivated"));
@@ -347,7 +348,7 @@ public class TruModuleStandaloneTest extends TruModuleUnitTest{
         }};
 
         setField(truModuleStandalone,"isActivated",false);
-        setField(truModuleStandalone,"activationRecheck", TruModuleDateUtils.getInstance().timeNowMillis() + TimeUnit.DAYS.toMillis(1)); // Set the next activation check to tomorrow
+        setField(truModuleStandalone,"activationRecheck", new AtomicLong(TruModuleDateUtils.getInstance().timeNowMillis() + TimeUnit.DAYS.toMillis(1))); // Set the next activation check to tomorrow
 
         truModuleStandalone.activate(4,"GMT",PaymentInstant.PAYAFTER,"unittest@trurating.com","password","107 Leadenhall Street","07765123456","Unit test merchants","Unit test business");
         Assert.assertTrue((Boolean) getField(truModuleStandalone,"isActivated"));
@@ -356,21 +357,21 @@ public class TruModuleStandaloneTest extends TruModuleUnitTest{
     @Test
     public void isActivated() throws Exception {
         setField(truModuleStandalone,"isActivated",true);
-        setField(truModuleStandalone,"activationRecheck", TruModuleDateUtils.getInstance().timeNowMillis() + TimeUnit.DAYS.toMillis(1)); // Set the next activation check to tomorrow
+        setField(truModuleStandalone,"activationRecheck", new AtomicLong(TruModuleDateUtils.getInstance().timeNowMillis() + TimeUnit.DAYS.toMillis(1))); // Set the next activation check to tomorrow
         Assert.assertTrue(truModuleStandalone.isActivated());
     }
 
     @Test
     public void isActivated_false() throws Exception {
         setField(truModuleStandalone,"isActivated",false);
-        setField(truModuleStandalone,"activationRecheck", TruModuleDateUtils.getInstance().timeNowMillis() + TimeUnit.DAYS.toMillis(1)); // Set the next activation check to tomorrow
+        setField(truModuleStandalone,"activationRecheck", new AtomicLong(TruModuleDateUtils.getInstance().timeNowMillis() + TimeUnit.DAYS.toMillis(1))); // Set the next activation check to tomorrow
         Assert.assertFalse(truModuleStandalone.isActivated());
     }
 
     @Test
     public void isActivated_recheck() throws Exception {
         setField(truModuleStandalone,"isActivated",false);
-        setField(truModuleStandalone,"activationRecheck", TruModuleDateUtils.getInstance().timeNowMillis() - TimeUnit.DAYS.toMillis(1)); // Set the next activation check to tomorrow
+        setField(truModuleStandalone,"activationRecheck", new AtomicLong(TruModuleDateUtils.getInstance().timeNowMillis() - TimeUnit.DAYS.toMillis(1))); // Set the next activation check to tomorrow
 
         final Response activateResponse = new Response();
         activateResponse.setPartnerId(partnerId);
