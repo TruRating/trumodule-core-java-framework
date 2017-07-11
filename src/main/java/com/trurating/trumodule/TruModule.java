@@ -139,7 +139,11 @@ public abstract class TruModule {
         }
         activationRecheck = new AtomicLong(0);
         if (!deferActivationCheck) {
-            this.isActivated(true);
+            try {
+                this.isActivated(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -296,11 +300,15 @@ public abstract class TruModule {
      */
     @SuppressWarnings("WeakerAccess")
     public boolean isActivated() {
-        return this.isActivated(false);
+        try {
+            return this.isActivated(false);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @SuppressWarnings({"WeakerAccess", "unused"})
-    public boolean isActivatedIgnoreTTL() {
+    public boolean isActivatedIgnoreTTL() throws Exception{
         this.activationRecheck.set(0);
         return this.isActivated(true);
     }
@@ -483,7 +491,7 @@ public abstract class TruModule {
 
 
     @SuppressWarnings("unused")
-    public void forceAcivationCheck(){
+    public void forceAcivationCheck() throws Exception{
         this.isActivated(true);
     }
 
@@ -763,9 +771,9 @@ public abstract class TruModule {
         }
     }
 
-    private boolean isActivated(boolean force) {
+    private boolean isActivated(boolean force) throws Exception{
         if (this.activationRecheck.get() > TruModuleDateUtils.getInstance().timeNowMillis()) {
-            getLogger().info("Not querying TruService status, next check at " + this.activationRecheck + ". IsActive is " + (this.isActivated ? "true" : "false"));
+            getLogger().info("Not querying TruModule status, next check at " + this.activationRecheck + ". IsActive is " + (this.isActivated ? "true" : "false"));
             return this.isActivated;
         }
         Response response = this.sendRequest(TruModuleMessageFactory.assembleRequestQuery(this.getIReceiptManager(),this.getIDevice(),this.getTruModuleProperties().getPartnerId(), this.getTruModuleProperties().getMerchantId(), this.getTruModuleProperties().getTerminalId(), this.getSessionId(), force));
@@ -773,7 +781,9 @@ public abstract class TruModule {
             ResponseStatus responseStatus = response.getStatus();
             return this.processStatusResponse(responseStatus);
         }
-        return this.isActivated;
+        else{
+            throw new Exception("Error retrieving TruModule status");
+        }
     }
 
 
