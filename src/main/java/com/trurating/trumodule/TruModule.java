@@ -25,7 +25,7 @@
 
 package com.trurating.trumodule;
 
-import com.trurating.service.v220.xml.*;
+import com.trurating.service.v230.xml.*;
 import com.trurating.trumodule.device.IDevice;
 import com.trurating.trumodule.device.IReceiptManager;
 import com.trurating.trumodule.messages.PosParams;
@@ -603,7 +603,7 @@ public abstract class TruModule {
     }
 
     @SuppressWarnings("unused")
-    public ResponseLookup.Language getLookupSectors(){
+    public ResponseLookupLanguage getLookupSectors(){
         return this.getLookupResponse(LookupName.SECTORNODE);
     }
 
@@ -792,7 +792,7 @@ public abstract class TruModule {
         Hashtable<Integer, String> result = new Hashtable<Integer, String>();
         int optionNumber = 0;
 
-        ResponseLookup.Language language = getLookupResponse(lookupName);
+        ResponseLookupLanguage language = getLookupResponse(lookupName);
 
         if(language != null) {
             if (language.getOption() != null) {
@@ -805,12 +805,12 @@ public abstract class TruModule {
         return result;
     }
 
-    private ResponseLookup.Language getLookupResponse(LookupName lookupName){
+    private ResponseLookupLanguage getLookupResponse(LookupName lookupName){
         Response response = this.sendRequest(TruModuleMessageFactory.assembleRequestlookup(this.getIDevice(), this.getIReceiptManager(), this.getTruModuleProperties().getPartnerId(), this.getTruModuleProperties().getMerchantId(), this.getTruModuleProperties().getTerminalId(), this.getSessionId(), lookupName));
 
         if (response != null && response.getLookup() != null) {
 
-            for (ResponseLookup.Language language : response.getLookup().getLanguage()) {
+            for (ResponseLookupLanguage language : response.getLookup().getLanguage()) {
                 if (language.getRfc1766().equals(this.getIDevice().getCurrentLanguage())) {
                     if (language.getOption() != null) {
                         return language;

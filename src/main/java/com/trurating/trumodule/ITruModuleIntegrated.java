@@ -25,7 +25,7 @@
 
 package com.trurating.trumodule;
 
-import com.trurating.service.v220.xml.*;
+import com.trurating.service.v230.xml.*;
 import com.trurating.trumodule.messages.PosParams;
 
 /**

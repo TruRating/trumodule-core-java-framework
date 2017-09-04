@@ -25,8 +25,8 @@
 
 package com.trurating.trumodule.network;
 
-import com.trurating.service.v220.xml.Request;
-import com.trurating.service.v220.xml.Response;
+import com.trurating.service.v230.xml.Request;
+import com.trurating.service.v230.xml.Response;
 import com.trurating.trumodule.properties.ITruModuleProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

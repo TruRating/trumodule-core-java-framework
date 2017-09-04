@@ -25,10 +25,10 @@
  */
 package com.trurating.trumodule.network;
 
-import com.trurating.service.v220.xml.Request;
-import com.trurating.service.v220.xml.RequestPosEvent;
-import com.trurating.service.v220.xml.RequestPosStartTilling;
-import com.trurating.service.v220.xml.Response;
+import com.trurating.service.v230.xml.Request;
+import com.trurating.service.v230.xml.RequestPosEvent;
+import com.trurating.service.v230.xml.RequestPosStartTilling;
+import com.trurating.service.v230.xml.Response;
 import com.trurating.trumodule.messages.TruModuleMessageFactory;
 import mockit.Tested;
 import org.junit.Assert;
@@ -58,7 +58,7 @@ public class JAXBSerializerTest {
 
         Request request = TruModuleMessageFactory.assembleRequestPosEvent(partnerId,merchantId,terminalId,sessionId,event);
 
-        String xml = "<Request PartnerId=\"1\" MerchantId=\"UNITTEST_MERCH_1\" TerminalId=\"UNITTEST_TERM_1\" SessionId=\"UNITTEST_SESSION_1\" xmlns=\"http://docs.trurating.com/schema/truservice/v220.xsd\">\n" +
+        String xml = "<Request PartnerId=\"1\" MerchantId=\"UNITTEST_MERCH_1\" TerminalId=\"UNITTEST_TERM_1\" SessionId=\"UNITTEST_SESSION_1\" xmlns=\"http://docs.trurating.com/schema/truservice/v230.xsd\">\n" +
                 "    <PosEvent>\n" +
                 "        <StartTilling/>\n" +
                 "    </PosEvent>\n" +
@@ -69,7 +69,7 @@ public class JAXBSerializerTest {
 
     @Test
     public void unMarshall() throws Exception {
-        String xml = "<Response PartnerId=\"1\" MerchantId=\"UNITTEST_MERCH_1\" TerminalId=\"UNITTEST_TERM_1\" SessionId=\"UNITTEST_SESSION_1\" xmlns=\"http://docs.trurating.com/schema/truservice/v220.xsd\">\n" +
+        String xml = "<Response PartnerId=\"1\" MerchantId=\"UNITTEST_MERCH_1\" TerminalId=\"UNITTEST_TERM_1\" SessionId=\"UNITTEST_SESSION_1\" xmlns=\"http://docs.trurating.com/schema/truservice/v230.xsd\">\n" +
                 "  <Display>\n" +
                 "    <Language Rfc1766=\"en-GB\">\n" +
                 "      <Question TimeoutMs=\"45000\">||||Please rate the menu|from 0-9 or clear</Question>\n" +

@@ -23,9 +23,9 @@
  */
 package com.trurating.trumodule;
 
-import com.trurating.service.v220.xml.Request;
-import com.trurating.service.v220.xml.RequestTransaction;
-import com.trurating.service.v220.xml.Trigger;
+import com.trurating.service.v230.xml.Request;
+import com.trurating.service.v230.xml.RequestTransaction;
+import com.trurating.service.v230.xml.Trigger;
 import com.trurating.trumodule.device.IDevice;
 import com.trurating.trumodule.device.IReceiptManager;
 import com.trurating.trumodule.messages.TruModuleMessageFactory;

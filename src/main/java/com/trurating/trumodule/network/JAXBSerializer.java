@@ -24,8 +24,8 @@
  */
 package com.trurating.trumodule.network;
 
-import com.trurating.service.v220.xml.Request;
-import com.trurating.service.v220.xml.Response;
+import com.trurating.service.v230.xml.Request;
+import com.trurating.service.v230.xml.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,10 +51,10 @@ public class JAXBSerializer implements ISerializer {
     public JAXBSerializer() {
         logger.debug("Loading JAXBSerializer...");
         try {
-            requestMarshaller = JAXBContext.newInstance("com.trurating.service.v220.xml").createMarshaller();
+            requestMarshaller = JAXBContext.newInstance("com.trurating.service.v230.xml").createMarshaller();
             requestMarshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
             requestMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-            responseUnmarshaller = JAXBContext.newInstance("com.trurating.service.v220.xml").createUnmarshaller();
+            responseUnmarshaller = JAXBContext.newInstance("com.trurating.service.v230.xml").createUnmarshaller();
         } catch (JAXBException e) {
             logger.error("Error loading JAXB",e);
         }

@@ -25,7 +25,7 @@
  */
 package com.trurating.trumodule;
 
-import com.trurating.service.v220.xml.*;
+import com.trurating.service.v230.xml.*;
 import com.trurating.trumodule.device.IDevice;
 import com.trurating.trumodule.device.IReceiptManager;
 import com.trurating.trumodule.messages.PosParams;
@@ -523,7 +523,7 @@ public class TruModuleIntegratedTest extends TruModuleUnitTest{
     public void activate() throws Exception {
         final Response sectorLookup = new Response();
         ResponseLookup responseSectorLookup = new ResponseLookup();
-        ResponseLookup.Language language = new ResponseLookup.Language();
+        ResponseLookupLanguage language = new ResponseLookupLanguage();
         language.setRfc1766("en-GB");
         List<LookupOption> sectorOptions = new LinkedList<LookupOption>();
         LookupOption sectorOption = new LookupOption();
@@ -552,7 +552,7 @@ public class TruModuleIntegratedTest extends TruModuleUnitTest{
 
         final Response timezoneLookup = new Response();
         ResponseLookup responseTimezoneOptionLookup = new ResponseLookup();
-        ResponseLookup.Language timezoneLanguage = new ResponseLookup.Language();
+        ResponseLookupLanguage timezoneLanguage = new ResponseLookupLanguage();
         timezoneLanguage.setRfc1766("en-GB");
         List<LookupOption> timezoneOptions = new LinkedList<LookupOption>();
         LookupOption timezoneOption = new LookupOption();

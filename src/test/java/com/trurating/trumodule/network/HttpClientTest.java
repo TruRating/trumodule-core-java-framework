@@ -25,7 +25,7 @@
  */
 package com.trurating.trumodule.network;
 
-import com.trurating.service.v220.xml.*;
+import com.trurating.service.v230.xml.*;
 import com.trurating.trumodule.messages.TruModuleMessageFactory;
 import com.trurating.trumodule.properties.ITruModuleProperties;
 import mockit.*;

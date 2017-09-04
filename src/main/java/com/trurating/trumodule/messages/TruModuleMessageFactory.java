@@ -25,7 +25,7 @@
  */
 package com.trurating.trumodule.messages;
 
-import com.trurating.service.v220.xml.*;
+import com.trurating.service.v230.xml.*;
 import com.trurating.trumodule.device.IDevice;
 import com.trurating.trumodule.device.IReceiptManager;
 import com.trurating.trumodule.util.TruModuleDateUtils;

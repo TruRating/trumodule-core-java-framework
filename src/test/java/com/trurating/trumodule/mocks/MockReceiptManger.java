@@ -25,10 +25,10 @@
  */
 package com.trurating.trumodule.mocks;
 
-import com.trurating.service.v220.xml.Font;
-import com.trurating.service.v220.xml.Format;
-import com.trurating.service.v220.xml.RequestPeripheral;
-import com.trurating.service.v220.xml.UnitDimension;
+import com.trurating.service.v230.xml.Font;
+import com.trurating.service.v230.xml.Format;
+import com.trurating.service.v230.xml.RequestPeripheral;
+import com.trurating.service.v230.xml.UnitDimension;
 import com.trurating.trumodule.device.IReceiptManager;
 
 public class MockReceiptManger implements IReceiptManager {

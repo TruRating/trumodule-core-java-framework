@@ -25,7 +25,7 @@
 
 package com.trurating.trumodule;
 
-import com.trurating.service.v220.xml.RequestTransaction;
+import com.trurating.service.v230.xml.RequestTransaction;
 
 /**
  * The interface Tru module standalone.

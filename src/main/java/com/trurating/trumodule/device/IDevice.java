@@ -25,7 +25,7 @@
 
 package com.trurating.trumodule.device;
 
-import com.trurating.service.v220.xml.*;
+import com.trurating.service.v230.xml.*;
 
 /**
  * An interface that describes the behaviour that the trurating

@@ -23,7 +23,7 @@
  */
 package com.trurating.trumodule.device;
 
-import com.trurating.service.v220.xml.RequestPeripheral;
+import com.trurating.service.v230.xml.RequestPeripheral;
 
 /**
  * The interface Receipt manager.
