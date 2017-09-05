@@ -77,6 +77,7 @@ public abstract class TruModule {
 
     private volatile AtomicLong activationRecheck;
     private volatile boolean isActivated;
+    private volatile String regCode;
     private volatile String sessionId;
     private volatile int dwellTimeExtendMs;
 
@@ -311,6 +312,15 @@ public abstract class TruModule {
     public boolean isActivatedIgnoreTTL() throws Exception{
         this.activationRecheck.set(0);
         return this.isActivated(true);
+    }
+
+    @SuppressWarnings({"WeakerAccess", "unused"})
+    public String getSuspendedRegCode() {
+        try {
+            return this.regCode;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     /**
@@ -638,6 +648,9 @@ public abstract class TruModule {
         }
         this.activationRecheck.set(TruModuleDateUtils.getInstance().timeNowMillis() + responseStatus.getTimeToLive());
         this.isActivated = responseStatus.isIsActive();
+        if(responseStatus.getRegistrationCode() != null){
+            this.regCode = responseStatus.getRegistrationCode();
+        }
         return this.isActivated;
     }
 
