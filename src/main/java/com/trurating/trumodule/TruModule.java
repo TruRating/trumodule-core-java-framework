@@ -78,6 +78,7 @@ public abstract class TruModule {
     private volatile AtomicLong activationRecheck;
     private volatile boolean isActivated;
     private volatile String regCode;
+    private volatile int activeOutletCount;
     private volatile String sessionId;
     private volatile int dwellTimeExtendMs;
 
@@ -321,6 +322,11 @@ public abstract class TruModule {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    @SuppressWarnings({"WeakerAccess", "unused"})
+    public int getActiveOutletCount() {
+        return this.activeOutletCount;
     }
 
     /**
@@ -650,6 +656,9 @@ public abstract class TruModule {
         this.isActivated = responseStatus.isIsActive();
         if(responseStatus.getRegistrationCode() != null){
             this.regCode = responseStatus.getRegistrationCode();
+        }
+        if(responseStatus.getActiveOutletCount() != null){
+            this.activeOutletCount = responseStatus.getActiveOutletCount();
         }
         return this.isActivated;
     }
