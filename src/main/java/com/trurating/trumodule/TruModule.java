@@ -78,7 +78,7 @@ public abstract class TruModule {
     private volatile AtomicLong activationRecheck;
     private volatile boolean isActivated;
     private volatile String regCode;
-    private volatile int activeOutletCount;
+    private volatile Integer activeOutletCount;
     private volatile String sessionId;
     private volatile int dwellTimeExtendMs;
 
@@ -325,7 +325,7 @@ public abstract class TruModule {
     }
 
     @SuppressWarnings({"WeakerAccess", "unused"})
-    public int getActiveOutletCount() {
+    public Integer getActiveOutletCount() {
         return this.activeOutletCount;
     }
 
