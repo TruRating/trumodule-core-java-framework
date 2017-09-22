@@ -341,6 +341,75 @@ public class TruModuleMessageFactory {
     }
 
     /**
+     * Assemble request login request.
+     *
+     * @param device         the device
+     * @param receiptManager the receipt manager
+     * @param partnerId      the partner id
+     * @param merchantId     the merchant id
+     * @param terminalId     the terminal id
+     * @param sessionId      the session id
+     * @param sectorNode     the sector node
+     * @param timeZone       the time zone
+     * @param paymentInstant the payment instant
+     * @param emailAddress   the email address
+     * @param password       the password
+     * @param address        the address
+     * @param mobileNumber   the mobile number
+     * @param merchantName   the merchant name
+     * @param businessName   the business name
+     * @return the request
+     */
+    public static Request assembleRequestLogin(IDevice device,
+                                                  IReceiptManager receiptManager,
+                                                  String partnerId,
+                                                  String merchantId,
+                                                  String terminalId,
+                                                  String sessionId,
+                                                  int sectorNode,
+                                                  String timeZone,
+                                                  PaymentInstant paymentInstant,
+                                                  String emailAddress,
+                                                  String password,
+                                                  String address,
+                                                  String mobileNumber,
+                                                  String merchantName,
+                                                  String businessName) {
+        Request request = new Request();
+        request.setPartnerId(partnerId);
+        request.setMerchantId(merchantId);
+        request.setTerminalId(terminalId);
+        request.setSessionId(sessionId);
+
+        RequestDevice requestDevice = new RequestDevice();
+        requestDevice.setName(device.getName());
+        requestDevice.setFirmware(device.getFirmware());
+        requestDevice.setScreen(device.getScreenCapabilities());
+        requestDevice.setSkipInstruction(device.getSkipInstruction());
+        requestDevice.setReceipt(receiptManager.getReceiptCapabilities());
+
+        RequestActivate activate = new RequestActivate();
+        activate.setDevice(requestDevice);
+        activate.getLanguage().addAll(Arrays.asList(device.getLanguages()));
+
+        RequestLoginForm form = new RequestLoginForm();
+        form.setSectorNode(sectorNode);
+        form.setTimeZone(timeZone);
+        form.setPaymentInstant(paymentInstant);
+        form.setMerchantEmailAddress(emailAddress);
+        form.setMerchantPassword(password);
+        form.setBusinessAddress(address);
+        form.setMerchantMobileNumber(mobileNumber);
+        form.setMerchantName(merchantName);
+        form.setBusinessName(businessName);
+
+        activate.setLoginForm(form);
+        request.setActivate(activate);
+
+        return request;
+    }
+
+    /**
      * Assemble question request request.
      *
      * @param rfc1766        the rfc 1766

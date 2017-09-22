@@ -77,6 +77,8 @@ public abstract class TruModule {
 
     private volatile AtomicLong activationRecheck;
     private volatile boolean isActivated;
+    private volatile boolean isSuspended;
+    private volatile boolean isRegSuccessful;
     private volatile String regCode;
     private volatile Integer activeOutletCount;
     private volatile String sessionId;
@@ -329,6 +331,16 @@ public abstract class TruModule {
         return this.activeOutletCount;
     }
 
+    @SuppressWarnings({"WeakerAccess", "unused"})
+    public boolean isSuspended() {
+        return this.isSuspended;
+    }
+
+    @SuppressWarnings({"WeakerAccess", "unused"})
+    public boolean isRegSuccessful() {
+        return this.isRegSuccessful;
+    }
+
     /**
      * Cancel rating.
      *
@@ -501,6 +513,41 @@ public abstract class TruModule {
         return response != null && this.processStatusResponse(response.getStatus());
     }
 
+    /**
+     * Login boolean.
+     *
+     * @param sectorNode     the sector node
+     * @param timeZone       the time zone
+     * @param paymentInstant the payment instant
+     * @param emailAddress   the email address
+     * @param password       the password
+     * @param address        the address
+     * @param mobileNumber   the mobile number
+     * @param merchantName   the merchant name
+     * @param businessName   the business name
+     * @return the boolean
+     */
+    @SuppressWarnings("WeakerAccess")
+    public boolean login(int sectorNode,
+                            String timeZone,
+                            @SuppressWarnings("SameParameterValue") PaymentInstant paymentInstant,
+                            String emailAddress,
+                            String password,
+                            String address,
+                            String mobileNumber,
+                            String merchantName,
+                            String businessName) {
+        if (this.isActivated()) {
+            return true;
+        }
+        Response response = this.sendRequest(TruModuleMessageFactory.assembleRequestLogin(this.getIDevice(), this.getIReceiptManager(), this.getTruModuleProperties().getPartnerId(), this.getTruModuleProperties().getMerchantId(), this.getTruModuleProperties().getTerminalId(), this.getSessionId(), sectorNode, timeZone, paymentInstant, emailAddress, password, address, mobileNumber, merchantName, businessName));
+        this.isRegSuccessful = false;
+        if(response != null){
+            this.processStatusResponse(response.getStatus());
+        }
+        return isRegSuccessful;
+    }
+
     //================================================================================
     // Protected methods
     //================================================================================
@@ -660,6 +707,20 @@ public abstract class TruModule {
         if(responseStatus.getActiveOutletCount() != null){
             this.activeOutletCount = responseStatus.getActiveOutletCount();
         }
+
+        try{
+            this.isSuspended = responseStatus.isIsSuspended();
+        }
+        catch (Exception e){
+            this.isSuspended = false;
+        }
+        try{
+            this.isRegSuccessful = responseStatus.isIsSuccess();
+        }
+        catch (Exception e){
+            this.isRegSuccessful = false;
+        }
+
         return this.isActivated;
     }
 
