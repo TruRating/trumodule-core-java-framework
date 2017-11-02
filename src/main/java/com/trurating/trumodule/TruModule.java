@@ -528,7 +528,7 @@ public abstract class TruModule {
      * @return the boolean
      */
     @SuppressWarnings("WeakerAccess")
-    public boolean login(int sectorNode,
+    public boolean login(Integer sectorNode,
                             String timeZone,
                             @SuppressWarnings("SameParameterValue") PaymentInstant paymentInstant,
                             String emailAddress,
@@ -609,6 +609,7 @@ public abstract class TruModule {
         ResponseLanguage responseLanguage = filterResponseLanguage(response, this.truModuleProperties.getRFC());
         if (responseLanguage == null) {
             this.logger.error("The service returned no language for the sought RFC");
+            this.iDevice.resetDisplay();
             return;
         }
 

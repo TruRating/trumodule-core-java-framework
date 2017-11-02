@@ -366,7 +366,7 @@ public class TruModuleMessageFactory {
                                                   String merchantId,
                                                   String terminalId,
                                                   String sessionId,
-                                                  int sectorNode,
+                                                  Integer sectorNode,
                                                   String timeZone,
                                                   PaymentInstant paymentInstant,
                                                   String emailAddress,
