@@ -28,12 +28,20 @@ package com.trurating.trumodule.network;
 import com.trurating.service.v230.xml.Request;
 import com.trurating.service.v230.xml.Response;
 import com.trurating.trumodule.properties.ITruModuleProperties;
+import com.trurating.trumodule.util.TLSSocketFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.net.www.protocol.https.HttpsURLConnectionImpl;
 
-import java.io.*;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -90,12 +98,20 @@ public class HttpClient {
             connection.setConnectTimeout(httpTimeout);
             // Set read timeout to times 2 connect. So fail fast of we can't connect but allow a little time to read
             connection.setReadTimeout(httpTimeout * 2);
+            connection.setChunkedStreamingMode(0);
+
+            connection = truServiceHttpClient.addHeaderInformation(connection, request);
+
+            if (connection instanceof HttpsURLConnection) {
+                ((HttpsURLConnection)connection).setSSLSocketFactory(new TLSSocketFactory());
+            }
+
+            connection.connect();
         } catch (Exception e) {
             logger.error("Error opening connection to {}",url,e);
             return null;
         }
 
-        connection = truServiceHttpClient.addHeaderInformation(connection, request);
         Response response = sendRequestToHost(connection, request);
         connection.disconnect();
         return response;

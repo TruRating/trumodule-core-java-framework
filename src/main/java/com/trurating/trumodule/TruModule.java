@@ -28,6 +28,7 @@ package com.trurating.trumodule;
 import com.trurating.service.v230.xml.*;
 import com.trurating.trumodule.device.IDevice;
 import com.trurating.trumodule.device.IReceiptManager;
+import com.trurating.trumodule.exceptions.LoginFailedException;
 import com.trurating.trumodule.messages.PosParams;
 import com.trurating.trumodule.messages.TruModuleMessageFactory;
 import com.trurating.trumodule.network.HttpClient;
@@ -78,7 +79,7 @@ public abstract class TruModule {
     private volatile AtomicLong activationRecheck;
     private volatile boolean isActivated;
     private volatile boolean isSuspended;
-    private volatile boolean isRegSuccessful;
+    private volatile Boolean isRegSuccessful;
     private volatile String regCode;
     private volatile Integer activeOutletCount;
     private volatile String sessionId;
@@ -337,7 +338,7 @@ public abstract class TruModule {
     }
 
     @SuppressWarnings({"WeakerAccess", "unused"})
-    public boolean isRegSuccessful() {
+    public Boolean isRegSuccessful() {
         return this.isRegSuccessful;
     }
 
@@ -528,7 +529,7 @@ public abstract class TruModule {
      * @return the boolean
      */
     @SuppressWarnings("WeakerAccess")
-    public boolean login(Integer sectorNode,
+    public Boolean login(Integer sectorNode,
                             String timeZone,
                             @SuppressWarnings("SameParameterValue") PaymentInstant paymentInstant,
                             String emailAddress,
@@ -536,14 +537,16 @@ public abstract class TruModule {
                             String address,
                             String mobileNumber,
                             String merchantName,
-                            String businessName) {
+                            String businessName) throws LoginFailedException {
         if (this.isActivated()) {
             return true;
         }
         Response response = this.sendRequest(TruModuleMessageFactory.assembleRequestLogin(this.getIDevice(), this.getIReceiptManager(), this.getTruModuleProperties().getPartnerId(), this.getTruModuleProperties().getMerchantId(), this.getTruModuleProperties().getTerminalId(), this.getSessionId(), sectorNode, timeZone, paymentInstant, emailAddress, password, address, mobileNumber, merchantName, businessName));
-        this.isRegSuccessful = false;
+        this.isRegSuccessful = null;
         if(response != null){
             this.processStatusResponse(response.getStatus());
+        } else {
+            throw new LoginFailedException();
         }
         return isRegSuccessful;
     }
@@ -589,6 +592,7 @@ public abstract class TruModule {
      * @return the response
      */
     Response sendRequest(Request request) {
+        this.isRegSuccessful = null;
         return this.httpClient.send(this.truModuleProperties.getTruServiceURL(), request);
     }
 
@@ -696,11 +700,11 @@ public abstract class TruModule {
         return keyStroke;
     }
 
-    private boolean processStatusResponse(ResponseStatus responseStatus) {
+    private Boolean processStatusResponse(ResponseStatus responseStatus) {
         if (responseStatus == null) {
             return false;
         }
-        this.activationRecheck.set(TruModuleDateUtils.getInstance().timeNowMillis() + responseStatus.getTimeToLive());
+        this.activationRecheck.set(TruModuleDateUtils.getInstance().timeNowMillis() + (responseStatus.getTimeToLive() * 1000));
         this.isActivated = responseStatus.isIsActive();
         if(responseStatus.getRegistrationCode() != null){
             this.regCode = responseStatus.getRegistrationCode();
@@ -719,7 +723,7 @@ public abstract class TruModule {
             this.isRegSuccessful = responseStatus.isIsSuccess();
         }
         catch (Exception e){
-            this.isRegSuccessful = false;
+            this.isRegSuccessful = null;
         }
 
         return this.isActivated;
