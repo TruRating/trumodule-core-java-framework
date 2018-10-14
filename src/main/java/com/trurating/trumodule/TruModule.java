@@ -38,6 +38,7 @@ import com.trurating.trumodule.util.TruModuleDateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.naming.Context;
 import java.net.URL;
 import java.util.Hashtable;
 import java.util.Map;
@@ -299,14 +300,28 @@ public abstract class TruModule {
     //================================================================================
 
     /**
+     * Is activated Boolean.
+     *
+     * @return the Boolean
+     */
+    @SuppressWarnings("WeakerAccess")
+    public Boolean isActivated() {
+        try {
+            return this.isActivated(false);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
      * Is activated boolean.
      *
      * @return the boolean
      */
     @SuppressWarnings("WeakerAccess")
-    public boolean isActivated() {
+    public boolean isActivatedSync() {
         try {
-            return this.isActivated(false);
+            return this.isActivatedSync(false);
         } catch (Exception e) {
             return false;
         }
@@ -315,7 +330,7 @@ public abstract class TruModule {
     @SuppressWarnings({"WeakerAccess", "unused"})
     public boolean isActivatedIgnoreTTL() throws Exception{
         this.activationRecheck.set(0);
-        return this.isActivated(true);
+        return this.isActivatedSync(true);
     }
 
     @SuppressWarnings({"WeakerAccess", "unused"})
@@ -859,7 +874,39 @@ public abstract class TruModule {
         }
     }
 
-    private boolean isActivated(boolean force) throws Exception{
+    private Boolean isActivated(final boolean force) throws Exception{
+        if (this.activationRecheck.get() == 0) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    TruModule context = TruModule.this;
+                    Response response = context.sendRequest(TruModuleMessageFactory.assembleRequestQuery(
+                            context.getIReceiptManager(), context.getIDevice(), context.getTruModuleProperties().getPartnerId(), context.getTruModuleProperties().getMerchantId(), context.getTruModuleProperties().getTerminalId(), context.getSessionId(), force));
+                    if (response != null) {
+                        ResponseStatus responseStatus = response.getStatus();
+                        context.processStatusResponse(responseStatus);
+                    }
+                }
+            }).start();
+            return null;
+        }
+
+        if (this.activationRecheck.get() > TruModuleDateUtils.getInstance().timeNowMillis()) {
+            getLogger().info("Not querying TruModule status, next check at " + this.activationRecheck + ". IsActive is " + (this.isActivated ? "true" : "false"));
+            return this.isActivated;
+        }
+        /*Response response = this.sendRequest(TruModuleMessageFactory.assembleRequestQuery(this.getIReceiptManager(),this.getIDevice(),this.getTruModuleProperties().getPartnerId(), this.getTruModuleProperties().getMerchantId(), this.getTruModuleProperties().getTerminalId(), this.getSessionId(), force));
+        if (response != null) {
+            ResponseStatus responseStatus = response.getStatus();
+            return this.processStatusResponse(responseStatus);
+        }
+        else{
+            throw new Exception("Error retrieving TruModule status");
+        }*/
+        return isActivatedSync(force);
+    }
+
+    private boolean isActivatedSync(final boolean force) throws Exception{
         if (this.activationRecheck.get() > TruModuleDateUtils.getInstance().timeNowMillis()) {
             getLogger().info("Not querying TruModule status, next check at " + this.activationRecheck + ". IsActive is " + (this.isActivated ? "true" : "false"));
             return this.isActivated;

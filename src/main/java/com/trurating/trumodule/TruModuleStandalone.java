@@ -23,11 +23,10 @@
  */
 package com.trurating.trumodule;
 
-import com.trurating.service.v230.xml.Request;
-import com.trurating.service.v230.xml.RequestTransaction;
-import com.trurating.service.v230.xml.Trigger;
+import com.trurating.service.v230.xml.*;
 import com.trurating.trumodule.device.IDevice;
 import com.trurating.trumodule.device.IReceiptManager;
+import com.trurating.trumodule.messages.PosParams;
 import com.trurating.trumodule.messages.TruModuleMessageFactory;
 import com.trurating.trumodule.network.ISerializer;
 import com.trurating.trumodule.properties.ITruModuleProperties;
@@ -38,6 +37,7 @@ import com.trurating.trumodule.util.TruModuleDateUtils;
  */
 public class TruModuleStandalone extends TruModule implements ITruModuleStandalone {
     private final Object sendTransactionLock = new Object();
+    private final Object sendPosEventListLock = new Object();
 
     /**
      * Instantiates a new Tru module standalone.
@@ -113,6 +113,29 @@ public class TruModuleStandalone extends TruModule implements ITruModuleStandalo
                 sendTransaction(sessionId, requestTransaction);
             }
             this.setSessionId(null);
+        }
+    }
+
+    public void sendPosEventList(final PosParams params, final RequestPosEventList eventList) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                sendPosEventListImpl(params, eventList);
+            }
+        }).start();
+    }
+
+    /**
+     * Send pos event list.
+     *
+     * @param params    the params
+     * @param eventList the event list
+     */
+    void sendPosEventListImpl(final PosParams params, final RequestPosEventList eventList) {
+        synchronized (sendPosEventListLock) {
+            if (super.isActivated()) {
+                Response response = super.sendRequest(TruModuleMessageFactory.assembleRequestPosEvent(super.getTruModuleProperties().getPartnerId(), super.getTruModuleProperties().getMerchantId(), super.getTruModuleProperties().getTerminalId(), super.getSessionId(params), eventList));
+            }
         }
     }
 }
